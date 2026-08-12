@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>薪水實拿計算機（台灣版）· 黑牛 AI 工具箱</title>
+<meta name="description" content="輸入月薪，馬上算出扣完勞健保的實拿金額，還有老闆偷偷幫你付的錢。黑牛用 AI 做的免費工具。">
+<meta property="og:title" content="薪水實拿計算機（台灣版）· 黑牛">
+<meta property="og:description" content="月薪 5 萬，你真的拿得到 5 萬嗎？輸入就知道。資料不會上傳。">
+<style>
+  :root{
+    --ink:#0C0E14; --ink2:#141824; --card:#1B2030; --line:#2A3040;
+    --hi:#FFE24B; --danger:#FF3B30; --fix:#34E1C4; --white:#F4F6FB; --muted:#8A93A6;
+    --cjk:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:radial-gradient(900px 500px at 15% -10%,rgba(255,59,48,.10),transparent 60%),
+    radial-gradient(1000px 600px at 100% 110%,rgba(52,225,196,.10),transparent 60%),var(--ink);
+    color:var(--white);font-family:var(--cjk);min-height:100vh;padding:22px 16px;line-height:1.5;}
+  .wrap{max-width:560px;margin:0 auto;}
+  .back{display:inline-block;color:var(--muted);text-decoration:none;font-size:13px;font-weight:700;margin-bottom:12px;}
+  .back:hover{color:var(--fix);}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .brand .logo{font-size:26px;font-weight:900;color:var(--hi);}
+  .brand .sub{font-size:13px;color:var(--fix);font-weight:700;letter-spacing:1px;}
+  h1{font-size:27px;font-weight:900;margin-bottom:4px;}
+  .tag{color:var(--muted);font-size:14px;margin-bottom:14px;}
+  .privacy{display:inline-flex;align-items:center;gap:6px;background:rgba(52,225,196,.1);border:1px solid rgba(52,225,196,.3);
+    color:var(--fix);font-size:12.5px;font-weight:700;border-radius:999px;padding:6px 12px;margin-bottom:18px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;}
+  label{display:block;font-size:14px;color:var(--muted);font-weight:700;margin-bottom:8px;}
+  .salarybox{display:flex;align-items:baseline;gap:8px;background:var(--ink2);border:1px solid var(--line);
+    border-radius:12px;padding:12px 16px;}
+  .salarybox .cur{color:var(--muted);font-size:20px;font-weight:800;}
+  #salary{flex:1;background:transparent;border:none;color:var(--white);font-size:38px;font-weight:900;outline:none;width:100%;}
+  input[type=range]{width:100%;margin-top:14px;accent-color:var(--hi);height:6px;}
+  .rangelabels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:4px;}
+  .ctrls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  .ctrl{background:var(--ink2);border:1px solid var(--line);border-radius:12px;padding:12px;}
+  .ctrl label{margin-bottom:6px;}
+  .seg{display:flex;gap:6px;flex-wrap:wrap;}
+  .seg button{flex:1;min-width:34px;background:#232838;border:1px solid var(--line);color:var(--white);
+    border-radius:9px;padding:8px 0;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--cjk);}
+  .seg button.on{background:var(--hi);color:var(--ink);border-color:var(--hi);}
+  .takehome{text-align:center;padding:6px 0 2px;}
+  .takehome .k{font-size:14px;color:var(--muted);font-weight:700;}
+  .takehome .v{font-size:52px;font-weight:900;color:var(--fix);letter-spacing:-1px;line-height:1.1;}
+  .bar{height:16px;border-radius:10px;overflow:hidden;display:flex;margin:16px 0 6px;background:var(--danger);}
+  .bar .net{background:var(--fix);height:100%;}
+  .barlegend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
+  .rows{margin-top:10px;}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);font-size:15px;}
+  .row:last-child{border-bottom:none;}
+  .row .lbl{color:var(--white);}
+  .row .lbl small{color:var(--muted);font-size:12px;font-weight:600;}
+  .row .amt{font-weight:800;font-variant-numeric:tabular-nums;}
+  .amt.minus{color:var(--danger);}
+  .amt.net{color:var(--fix);}
+  .row.total{border-top:2px solid var(--line);border-bottom:none;margin-top:4px;padding-top:14px;font-size:17px;}
+  .boss{background:rgba(52,225,196,.08);border:1px solid rgba(52,225,196,.3);border-radius:14px;padding:14px 16px;margin-top:14px;}
+  .boss .h{font-size:13px;color:var(--fix);font-weight:800;margin-bottom:8px;}
+  .boss .r{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;color:var(--white);}
+  .boss .r b{color:var(--fix);font-variant-numeric:tabular-nums;}
+  details{margin-top:14px;}
+  summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:700;}
+  .adv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+  .adv div{background:var(--ink2);border:1px solid var(--line);border-radius:10px;padding:10px;}
+  .adv label{font-size:12px;margin-bottom:5px;}
+  .adv input{width:100%;background:#232838;border:1px solid var(--line);color:var(--white);border-radius:7px;padding:7px 9px;font-size:14px;font-family:var(--cjk);}
+  .note{color:var(--muted);font-size:11.5px;line-height:1.6;margin-top:14px;}
+  .share{display:flex;gap:8px;margin-top:16px;}
+  .share button{flex:1;background:var(--hi);color:var(--ink);border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--cjk);}
+  .share button.alt{background:#232838;color:var(--white);border:1px solid var(--line);}
+  .foot{text-align:center;margin-top:22px;padding-top:16px;border-top:1px solid var(--line);}
+  .foot .cta{color:var(--white);font-weight:800;font-size:15px;}
+  .foot .cta b{color:var(--fix);}
+  .foot .hand{color:var(--muted);font-size:13px;margin-top:6px;}
+  .foot .links{margin-top:10px;font-size:13px;}
+  .foot .links a{color:var(--fix);text-decoration:none;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← 黑牛 AI 工具箱</a>
+  <div class="brand"><span class="logo">黑牛🐮</span><span class="sub">AI 工程師 · PhD</span></div>
+  <h1>薪水實拿計算機 <span style="color:var(--hi)">台灣版</span></h1>
+  <p class="tag">輸入月薪，馬上看你扣完勞健保實拿多少 · 還有老闆偷偷幫你付的錢</p>
+  <div class="privacy">🔒 你輸入的數字不會上傳，全部在你的瀏覽器裡算完</div>
+
+  <div class="card">
+    <label>你的月薪（NT$）</label>
+    <div class="salarybox"><span class="cur">NT$</span><input id="salary" type="text" inputmode="numeric" value="50,000"></div>
+    <input id="slider" type="range" min="28000" max="200000" step="500" value="50000">
+    <div class="rangelabels"><span>28,000</span><span>200,000+</span></div>
+    <div class="ctrls">
+      <div class="ctrl">
+        <label>眷屬人數（健保）</label>
+        <div class="seg" id="dep">
+          <button data-v="0" class="on">0</button><button data-v="1">1</button>
+          <button data-v="2">2</button><button data-v="3">3+</button>
+        </div>
+      </div>
+      <div class="ctrl">
+        <label>勞退自提 %</label>
+        <div class="seg" id="self">
+          <button data-v="0" class="on">0%</button><button data-v="3">3%</button><button data-v="6">6%</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="takehome"><div class="k">每月實拿 ≈</div><div class="v" id="net">NT$ 48,080</div></div>
+    <div class="bar"><div class="net" id="barnet" style="width:96%"></div></div>
+    <div class="barlegend"><span style="color:var(--fix)">■ 實拿 <span id="pctnet">96%</span></span><span style="color:var(--danger)">扣除 <span id="pctcut">4%</span> ■</span></div>
+    <div class="rows">
+      <div class="row"><span class="lbl">月薪</span><span class="amt" id="r_gross">50,000</span></div>
+      <div class="row"><span class="lbl">勞保自付 <small>11.5%+1% × 20%</small></span><span class="amt minus" id="r_labor">−1,145</span></div>
+      <div class="row"><span class="lbl">健保自付 <small>5.17% × 30% ×(本人+眷)</small></span><span class="amt minus" id="r_nhi">−776</span></div>
+      <div class="row" id="row_self"><span class="lbl">勞退自提 <small>可省稅</small></span><span class="amt minus" id="r_self">−0</span></div>
+      <div class="row total"><span class="lbl"><b>每月實拿</b></span><span class="amt net" id="r_net">48,080</span></div>
+    </div>
+    <div class="boss">
+      <div class="h">😲 你老闆每月「另外」幫你出的錢（不在你薪水裡）</div>
+      <div class="r"><span>勞保（雇主 70%）</span><b id="b_labor">4,008</b></div>
+      <div class="r"><span>健保（雇主 60%）</span><b id="b_nhi">1,551</b></div>
+      <div class="r"><span>勞退提撥（雇主 6%）</span><b id="b_pension">3,000</b></div>
+      <div class="r" style="border-top:1px solid rgba(52,225,196,.25);margin-top:6px;padding-top:8px;font-weight:800"><span>老闆多付合計</span><b id="b_total">8,559</b></div>
+    </div>
+    <div class="share">
+      <button id="sh">分享這個計算機</button>
+      <button class="alt" id="cp">複製連結</button>
+    </div>
+    <details>
+      <summary>進階：自訂費率 / 級距（預設 2026）</summary>
+      <div class="adv">
+        <div><label>勞保費率 %（普通+就業）</label><input id="rate_labor" type="number" step="0.1" value="12.5"></div>
+        <div><label>健保費率 %</label><input id="rate_nhi" type="number" step="0.01" value="5.17"></div>
+        <div><label>勞保投保上限</label><input id="cap_labor" type="number" value="45800"></div>
+        <div><label>健保投保上限</label><input id="cap_nhi" type="number" value="219500"></div>
+      </div>
+    </details>
+    <p class="note">※ 本工具為<b>估算</b>：以月薪直接套用費率，實際金額依勞保局／健保署公告之「投保薪資／金額分級表」四捨五入，可能小幅差異。<b>不含個人所得稅</b>（年度結算另計）。勞退自提為選填、可從當年度所得中扣除節稅。費率以 2026 年（民國115年）為準：勞保普通事故 11.5%＋就業保險 1%、自付 20%、上限 45,800；健保 5.17%、自付 30%、眷屬上限 3 口。</p>
+  </div>
+
+  <div class="foot">
+    <div class="cta">這個計算機我用 <b>AI 幾分鐘做出來的</b> · 想自己做一個？留言「<b>薪水</b>」</div>
+    <div class="hand">黑牛 @fatty_bamba　·　AI 創業家 · 工程師 · PhD</div>
+    <div class="links"><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">想幫公司導入 AI？→ PrimeStride</a></div>
+  </div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+let dep=0, self=0;
+function calc(){
+  const gross=Math.max(0, parseInt(($('salary').value||'0').replace(/[^0-9]/g,''))||0);
+  const rLabor=(parseFloat($('rate_labor').value)||12.5)/100;
+  const rNhi=(parseFloat($('rate_nhi').value)||5.17)/100;
+  const capL=parseInt($('cap_labor').value)||45800;
+  const capN=parseInt($('cap_nhi').value)||219500;
+  const capP=150000;
+  const insL=Math.min(gross,capL), insN=Math.min(gross,capN), insP=Math.min(gross,capP);
+  const labor=insL*rLabor*0.20;
+  const nhi=insN*rNhi*0.30*(1+dep);
+  const selfPen=insP*(self/100);
+  const net=gross-labor-nhi-selfPen;
+  const bLabor=insL*rLabor*0.70, bNhi=insN*rNhi*0.60, bPen=insP*0.06, bTotal=bLabor+bNhi+bPen;
+  $('r_gross').textContent=fmt(gross);
+  $('r_labor').textContent='−'+fmt(labor);
+  $('r_nhi').textContent='−'+fmt(nhi);
+  $('r_self').textContent='−'+fmt(selfPen);
+  $('r_net').textContent=fmt(net);
+  $('net').textContent='NT$ '+fmt(net);
+  $('b_labor').textContent=fmt(bLabor);
+  $('b_nhi').textContent=fmt(bNhi);
+  $('b_pension').textContent=fmt(bPen);
+  $('b_total').textContent=fmt(bTotal);
+  const pn=gross>0?Math.round(net/gross*100):0;
+  $('barnet').style.width=pn+'%';
+  $('pctnet').textContent=pn+'%';
+  $('pctcut').textContent=(100-pn)+'%';
+}
+function syncFromInput(){
+  let v=parseInt(($('salary').value||'').replace(/[^0-9]/g,''))||0;
+  $('salary').value=v?v.toLocaleString('en-US'):'';
+  if(v>=28000&&v<=200000)$('slider').value=v;
+  calc();
+}
+$('salary').addEventListener('input',syncFromInput);
+$('slider').addEventListener('input',()=>{$('salary').value=parseInt($('slider').value).toLocaleString('en-US');calc();});
+['rate_labor','rate_nhi','cap_labor','cap_nhi'].forEach(id=>$(id).addEventListener('input',calc));
+$('dep').addEventListener('click',e=>{if(e.target.dataset.v!==undefined){[...$('dep').children].forEach(b=>b.classList.remove('on'));e.target.classList.add('on');dep=+e.target.dataset.v;calc();}});
+$('self').addEventListener('click',e=>{if(e.target.dataset.v!==undefined){[...$('self').children].forEach(b=>b.classList.remove('on'));e.target.classList.add('on');self=+e.target.dataset.v;calc();}});
+$('sh').addEventListener('click',async()=>{const d={title:'薪水實拿計算機',text:'月薪你真的拿得到嗎？我算給你看',url:location.href};try{if(navigator.share)await navigator.share(d);else{await navigator.clipboard.writeText(location.href);$('sh').textContent='連結已複製！';}}catch(e){}});
+$('cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);$('cp').textContent='已複製 ✓';setTimeout(()=>$('cp').textContent='複製連結',1500);}catch(e){}});
+calc();
+</script>
+</body>
+</html>

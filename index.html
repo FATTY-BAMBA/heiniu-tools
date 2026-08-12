@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>黑牛 AI 工具箱｜我叫 AI 幫台灣人做的實用小工具</title>
+<meta name="description" content="黑牛（工程師 · AI 博士）用 AI 做的免費實用小工具。薪水實拿計算機、記帳儀表板…每支影片一個新工具。">
+<meta property="og:title" content="黑牛 AI 工具箱">
+<meta property="og:description" content="我叫 AI 幫台灣上班族做的實用小工具，免費用。">
+<style>
+  :root{
+    --ink:#0C0E14; --ink2:#141824; --card:#1B2030; --line:#2A3040;
+    --hi:#FFE24B; --danger:#FF3B30; --fix:#34E1C4; --white:#F4F6FB; --muted:#8A93A6;
+    --cjk:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:radial-gradient(1000px 560px at 12% -10%,rgba(255,59,48,.12),transparent 60%),
+    radial-gradient(1100px 640px at 100% 108%,rgba(52,225,196,.12),transparent 60%),var(--ink);
+    color:var(--white);font-family:var(--cjk);min-height:100vh;padding:40px 18px;line-height:1.55;}
+  .wrap{max-width:720px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:26px;}
+  .brand .logo{font-size:30px;font-weight:900;color:var(--hi);}
+  .brand .sub{font-size:13px;color:var(--fix);font-weight:800;letter-spacing:1.5px;}
+  h1{font-size:38px;font-weight:900;line-height:1.15;margin-bottom:12px;}
+  h1 .mark{background:var(--hi);color:var(--ink);padding:0 10px;border-radius:10px;}
+  .lede{color:var(--muted);font-size:17px;max-width:560px;margin-bottom:8px;}
+  .lede b{color:var(--white);}
+  .privacy{display:inline-flex;align-items:center;gap:6px;background:rgba(52,225,196,.1);border:1px solid rgba(52,225,196,.3);
+    color:var(--fix);font-size:12.5px;font-weight:700;border-radius:999px;padding:6px 12px;margin:18px 0 30px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:560px){.grid{grid-template-columns:1fr;}}
+  .tool{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);
+    border-radius:18px;padding:22px;transition:transform .12s, border-color .12s;position:relative;overflow:hidden;}
+  a.tool:hover{transform:translateY(-3px);border-color:var(--fix);}
+  .tool .ico{font-size:34px;margin-bottom:12px;}
+  .tool h3{font-size:20px;font-weight:900;margin-bottom:6px;}
+  .tool p{color:var(--muted);font-size:14px;}
+  .tool .go{color:var(--fix);font-weight:800;font-size:14px;margin-top:14px;display:inline-block;}
+  .badge{position:absolute;top:16px;right:16px;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px;}
+  .badge.live{background:var(--fix);color:var(--ink);}
+  .badge.soon{background:#232838;color:var(--muted);border:1px solid var(--line);}
+  .tool.soon{opacity:.6;}
+  .tool.soon:hover{transform:none;border-color:var(--line);cursor:default;}
+  .foot{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);text-align:center;}
+  .foot .who{font-weight:800;font-size:16px;}
+  .foot .who b{color:var(--hi);}
+  .foot .desc{color:var(--muted);font-size:14px;margin:6px 0 14px;}
+  .foot .links a{color:var(--fix);text-decoration:none;font-weight:800;font-size:14px;margin:0 8px;}
+  .biz{margin-top:22px;background:rgba(52,225,196,.07);border:1px solid rgba(52,225,196,.28);border-radius:14px;padding:16px 18px;}
+  .biz b{color:var(--fix);}
+  .biz a{color:var(--fix);font-weight:800;text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="logo">黑牛🐮</span><span class="sub">AI 創業家 · 工程師 · PhD</span></div>
+  <h1>黑牛的 <span class="mark">AI 工具箱</span></h1>
+  <p class="lede">我叫 <b>AI</b> 幫台灣上班族做的實用小工具。<b>免費用</b>，每支影片再多一個。</p>
+  <div class="privacy">🔒 這些工具都在你的瀏覽器裡運算，資料不會上傳</div>
+
+  <div class="grid">
+    <a class="tool" href="./salary/">
+      <span class="badge live">可用</span>
+      <div class="ico">💰</div>
+      <h3>薪水實拿計算機</h3>
+      <p>月薪你真的拿得到嗎？扣完勞健保實拿多少，還有老闆偷偷幫你付的錢。</p>
+      <span class="go">開始算 →</span>
+    </a>
+    <div class="tool soon">
+      <span class="badge soon">即將推出</span>
+      <div class="ico">📊</div>
+      <h3>記帳儀表板</h3>
+      <p>把消費丟進去，AI 幫你變成一張看得懂的花費圖表。</p>
+    </div>
+    <div class="tool soon">
+      <span class="badge soon">即將推出</span>
+      <div class="ico">🧭</div>
+      <h3>104 職缺分析器</h3>
+      <p>貼上職缺，看你缺哪 3 個技能、薪水行情落在哪。</p>
+    </div>
+    <div class="tool soon">
+      <span class="badge soon">即將推出</span>
+      <div class="ico">💳</div>
+      <h3>信用卡帳單分析</h3>
+      <p>你的錢到底花去哪？上傳帳單，一眼看出漏財的地方。</p>
+    </div>
+  </div>
+
+  <div class="biz">
+    <p>🏢 <b>你的公司也想用 AI？</b>這些是個人版小工具；如果想幫整間公司導入 AI 自動化（客服、報價、知識庫），看看我做的 <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">PrimeStride AI →</a></p>
+  </div>
+
+  <div class="foot">
+    <div class="who">我是 <b>黑牛</b> — 工程師出身、AI 博士、AI 公司創辦人</div>
+    <div class="desc">每週一三五教你把 AI 用對；每個工具都是我叫 AI 做的。</div>
+    <div class="links">
+      <a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
