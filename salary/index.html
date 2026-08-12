@@ -3,176 +3,209 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>薪水實拿計算機（台灣版）· 黑牛 AI 工具箱</title>
-<meta name="description" content="輸入月薪，馬上算出扣完勞健保的實拿金額，還有老闆偷偷幫你付的錢。黑牛用 AI 做的免費工具。">
+<title>薪水實拿計算機（台灣版）· 黑牛</title>
+<meta name="description" content="輸入月薪，立刻產生你的薪資明細表：扣完勞健保實拿多少，還有老闆偷偷幫你付的錢。">
 <meta property="og:title" content="薪水實拿計算機（台灣版）· 黑牛">
-<meta property="og:description" content="月薪 5 萬，你真的拿得到 5 萬嗎？輸入就知道。資料不會上傳。">
+<meta property="og:description" content="月薪 6 萬，你真的拿得到 6 萬嗎？輸入就知道。資料不會上傳。">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"薪水實拿計算機（台灣版）","applicationCategory":"FinanceApplication","operatingSystem":"Web","inLanguage":"zh-Hant","offers":{"@type":"Offer","price":"0","priceCurrency":"TWD"},"creator":{"@type":"Person","name":"黑牛"}}
+</script>
 <style>
   :root{
-    --ink:#0C0E14; --ink2:#141824; --card:#1B2030; --line:#2A3040;
+    --ink:#0C0E14; --ink2:#141824; --line:#2A3040; --paper:#F6F7F4; --paper2:#ECEEE8;
     --hi:#FFE24B; --danger:#FF3B30; --fix:#34E1C4; --white:#F4F6FB; --muted:#8A93A6;
+    --pink:#12141A; --pmut:#6A6E63; --prule:rgba(18,20,16,.14); --stamp:#C4362B;
     --cjk:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    --mono:"SFMono-Regular","JetBrains Mono","Roboto Mono","DejaVu Sans Mono",ui-monospace,monospace;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:radial-gradient(900px 500px at 15% -10%,rgba(255,59,48,.10),transparent 60%),
-    radial-gradient(1000px 600px at 100% 110%,rgba(52,225,196,.10),transparent 60%),var(--ink);
-    color:var(--white);font-family:var(--cjk);min-height:100vh;padding:22px 16px;line-height:1.5;}
-  .wrap{max-width:560px;margin:0 auto;}
-  .back{display:inline-block;color:var(--muted);text-decoration:none;font-size:13px;font-weight:700;margin-bottom:12px;}
-  .back:hover{color:var(--fix);}
-  .brand{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-  .brand .logo{font-size:26px;font-weight:900;color:var(--hi);}
-  .brand .sub{font-size:13px;color:var(--fix);font-weight:700;letter-spacing:1px;}
-  h1{font-size:27px;font-weight:900;margin-bottom:4px;}
-  .tag{color:var(--muted);font-size:14px;margin-bottom:14px;}
-  .privacy{display:inline-flex;align-items:center;gap:6px;background:rgba(52,225,196,.1);border:1px solid rgba(52,225,196,.3);
-    color:var(--fix);font-size:12.5px;font-weight:700;border-radius:999px;padding:6px 12px;margin-bottom:18px;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:16px;}
-  label{display:block;font-size:14px;color:var(--muted);font-weight:700;margin-bottom:8px;}
-  .salarybox{display:flex;align-items:baseline;gap:8px;background:var(--ink2);border:1px solid var(--line);
-    border-radius:12px;padding:12px 16px;}
-  .salarybox .cur{color:var(--muted);font-size:20px;font-weight:800;}
-  #salary{flex:1;background:transparent;border:none;color:var(--white);font-size:38px;font-weight:900;outline:none;width:100%;}
-  input[type=range]{width:100%;margin-top:14px;accent-color:var(--hi);height:6px;}
-  .rangelabels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:4px;}
-  .ctrls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
-  .ctrl{background:var(--ink2);border:1px solid var(--line);border-radius:12px;padding:12px;}
-  .ctrl label{margin-bottom:6px;}
-  .seg{display:flex;gap:6px;flex-wrap:wrap;}
-  .seg button{flex:1;min-width:34px;background:#232838;border:1px solid var(--line);color:var(--white);
-    border-radius:9px;padding:8px 0;font-size:15px;font-weight:800;cursor:pointer;font-family:var(--cjk);}
+  body{background:radial-gradient(900px 500px at 12% -8%,rgba(255,59,48,.09),transparent 60%),
+    radial-gradient(1000px 620px at 100% 108%,rgba(52,225,196,.09),transparent 60%),var(--ink);
+    color:var(--white);font-family:var(--cjk);min-height:100vh;padding:22px 16px 30px;line-height:1.5;}
+  .page{max-width:540px;margin:0 auto;}
+  button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--fix);outline-offset:2px;}
+  input:focus{outline:none;}
+
+  .brand{display:flex;align-items:center;gap:11px;margin-bottom:6px;}
+  .brand .name{font-size:22px;font-weight:900;color:var(--hi);letter-spacing:.5px;}
+  .brand .name b{color:var(--white);font-weight:800;font-size:17px;margin-left:6px;}
+  .kbadge{font-size:11.5px;color:var(--fix);font-weight:700;letter-spacing:1px;margin:0 0 16px 43px;}
+
+  /* controls (dark) */
+  .ctrl{background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;}
+  .clab{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px;}
+  .salaryin{display:flex;align-items:baseline;gap:8px;border-bottom:2px solid var(--line);padding-bottom:8px;}
+  .salaryin .cur{color:var(--muted);font-size:18px;font-weight:800;font-family:var(--mono);}
+  #salary{flex:1;background:transparent;border:none;color:var(--white);font-size:34px;font-weight:800;
+    font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:1px;width:100%;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;margin-top:16px;
+    background:linear-gradient(90deg,var(--hi) 0 40%,#2b3040 40% 100%);}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
+    background:var(--hi);border:3px solid var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.5);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--hi);border:3px solid var(--ink);cursor:pointer;}
+  .rl{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:5px;font-family:var(--mono);}
+  .segs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+  .seg-l{font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:7px;}
+  .seg{display:flex;gap:6px;}
+  .seg button{flex:1;background:#232838;border:1px solid var(--line);color:var(--white);border-radius:8px;
+    padding:8px 0;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--mono);}
   .seg button.on{background:var(--hi);color:var(--ink);border-color:var(--hi);}
-  .takehome{text-align:center;padding:6px 0 2px;}
-  .takehome .k{font-size:14px;color:var(--muted);font-weight:700;}
-  .takehome .v{font-size:52px;font-weight:900;color:var(--fix);letter-spacing:-1px;line-height:1.1;}
-  .bar{height:16px;border-radius:10px;overflow:hidden;display:flex;margin:16px 0 6px;background:var(--danger);}
-  .bar .net{background:var(--fix);height:100%;}
-  .barlegend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
-  .rows{margin-top:10px;}
-  .row{display:flex;justify-content:space-between;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);font-size:15px;}
-  .row:last-child{border-bottom:none;}
-  .row .lbl{color:var(--white);}
-  .row .lbl small{color:var(--muted);font-size:12px;font-weight:600;}
-  .row .amt{font-weight:800;font-variant-numeric:tabular-nums;}
-  .amt.minus{color:var(--danger);}
-  .amt.net{color:var(--fix);}
-  .row.total{border-top:2px solid var(--line);border-bottom:none;margin-top:4px;padding-top:14px;font-size:17px;}
-  .boss{background:rgba(52,225,196,.08);border:1px solid rgba(52,225,196,.3);border-radius:14px;padding:14px 16px;margin-top:14px;}
-  .boss .h{font-size:13px;color:var(--fix);font-weight:800;margin-bottom:8px;}
-  .boss .r{display:flex;justify-content:space-between;font-size:14px;padding:3px 0;color:var(--white);}
-  .boss .r b{color:var(--fix);font-variant-numeric:tabular-nums;}
+
+  /* the payslip (paper) */
+  .slip{background:linear-gradient(180deg,var(--paper),var(--paper2));color:var(--pink);border-radius:5px;
+    padding:22px 20px;box-shadow:0 18px 50px rgba(0,0,0,.5);position:relative;}
+  .slip-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--pink);padding-bottom:10px;}
+  .slip-title{font-size:22px;font-weight:900;letter-spacing:3px;}
+  .slip-sub{font-size:10.5px;color:var(--pmut);font-family:var(--mono);letter-spacing:1px;text-align:right;line-height:1.5;}
+  .slip-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--pmut);font-family:var(--mono);padding:8px 0 4px;}
+
+  .lrow{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--prule);gap:12px;}
+  .lrow .lbl{font-size:14.5px;font-weight:600;}
+  .lrow .lbl em{font-style:normal;font-size:10.5px;color:var(--pmut);font-family:var(--mono);margin-left:6px;}
+  .fig{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:700;font-size:16px;white-space:nowrap;}
+  .fig.neg{color:var(--stamp);}
+
+  .net{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:14px;border-top:3px double var(--pink);position:relative;}
+  .net-l{font-size:15px;font-weight:900;}
+  .net-l small{display:block;font-size:9.5px;color:var(--pmut);font-family:var(--mono);letter-spacing:1.5px;font-weight:700;}
+  .net-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:900;font-size:40px;letter-spacing:-.5px;}
+  .net-v::before{content:"NT$ ";font-size:18px;color:var(--pmut);font-weight:700;}
+  .stamp{position:absolute;right:2px;top:-6px;transform:rotate(-11deg);color:var(--stamp);border:2.5px solid var(--stamp);
+    border-radius:7px;font-size:13px;font-weight:900;padding:2px 8px;letter-spacing:2px;opacity:.9;pointer-events:none;}
+
+  .bar{height:9px;border-radius:5px;overflow:hidden;display:flex;margin:14px 0 5px;background:var(--stamp);}
+  .bar #barnet{background:#137a56;height:100%;}
+  .barleg{font-size:11px;color:var(--pmut);font-family:var(--mono);}
+  .barleg b{color:#137a56;}
+
+  .tear{position:relative;height:0;margin:18px -20px 6px;border-top:2px dashed var(--prule);}
+  .tear::before,.tear::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--ink);}
+  .tear::before{left:-10px;} .tear::after{right:-10px;}
+  .note-h{font-size:12px;font-weight:800;color:var(--pmut);letter-spacing:.5px;margin:6px 0 2px;}
+  .lrow.tot{border-bottom:none;border-top:1.5px solid var(--pink);margin-top:2px;font-weight:900;}
+  .lrow.tot .fig{font-size:18px;}
+
+  .actions{display:flex;gap:8px;margin:16px 0 4px;}
+  .actions button{flex:1;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--cjk);}
+  #sh{background:var(--hi);color:var(--ink);}
+  #cp{background:var(--ink2);color:var(--white);border:1px solid var(--line);}
+  .safe{font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px;font-family:var(--mono);}
+
   details{margin-top:14px;}
-  summary{cursor:pointer;color:var(--muted);font-size:13px;font-weight:700;}
+  summary{cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:700;}
   .adv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
-  .adv div{background:var(--ink2);border:1px solid var(--line);border-radius:10px;padding:10px;}
-  .adv label{font-size:12px;margin-bottom:5px;}
-  .adv input{width:100%;background:#232838;border:1px solid var(--line);color:var(--white);border-radius:7px;padding:7px 9px;font-size:14px;font-family:var(--cjk);}
-  .note{color:var(--muted);font-size:11.5px;line-height:1.6;margin-top:14px;}
-  .share{display:flex;gap:8px;margin-top:16px;}
-  .share button{flex:1;background:var(--hi);color:var(--ink);border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--cjk);}
-  .share button.alt{background:#232838;color:var(--white);border:1px solid var(--line);}
-  .foot{text-align:center;margin-top:22px;padding-top:16px;border-top:1px solid var(--line);}
-  .foot .cta{color:var(--white);font-weight:800;font-size:15px;}
-  .foot .cta b{color:var(--fix);}
-  .foot .hand{color:var(--muted);font-size:13px;margin-top:6px;}
-  .foot .links{margin-top:10px;font-size:13px;}
+  .adv div{background:var(--ink2);border:1px solid var(--line);border-radius:9px;padding:9px;}
+  .adv label{font-size:11.5px;color:var(--muted);display:block;margin-bottom:5px;}
+  .adv input{width:100%;background:#232838;border:1px solid var(--line);color:var(--white);border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:13px;}
+  .fine{color:var(--muted);font-size:11px;line-height:1.65;margin-top:12px;}
+
+  .foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);text-align:center;}
+  .foot .made{font-size:13.5px;color:var(--white);font-weight:700;}
+  .foot .made b{color:var(--fix);}
+  .foot .hand{color:var(--muted);font-size:12.5px;margin-top:7px;}
+  .foot .links{margin-top:9px;font-size:12.5px;}
   .foot .links a{color:var(--fix);text-decoration:none;font-weight:700;}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--pink);
+    color:var(--white);border:1px solid var(--fix);border-radius:999px;padding:10px 20px;font-size:13.5px;font-weight:700;
+    opacity:0;transition:.22s;pointer-events:none;z-index:9;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <a class="back" href="../">← 黑牛 AI 工具箱</a>
-  <div class="brand"><span class="logo">黑牛🐮</span><span class="sub">AI 工程師 · PhD</span></div>
-  <h1>薪水實拿計算機 <span style="color:var(--hi)">台灣版</span></h1>
-  <p class="tag">輸入月薪，馬上看你扣完勞健保實拿多少 · 還有老闆偷偷幫你付的錢</p>
-  <div class="privacy">🔒 你輸入的數字不會上傳，全部在你的瀏覽器裡算完</div>
+<div class="page">
+  <div class="brand">
+    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#141824" stroke="#34E1C4" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg>
+    <span class="name">黑牛<b>薪水實拿計算機</b></span>
+  </div>
+  <div class="kbadge">AI 創業家 · 工程師 · PhD</div>
 
-  <div class="card">
-    <label>你的月薪（NT$）</label>
-    <div class="salarybox"><span class="cur">NT$</span><input id="salary" type="text" inputmode="numeric" value="50,000"></div>
-    <input id="slider" type="range" min="28000" max="200000" step="500" value="50000">
-    <div class="rangelabels"><span>28,000</span><span>200,000+</span></div>
-    <div class="ctrls">
-      <div class="ctrl">
-        <label>眷屬人數（健保）</label>
-        <div class="seg" id="dep">
-          <button data-v="0" class="on">0</button><button data-v="1">1</button>
-          <button data-v="2">2</button><button data-v="3">3+</button>
-        </div>
-      </div>
-      <div class="ctrl">
-        <label>勞退自提 %</label>
-        <div class="seg" id="self">
-          <button data-v="0" class="on">0%</button><button data-v="3">3%</button><button data-v="6">6%</button>
-        </div>
-      </div>
+  <div class="ctrl">
+    <div class="clab">輸入你的月薪</div>
+    <div class="salaryin"><span class="cur">NT$</span><input id="salary" type="text" inputmode="numeric" value="60,000" aria-label="月薪"></div>
+    <input id="slider" type="range" min="28000" max="200000" step="500" value="60000" aria-label="月薪滑桿">
+    <div class="rl"><span>28,000</span><span>200,000+</span></div>
+    <div class="segs">
+      <div><div class="seg-l">眷屬人數（健保）</div>
+        <div class="seg" id="dep"><button data-v="0" class="on">0</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3+</button></div></div>
+      <div><div class="seg-l">勞退自提</div>
+        <div class="seg" id="self"><button data-v="0" class="on">0%</button><button data-v="3">3%</button><button data-v="6">6%</button></div></div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="takehome"><div class="k">每月實拿 ≈</div><div class="v" id="net">NT$ 48,080</div></div>
-    <div class="bar"><div class="net" id="barnet" style="width:96%"></div></div>
-    <div class="barlegend"><span style="color:var(--fix)">■ 實拿 <span id="pctnet">96%</span></span><span style="color:var(--danger)">扣除 <span id="pctcut">4%</span> ■</span></div>
-    <div class="rows">
-      <div class="row"><span class="lbl">月薪</span><span class="amt" id="r_gross">50,000</span></div>
-      <div class="row"><span class="lbl">勞保自付 <small>11.5%+1% × 20%</small></span><span class="amt minus" id="r_labor">−1,145</span></div>
-      <div class="row"><span class="lbl">健保自付 <small>5.17% × 30% ×(本人+眷)</small></span><span class="amt minus" id="r_nhi">−776</span></div>
-      <div class="row" id="row_self"><span class="lbl">勞退自提 <small>可省稅</small></span><span class="amt minus" id="r_self">−0</span></div>
-      <div class="row total"><span class="lbl"><b>每月實拿</b></span><span class="amt net" id="r_net">48,080</span></div>
+  <article class="slip">
+    <div class="slip-head">
+      <div class="slip-title">薪資明細表</div>
+      <div class="slip-sub">SALARY STATEMENT<br>每月 · 2026 費率</div>
     </div>
-    <div class="boss">
-      <div class="h">😲 你老闆每月「另外」幫你出的錢（不在你薪水裡）</div>
-      <div class="r"><span>勞保（雇主 70%）</span><b id="b_labor">4,008</b></div>
-      <div class="r"><span>健保（雇主 60%）</span><b id="b_nhi">1,551</b></div>
-      <div class="r"><span>勞退提撥（雇主 6%）</span><b id="b_pension">3,000</b></div>
-      <div class="r" style="border-top:1px solid rgba(52,225,196,.25);margin-top:6px;padding-top:8px;font-weight:800"><span>老闆多付合計</span><b id="b_total">8,559</b></div>
+    <div class="slip-meta"><span>投保上限 45,800</span><span>台灣 · 勞健保 + 勞退</span></div>
+
+    <div class="lrow"><span class="lbl">應發月薪</span><span class="fig" id="r_gross">60,000</span></div>
+    <div class="lrow"><span class="lbl">勞保自付 <em>11.5%+1% × 20%</em></span><span class="fig neg" id="r_labor">−1,145</span></div>
+    <div class="lrow"><span class="lbl">健保自付 <em>5.17% × 30% ×(本人+眷)</em></span><span class="fig neg" id="r_nhi">−931</span></div>
+    <div class="lrow" id="row_self"><span class="lbl">勞退自提 <em>可省稅</em></span><span class="fig neg" id="r_self">−0</span></div>
+
+    <div class="net">
+      <div class="net-l">實領<small>TAKE-HOME / 月</small></div>
+      <div class="net-v" id="net">57,924</div>
+      <span class="stamp">核發</span>
     </div>
-    <div class="share">
-      <button id="sh">分享這個計算機</button>
-      <button class="alt" id="cp">複製連結</button>
+    <div class="bar"><div id="barnet" style="width:97%"></div></div>
+    <div class="barleg"><b id="pctnet">97%</b> 實領　·　扣除 <span id="pctcut">3%</span></div>
+
+    <div class="tear"></div>
+    <div class="note-h">備註：雇主每月「另外」為你負擔（不在你薪水裡）</div>
+    <div class="lrow"><span class="lbl">勞保 <em>雇主 70%</em></span><span class="fig" id="b_labor">4,007</span></div>
+    <div class="lrow"><span class="lbl">健保 <em>雇主 60%</em></span><span class="fig" id="b_nhi">1,861</span></div>
+    <div class="lrow"><span class="lbl">勞退提撥 <em>雇主 6%</em></span><span class="fig" id="b_pension">3,600</span></div>
+    <div class="lrow tot"><span class="lbl">合計</span><span class="fig" id="b_total">9,469</span></div>
+  </article>
+
+  <div class="actions"><button id="sh">分享</button><button id="cp">複製連結</button></div>
+  <div class="safe">本機計算 · 你的數字不會上傳</div>
+
+  <details>
+    <summary>進階：自訂費率 / 級距（預設 2026）</summary>
+    <div class="adv">
+      <div><label>勞保費率 %（普通+就業）</label><input id="rate_labor" type="number" step="0.1" value="12.5"></div>
+      <div><label>健保費率 %</label><input id="rate_nhi" type="number" step="0.01" value="5.17"></div>
+      <div><label>勞保投保上限</label><input id="cap_labor" type="number" value="45800"></div>
+      <div><label>健保投保上限</label><input id="cap_nhi" type="number" value="219500"></div>
     </div>
-    <details>
-      <summary>進階：自訂費率 / 級距（預設 2026）</summary>
-      <div class="adv">
-        <div><label>勞保費率 %（普通+就業）</label><input id="rate_labor" type="number" step="0.1" value="12.5"></div>
-        <div><label>健保費率 %</label><input id="rate_nhi" type="number" step="0.01" value="5.17"></div>
-        <div><label>勞保投保上限</label><input id="cap_labor" type="number" value="45800"></div>
-        <div><label>健保投保上限</label><input id="cap_nhi" type="number" value="219500"></div>
-      </div>
-    </details>
-    <p class="note">※ 本工具為<b>估算</b>：以月薪直接套用費率，實際金額依勞保局／健保署公告之「投保薪資／金額分級表」四捨五入，可能小幅差異。<b>不含個人所得稅</b>（年度結算另計）。勞退自提為選填、可從當年度所得中扣除節稅。費率以 2026 年（民國115年）為準：勞保普通事故 11.5%＋就業保險 1%、自付 20%、上限 45,800；健保 5.17%、自付 30%、眷屬上限 3 口。</p>
-  </div>
+  </details>
+  <p class="fine">※ 本工具為<b>估算</b>：以月薪直接套用費率，實際金額依勞保局／健保署公告之「投保薪資／金額分級表」四捨五入，可能小幅差異。不含個人所得稅（年度結算另計）。費率以 2026 年（民國115年）為準。</p>
 
   <div class="foot">
-    <div class="cta">這個計算機我用 <b>AI 幾分鐘做出來的</b> · 想自己做一個？留言「<b>薪水</b>」</div>
+    <div class="made">這張「薪資明細表」我沒自己刻，是我叫 <b>AI</b> 做的 · 想自己做一個？留言「薪水」</div>
     <div class="hand">黑牛 @fatty_bamba　·　AI 創業家 · 工程師 · PhD</div>
     <div class="links"><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">想幫公司導入 AI？→ PrimeStride</a></div>
   </div>
 </div>
+<div class="toast" id="toast"></div>
 
 <script>
 const $=id=>document.getElementById(id);
+const digits=s=>parseInt((s||'').replace(/[^0-9]/g,''))||0;
 const fmt=n=>Math.round(n).toLocaleString('en-US');
+const SMIN=28000, SMAX=200000;
 let dep=0, self=0;
+
 function calc(){
-  const gross=Math.max(0, parseInt(($('salary').value||'0').replace(/[^0-9]/g,''))||0);
+  const gross=digits($('salary').value);
   const rLabor=(parseFloat($('rate_labor').value)||12.5)/100;
   const rNhi=(parseFloat($('rate_nhi').value)||5.17)/100;
   const capL=parseInt($('cap_labor').value)||45800;
   const capN=parseInt($('cap_nhi').value)||219500;
   const capP=150000;
   const insL=Math.min(gross,capL), insN=Math.min(gross,capN), insP=Math.min(gross,capP);
-  const labor=insL*rLabor*0.20;
-  const nhi=insN*rNhi*0.30*(1+dep);
-  const selfPen=insP*(self/100);
+  const labor=insL*rLabor*0.20, nhi=insN*rNhi*0.30*(1+dep), selfPen=insP*(self/100);
   const net=gross-labor-nhi-selfPen;
   const bLabor=insL*rLabor*0.70, bNhi=insN*rNhi*0.60, bPen=insP*0.06, bTotal=bLabor+bNhi+bPen;
   $('r_gross').textContent=fmt(gross);
   $('r_labor').textContent='−'+fmt(labor);
   $('r_nhi').textContent='−'+fmt(nhi);
   $('r_self').textContent='−'+fmt(selfPen);
-  $('r_net').textContent=fmt(net);
-  $('net').textContent='NT$ '+fmt(net);
+  $('net').textContent=fmt(net);
   $('b_labor').textContent=fmt(bLabor);
   $('b_nhi').textContent=fmt(bNhi);
   $('b_pension').textContent=fmt(bPen);
@@ -182,19 +215,19 @@ function calc(){
   $('pctnet').textContent=pn+'%';
   $('pctcut').textContent=(100-pn)+'%';
 }
-function syncFromInput(){
-  let v=parseInt(($('salary').value||'').replace(/[^0-9]/g,''))||0;
-  $('salary').value=v?v.toLocaleString('en-US'):'';
-  if(v>=28000&&v<=200000)$('slider').value=v;
-  calc();
-}
-$('salary').addEventListener('input',syncFromInput);
-$('slider').addEventListener('input',()=>{$('salary').value=parseInt($('slider').value).toLocaleString('en-US');calc();});
+// format on blur, not while typing
+$('salary').addEventListener('input',()=>{ const v=digits($('salary').value); if(v>=SMIN&&v<=SMAX)$('slider').value=v; calc(); });
+$('salary').addEventListener('focus',()=>{ const v=digits($('salary').value); $('salary').value=v?String(v):''; });
+$('salary').addEventListener('blur',()=>{ const v=digits($('salary').value); $('salary').value=v?v.toLocaleString('en-US'):''; });
+$('slider').addEventListener('input',()=>{ $('salary').value=parseInt($('slider').value).toLocaleString('en-US'); calc(); });
 ['rate_labor','rate_nhi','cap_labor','cap_nhi'].forEach(id=>$(id).addEventListener('input',calc));
-$('dep').addEventListener('click',e=>{if(e.target.dataset.v!==undefined){[...$('dep').children].forEach(b=>b.classList.remove('on'));e.target.classList.add('on');dep=+e.target.dataset.v;calc();}});
-$('self').addEventListener('click',e=>{if(e.target.dataset.v!==undefined){[...$('self').children].forEach(b=>b.classList.remove('on'));e.target.classList.add('on');self=+e.target.dataset.v;calc();}});
-$('sh').addEventListener('click',async()=>{const d={title:'薪水實拿計算機',text:'月薪你真的拿得到嗎？我算給你看',url:location.href};try{if(navigator.share)await navigator.share(d);else{await navigator.clipboard.writeText(location.href);$('sh').textContent='連結已複製！';}}catch(e){}});
-$('cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);$('cp').textContent='已複製 ✓';setTimeout(()=>$('cp').textContent='複製連結',1500);}catch(e){}});
+$('dep').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('dep').children].forEach(x=>x.classList.remove('on'));b.classList.add('on');dep=+b.dataset.v;calc();});
+$('self').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('self').children].forEach(x=>x.classList.remove('on'));b.classList.add('on');self=+b.dataset.v;calc();});
+
+let toastT;
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
+$('cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);toast('已複製連結 ✓');}catch(e){toast('複製失敗');}});
+$('sh').addEventListener('click',async()=>{const d={title:'薪水實拿計算機',text:'月薪你真的拿得到嗎？',url:location.href};try{if(navigator.share)await navigator.share(d);else{await navigator.clipboard.writeText(location.href);toast('已複製連結 ✓');}}catch(e){}});
 calc();
 </script>
 </body>
