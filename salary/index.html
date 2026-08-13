@@ -54,6 +54,9 @@
   /* the payslip (paper) */
   .slip{background:linear-gradient(180deg,var(--paper),var(--paper2));color:var(--pink);border-radius:5px;
     padding:22px 20px;box-shadow:0 18px 50px rgba(0,0,0,.5);position:relative;}
+  .slip.annual{margin-top:16px;border-top:4px solid var(--hi);}
+  .slip.annual .net-v{color:#8a5a00;}
+  .slip.annual .stamp{color:#8a5a00;border-color:#8a5a00;}
   .slip-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--pink);padding-bottom:10px;}
   .slip-title{font-size:22px;font-weight:900;letter-spacing:3px;}
   .slip-sub{font-size:10.5px;color:var(--pmut);font-family:var(--mono);letter-spacing:1px;text-align:right;line-height:1.5;}
@@ -131,6 +134,8 @@
       <div><div class="seg-l">勞退自提</div>
         <div class="seg" id="self"><button data-v="0" class="on">0%</button><button data-v="3">3%</button><button data-v="6">6%</button></div></div>
     </div>
+    <div class="seg-l" style="margin-top:14px">年終獎金（幾個月）</div>
+    <div class="seg" id="bonus"><button data-v="0">0</button><button data-v="1" class="on">1</button><button data-v="1.5">1.5</button><button data-v="2">2</button></div>
   </div>
 
   <article class="slip">
@@ -161,6 +166,24 @@
     <div class="lrow tot"><span class="lbl">合計</span><span class="fig" id="b_total">9,469</span></div>
   </article>
 
+  <article class="slip annual">
+    <div class="slip-head">
+      <div class="slip-title">一年實拿</div>
+      <div class="slip-sub">ANNUAL TAKE-HOME<br>月實領 × 12 + 年終</div>
+    </div>
+    <div class="lrow"><span class="lbl">月實領 × 12</span><span class="fig" id="a_base">695,088</span></div>
+    <div class="lrow"><span class="lbl">年終獎金 <em id="a_bm">1 個月</em></span><span class="fig" id="a_bonus">+60,000</span></div>
+
+    <div class="net">
+      <div class="net-l">一年真正拿到<small>REAL ANNUAL</small></div>
+      <div class="net-v" id="anet">755,088</div>
+      <span class="stamp">年薪</span>
+    </div>
+
+    <div class="tear"></div>
+    <div class="lrow tot"><span class="lbl">一年被扣掉（勞健保 + 自提）</span><span class="fig neg" id="a_cut">−24,912</span></div>
+  </article>
+
   <div class="actions"><button id="sh">分享</button><button id="cp">複製連結</button></div>
   <div class="safe">本機計算 · 你的數字不會上傳</div>
 
@@ -173,7 +196,7 @@
       <div><label>健保投保上限</label><input id="cap_nhi" type="number" value="219500"></div>
     </div>
   </details>
-  <p class="fine">※ 本工具為<b>估算</b>：以月薪直接套用費率，實際金額依勞保局／健保署公告之「投保薪資／金額分級表」四捨五入，可能小幅差異。不含個人所得稅（年度結算另計）。費率以 2026 年（民國115年）為準。</p>
+  <p class="fine">※ 本工具為<b>估算</b>：以月薪直接套用費率，實際金額依勞保局／健保署公告之「投保薪資／金額分級表」四捨五入，可能小幅差異。「一年實拿」＝月實領×12＋年終，年終以整月月薪估算、未扣所得稅與補充保費。不含個人所得稅（年度結算另計）。費率以 2026 年（民國115年）為準。</p>
 
   <div class="foot">
     <div class="made">這張「薪資明細表」我沒自己刻，是我叫 <b>AI</b> 做的 · 想自己做一個？留言「薪水」</div>
@@ -188,7 +211,7 @@ const $=id=>document.getElementById(id);
 const digits=s=>parseInt((s||'').replace(/[^0-9]/g,''))||0;
 const fmt=n=>Math.round(n).toLocaleString('en-US');
 const SMIN=28000, SMAX=200000;
-let dep=0, self=0;
+let dep=0, self=0, bonusM=1;
 
 function calc(){
   const gross=digits($('salary').value);
@@ -214,6 +237,16 @@ function calc(){
   $('barnet').style.width=pn+'%';
   $('pctnet').textContent=pn+'%';
   $('pctcut').textContent=(100-pn)+'%';
+  // annual
+  const annualBase=net*12;
+  const bonus=gross*bonusM;
+  const annualNet=annualBase+bonus;
+  const annualCut=(labor+nhi+selfPen)*12;
+  $('a_base').textContent=fmt(annualBase);
+  $('a_bonus').textContent='+'+fmt(bonus);
+  $('a_bm').textContent=(bonusM%1===0?bonusM:bonusM.toFixed(1))+' 個月';
+  $('anet').textContent=fmt(annualNet);
+  $('a_cut').textContent='−'+fmt(annualCut);
 }
 // format on blur, not while typing
 $('salary').addEventListener('input',()=>{ const v=digits($('salary').value); if(v>=SMIN&&v<=SMAX)$('slider').value=v; calc(); });
@@ -223,6 +256,7 @@ $('slider').addEventListener('input',()=>{ $('salary').value=parseInt($('slider'
 ['rate_labor','rate_nhi','cap_labor','cap_nhi'].forEach(id=>$(id).addEventListener('input',calc));
 $('dep').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('dep').children].forEach(x=>x.classList.remove('on'));b.classList.add('on');dep=+b.dataset.v;calc();});
 $('self').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('self').children].forEach(x=>x.classList.remove('on'));b.classList.add('on');self=+b.dataset.v;calc();});
+$('bonus').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('bonus').children].forEach(x=>x.classList.remove('on'));b.classList.add('on');bonusM=+b.dataset.v;calc();});
 
 let toastT;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
