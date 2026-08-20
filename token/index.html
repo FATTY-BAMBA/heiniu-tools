@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>省 token 三招 · 完整做法｜黑牛</title>
+<meta name="description" content="別讓 AI 額度一下就燒光。省 token 三招完整做法：只給需要的部分、新任務開新對話、需要才開功能。黑牛 @fatty_bamba 整理。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0C11; --surface:#12151D; --surface2:#171B25; --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
+    --ink:#F2F5FA; --ink2:#AEB6C6; --muted:#79839A;
+    --accent:#34E1C4; --accent-ink:#053b34; --gold:#FFCF3B; --danger:#FF5A4D;
+    --r:16px; --shadow:0 10px 34px rgba(0,0,0,.40);
+    --num:"Inter","Noto Sans TC",system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{font-family:"Noto Sans TC","Inter","PingFang TC",system-ui,sans-serif;background:var(--bg);color:var(--ink);
+    line-height:1.6;min-height:100vh;padding:30px 18px 70px;}
+  .wrap{max-width:600px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:9px;color:var(--accent);font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;}
+  .brand svg{width:16px;height:16px;}
+  h1{font-size:34px;line-height:1.18;font-weight:900;letter-spacing:-.01em;margin:12px 0 8px;}
+  h1 .u{color:var(--gold);}
+  .lede{color:var(--ink2);font-size:16px;max-width:48ch;}
+  .rule{display:inline-flex;align-items:center;gap:10px;margin-top:18px;background:rgba(52,225,196,.08);
+    border:1px solid rgba(52,225,196,.28);border-radius:999px;padding:9px 16px;color:var(--accent);font-weight:800;font-size:15px;}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
+    padding:22px 22px 24px;margin-top:20px;position:relative;overflow:hidden;}
+  .card .wm{position:absolute;top:-14px;right:6px;font-family:var(--num);font-weight:900;font-size:120px;color:rgba(255,255,255,.035);line-height:1;pointer-events:none;}
+  .card .ic{width:44px;height:44px;border-radius:12px;background:var(--surface2);border:1px solid var(--line2);
+    display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:14px;}
+  .card .ic svg{width:23px;height:23px;}
+  .card h2{font-size:22px;font-weight:900;letter-spacing:-.01em;}
+  .card h2 small{display:block;color:var(--muted);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
+  .card p{color:var(--ink2);font-size:15.5px;margin-top:10px;}
+  .card p b{color:var(--ink);}
+  .tags{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+  .tag{display:flex;gap:10px;align-items:flex-start;font-size:15px;font-weight:600;}
+  .tag .m{flex:none;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;margin-top:1px;}
+  .tag.ok .m{background:rgba(52,225,196,.15);color:var(--accent);}
+  .tag.no .m{background:rgba(255,90,77,.15);color:var(--danger);}
+  .tag .t{color:var(--ink);}
+  .tag .t b{color:var(--accent);}
+
+  .sum{margin-top:24px;background:linear-gradient(135deg,#14241f,#141821);border:1px solid rgba(52,225,196,.3);
+    border-radius:var(--r);padding:22px;text-align:center;}
+  .sum .k{color:var(--muted);font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+  .sum .big{font-size:26px;font-weight:900;margin-top:6px;}
+  .sum .big b{color:var(--accent);}
+
+  .cta{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;text-align:center;}
+  .cta p{font-size:16px;font-weight:700;}
+  .cta p b{color:var(--gold);}
+  .cta .h{display:inline-block;margin-top:12px;color:var(--accent);font-weight:900;font-size:17px;text-decoration:none;}
+  .cta .who{color:var(--muted);font-size:13px;margin-top:6px;}
+
+  .more{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;}
+  .more a{flex:1;min-width:150px;background:var(--surface2);border:1px solid var(--line2);border-radius:12px;
+    padding:14px 16px;color:var(--ink);text-decoration:none;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:space-between;}
+  .more a:hover{border-color:var(--accent);}
+  .more a span{color:var(--muted);font-weight:600;font-size:13px;}
+  .foot{margin-top:26px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.8;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/></svg>
+    黑牛 · 省 token 指南
+  </div>
+  <h1>別讓 AI 額度一下就<span class="u">燒光</span>。</h1>
+  <p class="lede">你留言了 <b>token</b>，這是完整版。90% 的人在浪費 token，都是這 3 個習慣。</p>
+  <div class="rule">原則就一句：需要才用</div>
+
+  <!-- 1 -->
+  <div class="card">
+    <div class="wm">1</div>
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
+    <h2><small>Mistake 01</small>大文件：只給需要的部分</h2>
+    <p>你只需要第 37 頁，卻把整份三百多頁的 PDF 全塞進去——AI 每次都要「讀」完整份，<b>token 當然一下就燒光</b>。</p>
+    <div class="tags">
+      <div class="tag ok"><span class="m">✓</span><span class="t">主要讀文字時：先把文件轉成 <b>Markdown／純文字</b>（例如微軟 MarkItDown），再只貼你需要的段落。</span></div>
+      <div class="tag ok"><span class="m">✓</span><span class="t">要看<b>圖表、表格、版面</b>時：留著 PDF，別轉文字（版面資訊會不見）。</span></div>
+      <div class="tag no"><span class="m">✕</span><span class="t">把整份文件原封不動丟進去，只為了問其中一小段。</span></div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <div class="wm">2</div>
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+    <h2><small>Mistake 02</small>新任務：開新對話</h2>
+    <p>一個對話用三個禮拜，AI 每次回你都要<b>重讀前面全部內容</b>。你只是要寫封請假信，它卻扛著三週的歷史在算。</p>
+    <div class="tags">
+      <div class="tag ok"><span class="m">✓</span><span class="t">全新、不相關的任務 → <b>開一個新對話</b>，讓它只看到這件事。</span></div>
+      <div class="tag ok"><span class="m">✓</span><span class="t">同一個專案、前面脈絡真的有用 → 就留著，別為省而丟掉需要的東西。</span></div>
+      <div class="tag no"><span class="m">✕</span><span class="t">把一大段<b>無關</b>的舊對話，硬帶進一個全新的任務。</span></div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <div class="wm">3</div>
+    <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="22" height="12" rx="6"/><circle cx="16" cy="12" r="3"/></svg></div>
+    <h2><small>Mistake 03</small>簡單任務：需要才開功能</h2>
+    <p>只是要改一句話，卻把 Extended Thinking、網路搜尋、連接器、工具<b>全部打開</b>——等於叫全公司來開會改一個字。每個功能都在多花 token。</p>
+    <div class="tags">
+      <div class="tag ok"><span class="m">✓</span><span class="t">需要<b>即時資訊</b>才開搜尋；需要<b>你的檔案</b>才開連接器；其他時候關著。</span></div>
+      <div class="tag ok"><span class="m">✓</span><span class="t">簡單任務用<b>簡單模式</b>——又快又省。</span></div>
+      <div class="tag no"><span class="m">✕</span><span class="t">預設全開，什麼小事都動用所有功能。</span></div>
+    </div>
+  </div>
+
+  <div class="sum">
+    <div class="k">一句話總結</div>
+    <div class="big"><b>需要才用</b>。給它需要的、開新對話、別全部打開。</div>
+  </div>
+
+  <div class="cta">
+    <p>覺得有用？在影片下面留言 <b>token</b>，也告訴我你看過<b>最扯</b>的 AI 用法 👇</p>
+    <a class="h" href="https://instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤 @fatty_bamba →</a>
+    <div class="who">工程師 · AI 博士 · PrimeStride AI 創辦人｜每週教你把 AI 真的用對</div>
+  </div>
+
+  <div class="more">
+    <a href="/salary">薪水實拿計算機 <span>試算 →</span></a>
+    <a href="/spending">錢花去哪了 <span>花費健檢 →</span></a>
+  </div>
+
+  <div class="foot">＊本頁為教育示範，非官方文件，不構成專業建議。MarkItDown 為微軟開源工具。</div>
+</div>
+</body>
+</html>

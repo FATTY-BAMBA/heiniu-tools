@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>黑牛 AI 工具箱｜我叫 AI 幫台灣人做的實用小工具</title>
-<meta name="description" content="黑牛（工程師 · AI 博士）叫 AI 做的免費實用小工具。薪水實拿計算機、記帳儀表板…每支影片再多一個。">
-<meta property="og:title" content="黑牛 AI 工具箱">
-<meta property="og:description" content="我叫 AI 幫台灣上班族做的實用小工具，免費用。">
+<title>黑牛｜我把 AI 真的用在生活裡（工具＋完整做法）</title>
+<meta name="description" content="黑牛（工程師 · AI 博士）把每支影片教的東西，做成你可以直接用的免費小工具，和可以直接照做的完整做法。薪水計算機、花費健檢、省 token 三招…每支影片再多一個。">
+<meta property="og:title" content="黑牛｜工具＋完整做法">
+<meta property="og:description" content="我把 AI 真的用在生活裡。免費工具，加上可以直接照做的完整做法。">
 <style>
   :root{
     --ink:#0C0E14; --ink2:#141824; --card:#161B27; --line:#2A3040;
@@ -17,34 +17,45 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:radial-gradient(1000px 560px at 12% -10%,rgba(255,59,48,.10),transparent 60%),
     radial-gradient(1100px 640px at 100% 108%,rgba(52,225,196,.10),transparent 60%),var(--ink);
-    color:var(--white);font-family:var(--cjk);min-height:100vh;padding:44px 18px;line-height:1.55;}
+    color:var(--white);font-family:var(--cjk);min-height:100vh;padding:44px 18px;line-height:1.55;
+    overflow-x:hidden;overflow-wrap:break-word;}
   a:focus-visible{outline:2px solid var(--fix);outline-offset:3px;}
   .wrap{max-width:680px;margin:0 auto;}
   .brand{display:flex;align-items:center;gap:12px;margin-bottom:22px;}
   .brand .name{font-size:24px;font-weight:900;color:var(--hi);}
   .brand .sub{font-size:12px;color:var(--fix);font-weight:800;letter-spacing:1.5px;}
-  h1{font-size:36px;font-weight:900;line-height:1.15;margin-bottom:12px;}
+  h1{font-size:34px;font-weight:900;line-height:1.16;margin-bottom:12px;}
   h1 .mark{background:var(--hi);color:var(--ink);padding:0 10px;border-radius:8px;}
-  .lede{color:var(--muted);font-size:16px;max-width:520px;}
+  .lede{color:var(--muted);font-size:16px;max-width:540px;}
   .lede b{color:var(--white);}
-  .safe{color:var(--muted);font-size:12.5px;font-family:var(--mono);margin:14px 0 28px;}
+  .safe{color:var(--muted);font-size:12.5px;font-family:var(--mono);margin:14px 0 6px;}
+
+  .section{margin-top:34px;}
+  .section .hd{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px;margin:0 2px 14px;}
+  .section .hd h2{font-size:20px;font-weight:900;color:var(--white);}
+  .section .hd .en{font-family:var(--mono);font-size:12px;color:var(--fix);letter-spacing:1.5px;text-transform:uppercase;}
+  .section .hd .note{margin-left:auto;font-size:12.5px;color:var(--muted);white-space:nowrap;}
 
   a.tool{display:flex;align-items:center;gap:18px;text-decoration:none;color:inherit;background:var(--card);
     border:1px solid var(--line);border-left:3px solid var(--fix);border-radius:12px;padding:20px 22px;
-    transition:transform .12s,border-color .12s;}
+    margin-bottom:12px;transition:transform .12s,border-color .12s;}
   a.tool:hover{transform:translateY(-2px);border-color:var(--fix);}
+  a.tool.guide{border-left-color:var(--hi);}
+  a.tool.guide:hover{border-color:var(--hi);}
+  a.tool.guide .idx,a.tool.guide .go{color:var(--hi);}
   .tool .idx{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--fix);opacity:.75;}
   .tool .body{flex:1;}
-  .tool h3{font-size:20px;font-weight:900;margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+  .tool h3{font-size:19px;font-weight:900;margin-bottom:4px;display:flex;align-items:center;gap:10px;}
   .tag{font-size:11px;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--fix);color:var(--ink);}
+  .tag.y{background:var(--hi);}
   .tool p{color:var(--muted);font-size:14px;}
   .tool .go{font-family:var(--mono);font-size:22px;color:var(--fix);}
 
-  .next{margin:18px 2px 0;color:var(--muted);font-size:14px;}
+  .next{margin:4px 2px 0;color:var(--muted);font-size:13.5px;}
   .next b{color:var(--white);font-weight:700;}
   .next .n{font-family:var(--mono);color:var(--fix);}
 
-  .biz{margin-top:26px;background:rgba(52,225,196,.06);border:1px solid rgba(52,225,196,.26);border-radius:12px;padding:16px 18px;font-size:14.5px;color:var(--white);}
+  .biz{margin-top:30px;background:rgba(52,225,196,.06);border:1px solid rgba(52,225,196,.26);border-radius:12px;padding:16px 18px;font-size:14.5px;color:var(--white);}
   .biz b{color:var(--fix);} .biz a{color:var(--fix);font-weight:800;text-decoration:none;}
 
   .foot{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);text-align:center;}
@@ -60,26 +71,56 @@
     <div><div class="name">黑牛</div><div class="sub">AI 創業家 · 工程師 · PhD</div></div>
   </div>
 
-  <h1>黑牛的 <span class="mark">AI 工具箱</span></h1>
-  <p class="lede">我叫 <b>AI</b> 幫台灣上班族做的實用小工具。<b>免費用</b>，每支影片再多一個。</p>
-  <p class="safe">// 都在你的瀏覽器裡運算，資料不會上傳</p>
+  <h1>我把 <span class="mark">AI</span> 真的用在生活裡。</h1>
+  <p class="lede">每支影片教的東西，我做成兩種：可以<b>直接用</b>的小工具，和可以<b>直接照做</b>的完整做法。<b>免費</b>，每支影片再多一個。</p>
+  <p class="safe">// 工具都在你的瀏覽器裡運算，資料不會上傳</p>
 
-  <a class="tool" href="./salary/">
-    <span class="idx">01</span>
-    <div class="body">
-      <h3>薪水實拿計算機 <span class="tag">可用</span></h3>
-      <p>輸入月薪 → 產生你的薪資明細表：扣完勞健保實拿多少，還有老闆偷偷幫你付的錢。</p>
-    </div>
-    <span class="go">→</span>
-  </a>
+  <!-- SHELF 1: TOOLS -->
+  <div class="section">
+    <div class="hd"><h2>工具</h2><span class="en">Tools</span><span class="note">打開就能用</span></div>
 
-  <p class="next"><span class="n">接下來 »</span> <b>記帳儀表板</b> · 104 職缺分析器 · 信用卡帳單分析（依你們留言點的順序做）</p>
+    <a class="tool" href="./salary/">
+      <span class="idx">01</span>
+      <div class="body">
+        <h3>薪水實拿計算機 <span class="tag">可用</span></h3>
+        <p>輸入月薪 → 產生你的薪資明細表：扣完勞健保實拿多少，還有老闆偷偷幫你付的錢。</p>
+      </div>
+      <span class="go">→</span>
+    </a>
 
-  <div class="biz"><b>你的公司也想用 AI？</b>這些是個人版小工具；要幫整間公司導入 AI 自動化（客服、報價、知識庫），看看我做的 <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">PrimeStride AI →</a></div>
+    <a class="tool" href="./spending/">
+      <span class="idx">02</span>
+      <div class="body">
+        <h3>錢去哪了 · AI 花費健檢 <span class="tag">可用</span></h3>
+        <p>把信用卡明細貼進來 → AI 自動分類、抓出你最大的錢坑，看「亂花」有沒有比房租多。</p>
+      </div>
+      <span class="go">→</span>
+    </a>
+
+    <p class="next"><span class="n">接下來 »</span> <b>104 職缺分析器</b> · 信用卡帳單分析（依你們留言點的順序做）</p>
+  </div>
+
+  <!-- SHELF 2: FULL METHODS -->
+  <div class="section">
+    <div class="hd"><h2>完整做法</h2><span class="en">Full Methods</span><span class="note">影片留言領取的完整版</span></div>
+
+    <a class="tool guide" href="./token/">
+      <span class="idx">A</span>
+      <div class="body">
+        <h3>省 token 三招 <span class="tag y">完整版</span></h3>
+        <p>3 個超浪費 AI 額度的習慣，跟正確做法：只給需要的部分、開新對話、需要才開功能。</p>
+      </div>
+      <span class="go">→</span>
+    </a>
+
+    <p class="next"><span class="n">接下來 »</span> <b>AI 外掛 / 自動化</b> 完整做法…（每支「留言領取」的影片，這裡就多一篇）</p>
+  </div>
+
+  <div class="biz"><b>你的公司也想用 AI？</b>上面是個人版；要幫整間公司導入 AI 自動化（客服、報價、知識庫），看看我做的 <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">PrimeStride AI →</a></div>
 
   <div class="foot">
     <div class="who">我是 <b>黑牛</b> — 工程師出身、AI 博士、AI 公司創辦人</div>
-    <div class="desc">每個工具都是我叫 AI 做的。想看下一個做什麼？到影片留言告訴我。</div>
+    <div class="desc">每個東西都是我叫 AI 做的。想看下一個做什麼？到影片留言告訴我。</div>
     <div class="links">
       <a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a>
       <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a>

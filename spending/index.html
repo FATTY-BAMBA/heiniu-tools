@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>錢去哪了 · AI 花費健檢｜黑牛</title>
+<meta name="description" content="把你的信用卡明細貼進來，AI 自動分類、算出你的最大錢坑，並看你「亂花」的有沒有比房租多。資料不上傳，全部在你的裝置裡算。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0C11; --surface:#12151D; --surface2:#171B25; --line:rgba(255,255,255,.07);
+    --line2:rgba(255,255,255,.12);
+    --ink:#F2F5FA; --ink2:#AEB6C6; --muted:#79839A;
+    --accent:#34E1C4; --accent-ink:#053b34;
+    --gold:#FFCF3B; --danger:#FF5A4D; --track:rgba(255,255,255,.055);
+    --r:16px; --shadow:0 10px 34px rgba(0,0,0,.40);
+    --num:"Inter","Noto Sans TC",system-ui,sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;}
+  body{font-family:"Noto Sans TC","Inter","PingFang TC",system-ui,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;min-height:100vh;
+    padding:26px 18px 72px;}
+  .num{font-family:var(--num);font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1;}
+  .wrap{max-width:560px;margin:0 auto;}
+  .brand{display:flex;align-items:center;gap:9px;color:var(--accent);font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;}
+  .brand svg{width:16px;height:16px;}
+  h1{font-size:32px;line-height:1.18;font-weight:900;letter-spacing:-.01em;margin:12px 0 6px;}
+  h1 .u{color:var(--gold);}
+  .lede{color:var(--ink2);font-size:15.5px;max-width:44ch;}
+
+  .note{display:flex;align-items:center;gap:9px;margin-top:18px;color:var(--accent);
+    font-size:13px;font-weight:700;background:rgba(52,225,196,.07);
+    border:1px solid rgba(52,225,196,.24);border-radius:12px;padding:11px 13px;}
+  .note svg{width:16px;height:16px;flex:none;}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--shadow);}
+  .pad{padding:18px;}
+
+  .input-card{margin-top:22px;}
+  .input-card label{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:9px;}
+  textarea#stmt{width:100%;height:118px;background:var(--bg);color:var(--ink);
+    border:1px solid var(--line2);border-radius:12px;padding:13px;resize:vertical;
+    font-family:var(--num);font-size:13.5px;line-height:1.55;outline:none;transition:border-color .15s;}
+  textarea#stmt:focus{border-color:var(--accent);}
+  textarea#stmt::placeholder{color:var(--muted);}
+  .actions{display:flex;gap:10px;margin-top:12px;}
+  .btn{appearance:none;border:0;cursor:pointer;font-weight:800;font-size:15px;
+    border-radius:12px;padding:13px 16px;display:inline-flex;align-items:center;
+    justify-content:center;gap:8px;transition:transform .06s, background .15s, border-color .15s;
+    font-family:inherit;}
+  .btn:active{transform:translateY(1px);}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .btn svg{width:17px;height:17px;}
+  .btn-primary{flex:1;background:var(--accent);color:var(--accent-ink);}
+  .btn-primary:hover{background:#5eead0;}
+  .btn-ghost{background:var(--surface2);color:var(--ink2);border:1px solid var(--line2);}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--ink);}
+
+  .results{margin-top:24px;display:none;}
+  .results.show{display:block;animation:fade .3s ease both;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important;}}
+
+  .period{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    margin-bottom:16px;color:var(--ink2);font-size:13.5px;flex-wrap:wrap;}
+  .period .lab{display:flex;align-items:center;gap:8px;}
+  .period svg{width:16px;height:16px;color:var(--muted);}
+  select{font-family:inherit;background:var(--surface2);color:var(--ink);border:1px solid var(--line2);
+    border-radius:10px;padding:8px 10px;font-size:13.5px;font-weight:700;cursor:pointer;}
+
+  .verdict{padding:20px;border-radius:var(--r);border:1px solid var(--line2);
+    background:var(--surface);}
+  .verdict .eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+  .verdict .headline{font-size:26px;font-weight:900;line-height:1.25;margin-top:8px;letter-spacing:-.01em;}
+  .verdict .headline .hot{color:var(--gold);}
+  .verdict.over{border-color:rgba(255,90,77,.4);}
+  .verdict.over .headline .hot{color:var(--danger);}
+  .verdict .sub{color:var(--ink2);font-size:14px;margin-top:10px;}
+
+  .cmp{margin-top:18px;display:flex;flex-direction:column;gap:15px;}
+  .cmp .lab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+  .cmp .lab .k{font-weight:800;font-size:15px;}
+  .cmp .lab .k small{color:var(--muted);font-weight:600;font-size:12px;margin-left:6px;}
+  .cmp .lab .v{font-weight:800;font-size:18px;}
+  .cmp .track{height:14px;background:var(--track);border-radius:7px;overflow:hidden;}
+  .cmp .fill{height:100%;border-radius:7px;width:0;transition:width .6s cubic-bezier(.2,.7,.2,1);}
+  .fill.rent{background:#556089;}
+  .fill.waste{background:var(--gold);}
+
+  .sec-h{display:flex;align-items:center;justify-content:space-between;margin:26px 2px 12px;}
+  .sec-h .t{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+  .link{background:none;border:0;color:var(--accent);font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;padding:4px;}
+  .link:hover{text-decoration:underline;}
+
+  .brk{display:flex;flex-direction:column;gap:2px;}
+  .brk .item{display:grid;grid-template-columns:96px 1fr auto;align-items:center;gap:12px;
+    padding:10px 4px;}
+  .brk .name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:7px;}
+  .brk .name .dot{width:9px;height:9px;border-radius:3px;flex:none;}
+  .brk .btrack{height:9px;background:var(--track);border-radius:5px;overflow:hidden;}
+  .brk .bfill{height:100%;border-radius:5px;width:0;transition:width .6s cubic-bezier(.2,.7,.2,1);}
+  .brk .amt{font-weight:800;font-size:15px;text-align:right;min-width:78px;}
+  .brk .item.top .name{color:var(--gold);}
+  .tag{font-size:11px;font-weight:900;color:var(--accent-ink);background:var(--gold);
+    border-radius:6px;padding:2px 7px;letter-spacing:.04em;}
+
+  .edit{margin-top:6px;display:none;}
+  .edit.show{display:block;}
+  .edit .erow{display:flex;align-items:center;gap:10px;padding:8px 4px;}
+  .edit .erow .en{flex:1;font-size:14px;font-weight:700;color:var(--ink2);}
+  .edit .erow input{width:120px;background:var(--bg);border:1px solid var(--line2);color:var(--ink);
+    text-align:right;padding:8px 11px;border-radius:9px;font-family:var(--num);font-size:15px;font-weight:700;outline:none;}
+  .edit .erow input:focus{border-color:var(--accent);}
+  .edit .ehint{color:var(--muted);font-size:12px;padding:4px;}
+
+  .prompt{margin-top:26px;}
+  .prompt .ph{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;margin-bottom:10px;}
+  .prompt .ph svg{width:17px;height:17px;color:var(--accent);}
+  .prompt textarea{width:100%;height:132px;background:var(--bg);color:var(--ink2);
+    border:1px solid var(--line);border-radius:11px;padding:12px;font-size:12.5px;line-height:1.5;
+    resize:vertical;font-family:var(--num);}
+  .foot{margin-top:30px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.8;}
+  .foot b{color:var(--ink2);} .foot .h{color:var(--accent);font-weight:800;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/></svg>
+    黑牛 AI 工具
+  </div>
+  <h1>錢去哪了？把帳單丟給 <span class="u">AI</span>，它幫你算。</h1>
+  <p class="lede">貼上你的信用卡／銀行明細，自動分類、找出你的最大錢坑，看你「亂花」的有沒有比房租多。</p>
+
+  <div class="note">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    資料不上傳、不儲存 — 全部在你這台裝置裡算，關掉就消失。
+  </div>
+
+  <div class="card pad input-card">
+    <label for="stmt">貼上明細（複製你的帳單就好，卡號姓名可先刪掉）</label>
+    <textarea id="stmt" placeholder="例如：&#10;3/01  UBER EATS  312&#10;3/02  50嵐  65&#10;3/03  蝦皮購物  1290&#10;3/12  房租  18000&#10;NETFLIX  390 ..."></textarea>
+    <div class="actions">
+      <button class="btn btn-primary" id="analyze">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/><path d="M19 3v4M21 5h-4"/></svg>
+        分析我的花費
+      </button>
+      <button class="btn btn-ghost" id="sample">載入範例</button>
+    </div>
+  </div>
+
+  <div class="results" id="results">
+    <div class="period">
+      <span class="lab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>
+        <span id="periodLabel">偵測到 1 個月的明細</span>
+      </span>
+      <label>換算成一年：
+        <select id="periodSel">
+          <option value="1">這是 1 個月</option>
+          <option value="3">這是 3 個月</option>
+          <option value="6">這是 半年</option>
+          <option value="12">這是 1 整年</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="verdict" id="verdict"></div>
+
+    <div class="cmp">
+      <div>
+        <div class="lab"><span class="k">房租<small>一年</small></span><span class="v num" id="rentV"></span></div>
+        <div class="track"><div class="fill rent" id="rentFill"></div></div>
+      </div>
+      <div>
+        <div class="lab"><span class="k">亂花總和<small>外送·手搖·網購·餐飲·娛樂·訂閱</small></span><span class="v num" id="wasteV"></span></div>
+        <div class="track"><div class="fill waste" id="wasteFill"></div></div>
+      </div>
+    </div>
+
+    <div class="sec-h">
+      <span class="t">分類明細（一年）</span>
+      <button class="link" id="toggleEdit">分錯了？手動調整</button>
+    </div>
+    <div class="brk card pad" id="brk"></div>
+
+    <div class="edit card pad" id="edit">
+      <div class="ehint">下面填「這份明細期間」的金額，工具會幫你換算一年。改完會即時更新。</div>
+      <div id="editRows"></div>
+    </div>
+
+    <div class="prompt">
+      <div class="ph">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        想要 AI 給你省錢建議？複製這段
+      </div>
+      <textarea id="promptBox" readonly></textarea>
+      <button class="btn btn-primary" id="copyBtn" style="margin-top:10px;width:100%">複製 Prompt</button>
+    </div>
+
+    <div class="foot">
+      這個工具是 <b>黑牛</b> <span class="h">@fatty_bamba</span> 叫 AI 做的。<br>
+      分類用關鍵字比對，可能會有誤差，可手動調整。教育示範，不構成理財建議。
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- categorisation engine (client-side, no upload) ----------
+const CATS = [
+  {key:'rent',     nm:'房租', need:true,  color:'#556089', kw:['房租','租金','rent']},
+  {key:'transit',  nm:'交通', need:true,  color:'#5a6b8c', kw:['mrt','捷運','悠遊','一卡通','大車隊','計程','uber trip','高鐵','thsr','台鐵','加油','中油','台亞','停車','parking','gogoro','youbike','客運','ubike']},
+  {key:'delivery', nm:'外送', waste:true, color:'#34E1C4', kw:['uber eats','ubereats','foodpanda','food panda','熊貓','panda','外送']},
+  {key:'drinks',   nm:'手搖飲', waste:true, color:'#34E1C4', kw:['50嵐','五十嵐','清心','可不可','一沐日','一沐','迷客夏','迷客','大苑子','comebuy','龜記','得正','麻古','kebuke','coco','珍煮丹','鶴茶樓','茶湯會','大茶','手搖','歇腳亭','日出茶太']},
+  {key:'shopping', nm:'網購', waste:true, color:'#7c8bb8', kw:['shopee','蝦皮','momo','pchome','露天','博客來','books','淘寶','taobao','amazon','生活市集','蝦寶','pinkoi']},
+  {key:'eatout',   nm:'餐飲', waste:true, color:'#7c8bb8', kw:['餐廳','便當','麥當勞','mcdonald','肯德基','kfc','摩斯','mos','星巴克','starbucks','路易莎','louisa','拉麵','火鍋','燒肉','7-eleven','7-11','全家','萊爾富','ok超商','超商','美食','食堂','小吃','飯','麵']},
+  {key:'fun',      nm:'娛樂', waste:true, color:'#7c8bb8', kw:['電影','威秀','vieshow','秀泰','ktv','錢櫃','好樂迪','steam','playstation','psn','nintendo','遊戲','健身','gym','world gym','運動','switch','livehouse']},
+  {key:'subs',     nm:'訂閱', waste:true, color:'#7c8bb8', kw:['netflix','spotify','youtube premium','youtubepremium','disney','apple.com','icloud','google storage','google one','chatgpt','openai','notion','adobe','canva','訂閱','patreon','hbo','kkbox']},
+  {key:'other',    nm:'其他', need:false, color:'#4a5468', kw:[]},
+];
+const byKey = Object.fromEntries(CATS.map(c=>[c.key,c]));
+
+function fmt(n){return Math.round(n).toLocaleString('en-US');}
+
+function parseLineAmount(line){
+  let s = ' '+line+' ';
+  // strip dates
+  s = s.replace(/\d{4}[\/\-.]\d{1,2}[\/\-.]\d{1,2}/g,' ').replace(/(^|\s)\d{1,2}\/\d{1,2}(\s|$)/g,' ');
+  // strip masked cards, mixed letter+digit refs (e.g. SPX0039281), and long pure-digit card/account nums
+  s = s.replace(/[*xX•·]{2,}\s?\d+/g,' ').replace(/\d+\s?[*xX•·]{2,}/g,' ')
+       .replace(/\b(?=[a-z0-9]*[a-z])(?=[a-z0-9]*\d)[a-z0-9]{4,}\b/gi,' ')
+       .replace(/\b\d{7,}\b/g,' ');
+  const m = s.match(/-?\(?\s?(?:nt\$?|\$)?\s?\d{1,3}(?:,\d{3})+(?:\.\d+)?|-?\(?\s?(?:nt\$?|\$)?\s?\d+(?:\.\d+)?/gi);
+  if(!m) return 0;
+  // the transaction amount is almost always the LAST number on the line
+  const t = m[m.length-1];
+  const v = parseFloat(t.replace(/[^0-9.]/g,''));
+  return isNaN(v) ? 0 : v;
+}
+
+function categorise(line){
+  const low = line.toLowerCase();
+  for(const c of CATS){
+    if(c.key==='other') continue;
+    for(const k of c.kw){ if(low.includes(k.toLowerCase())) return c.key; }
+  }
+  return 'other';
+}
+
+function monthsFromDates(text){
+  const ds=[...text.matchAll(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/g)].map(m=>new Date(+m[1],+m[2]-1,+m[3]));
+  if(ds.length>=2){
+    const min=Math.min(...ds), max=Math.max(...ds);
+    const mo=(max-min)/(1000*60*60*24*30.4);
+    return Math.max(1, Math.round(mo)||1);
+  }
+  return 0;
+}
+
+let periodTotals={}, detectedMonths=1, editMode=false;
+
+function analyse(text){
+  const totals={}; CATS.forEach(c=>totals[c.key]=0);
+  text.split(/\n+/).forEach(line=>{
+    if(!line.trim()) return;
+    const amt=parseLineAmount(line);
+    if(amt<=0) return;
+    totals[categorise(line)] += amt;
+  });
+  periodTotals=totals;
+  const dm=monthsFromDates(text);
+  detectedMonths = dm || 1;
+  document.getElementById('periodSel').value = String([1,3,6,12].includes(detectedMonths)?detectedMonths:1);
+  document.getElementById('periodLabel').textContent = dm ? `偵測到約 ${detectedMonths} 個月的明細` : '沒抓到日期，預設當 1 個月';
+  buildEdit();
+  render();
+  document.getElementById('results').classList.add('show');
+}
+
+function annualFactor(){ return 12 / (+document.getElementById('periodSel').value || 1); }
+
+function render(){
+  const f=annualFactor();
+  const ann={}; CATS.forEach(c=>ann[c.key]=(periodTotals[c.key]||0)*f);
+  const rent=ann.rent;
+  const wasteKeys=CATS.filter(c=>c.waste).map(c=>c.key);
+  const waste=wasteKeys.reduce((s,k)=>s+ann[k],0);
+
+  document.getElementById('rentV').textContent='NT$ '+fmt(rent);
+  document.getElementById('wasteV').textContent='NT$ '+fmt(waste);
+  const scale=Math.max(rent,waste,1)*1.04;
+  document.getElementById('rentFill').style.width=(rent/scale*100)+'%';
+  document.getElementById('wasteFill').style.width=(waste/scale*100)+'%';
+
+  // breakdown ranked (all non-rent categories with spend)
+  const items=CATS.filter(c=>c.key!=='rent' && ann[c.key]>0).map(c=>({...c,y:ann[c.key]}))
+                   .sort((a,b)=>b.y-a.y);
+  const top=items[0];
+  const topWaste=items.find(c=>c.waste);
+  const combo=ann.delivery+ann.drinks;
+
+  const v=document.getElementById('verdict');
+  if(waste>rent && rent>0){
+    v.className='verdict over';
+    v.innerHTML=`<div class="eyebrow">結果</div>
+      <div class="headline">你「亂花」的一年 <span class="hot num">${fmt(waste)}</span>，比房租還多 <span class="hot num">${fmt(waste-rent)}</span>。</div>
+      <div class="sub">最大錢坑是${topWaste?topWaste.nm:'—'}（一年 <b class="num">${fmt(topWaste?topWaste.y:0)}</b>）；光手搖＋外送就 <b class="num">${fmt(combo)}</b>。</div>`;
+  }else{
+    v.className='verdict';
+    v.innerHTML=`<div class="eyebrow">結果</div>
+      <div class="headline">房租 <span class="hot num">${fmt(rent)}</span> 還是你最大的開銷。</div>
+      <div class="sub">亂花一年 <b class="num">${fmt(waste)}</b>，有守住 — 你最肥的一類是${topWaste?topWaste.nm:'—'}（<b class="num">${fmt(topWaste?topWaste.y:0)}</b>）。</div>`;
+  }
+  const bscale=Math.max(...items.map(i=>i.y),1);
+  document.getElementById('brk').innerHTML = items.map(c=>`
+    <div class="item${c===top?' top':''}">
+      <div class="name"><span class="dot" style="background:${c.color}"></span>${c.nm}${c===top?' <span class="tag">最大</span>':''}</div>
+      <div class="btrack"><div class="bfill" style="background:${c.color};width:${c.y/bscale*100}%"></div></div>
+      <div class="amt num">${fmt(c.y)}</div>
+    </div>`).join('') || '<div class="ehint">沒有偵測到花費，貼上明細再試一次。</div>';
+
+  document.getElementById('promptBox').value =
+`你是理財分析師。下面是我的消費明細（卡號、姓名已刪除）。請幫我：
+1. 分類：房租/外送/手搖飲/網購/餐飲/交通/娛樂/訂閱/其他
+2. 算出每一類「一年」的總額
+3. 找出我的「最大錢坑」
+4. 把亂花類（外送+手搖+網購+餐飲+娛樂+訂閱）加起來跟房租比
+5. 用一段白話講：我最漏財的地方＋最有感的 2 個省錢動作
+（把上面這份明細一起貼給 AI）`;
+}
+
+function buildEdit(){
+  document.getElementById('editRows').innerHTML = CATS.map(c=>`
+    <div class="erow"><span class="en">${c.nm}</span>
+      <input inputmode="numeric" data-k="${c.key}" value="${Math.round(periodTotals[c.key]||0)}"></div>`).join('');
+  document.querySelectorAll('#editRows input').forEach(inp=>{
+    inp.addEventListener('input',e=>{
+      const val=parseInt(e.target.value.replace(/[^0-9]/g,''),10);
+      periodTotals[e.target.dataset.k]=isNaN(val)?0:val;
+      render();
+    });
+  });
+}
+
+// ---------- wiring ----------
+const SAMPLE=`2025/03/01  UBER EATS TAIPEI      455
+2025/03/02  foodpanda             352
+2025/03/02  50嵐 民生店            65
+2025/03/03  蝦皮購物 SHOPEE       1290
+2025/03/03  MRT 悠遊卡加值         500
+2025/03/04  UBER EATS TAIPEI      410
+2025/03/05  NETFLIX.COM           390
+2025/03/06  foodpanda             318
+2025/03/07  MOMO 富邦媒體          4980
+2025/03/08  UBER EATS TAIPEI      388
+2025/03/09  星巴克 STARBUCKS       165
+2025/03/10  SPOTIFY               149
+2025/03/11  foodpanda             276
+2025/03/12  房租 三月              18000
+2025/03/13  UBER EATS TAIPEI      366
+2025/03/14  蝦皮購物 SHOPEE        899
+2025/03/15  台灣大車隊             215
+2025/03/16  UBER EATS TAIPEI      299
+2025/03/17  迷客夏                 75
+2025/03/18  foodpanda             305
+2025/03/19  YOUTUBE PREMIUM       179
+2025/03/20  威秀影城               560
+2025/03/21  PCHOME 24h            1680
+2025/03/22  全聯 PXMART           624
+2025/03/24  蝦皮購物 SHOPEE       2100
+2025/03/25  蝦皮購物 SHOPEE        640
+2025/03/26  五十嵐                 60
+2025/03/27  UBER EATS TAIPEI      344
+2025/03/28  foodpanda             290
+2025/03/29  麥當勞 MCDONALD        189
+2025/03/29  蝦皮購物 SHOPEE        780
+2025/03/30  UBER EATS TAIPEI      402
+2025/03/30  Disney+ TW            270
+2025/03/31  STEAM PURCHASE        330`;
+
+document.getElementById('sample').addEventListener('click',()=>{
+  document.getElementById('stmt').value=SAMPLE; analyse(SAMPLE);
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('analyze').addEventListener('click',()=>{
+  const t=document.getElementById('stmt').value.trim();
+  if(!t){document.getElementById('stmt').focus();return;}
+  analyse(t);
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('periodSel').addEventListener('change',render);
+document.getElementById('toggleEdit').addEventListener('click',()=>{
+  editMode=!editMode;
+  document.getElementById('edit').classList.toggle('show',editMode);
+  document.getElementById('toggleEdit').textContent=editMode?'收起調整':'分錯了？手動調整';
+});
+document.getElementById('copyBtn').addEventListener('click',()=>{
+  const t=document.getElementById('promptBox');t.select();t.setSelectionRange(0,99999);
+  navigator.clipboard?.writeText(t.value).then(()=>{
+    const b=document.getElementById('copyBtn');b.textContent='已複製 ✓';setTimeout(()=>b.textContent='複製 Prompt',1600);
+  }).catch(()=>{});
+});
+
+// preload sample so the page shows value immediately
+document.getElementById('stmt').value=SAMPLE; analyse(SAMPLE);
+</script>
+</body>
+</html>
