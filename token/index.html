@@ -7,122 +7,152 @@
 <meta name="description" content="別讓 AI 額度一下就燒光。完整做法：先搞懂 token 為什麼會燒，再用 3 個習慣（只給需要的部分、新任務開新對話、需要才開功能）省下大把額度。黑牛 @fatty_bamba 整理。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
 <style>
-  :root{
-    --bg:#0A0C11; --surface:#12151D; --surface2:#171B25; --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
-    --ink:#F2F5FA; --ink2:#AEB6C6; --muted:#79839A;
-    --accent:#34E1C4; --accent-ink:#053b34; --gold:#FFCF3B; --danger:#FF5A4D;
-    --r:16px; --shadow:0 10px 34px rgba(0,0,0,.40);
-    --num:"Inter","Noto Sans TC",system-ui,sans-serif;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  body{font-family:"Noto Sans TC","Inter","PingFang TC",system-ui,sans-serif;background:var(--bg);color:var(--ink);
-    line-height:1.62;min-height:100vh;padding:30px 18px 70px;overflow-x:hidden;overflow-wrap:break-word;}
-  .wrap{max-width:620px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:9px;color:var(--accent);font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;}
-  .brand svg{width:16px;height:16px;}
-  h1{font-size:33px;line-height:1.18;font-weight:900;letter-spacing:-.01em;margin:12px 0 8px;}
-  h1 .u{color:var(--gold);}
-  .lede{color:var(--ink2);font-size:16px;max-width:52ch;}
-  .lede b{color:var(--ink);}
-  .rule{display:inline-flex;align-items:center;gap:10px;margin-top:18px;background:rgba(52,225,196,.08);
-    border:1px solid rgba(52,225,196,.28);border-radius:999px;padding:9px 16px;color:var(--accent);font-weight:800;font-size:15px;}
+  .tool-head{padding:48px 0 6px;}
+  .tool-head .eyebrow{margin-bottom:16px;}
+  .tool-head h1{font-size:clamp(30px,5vw,42px);font-weight:900;line-height:1.18;letter-spacing:-.012em;}
+  .tool-head h1 .acc{color:var(--hi);}
+  .tool-head .lede{margin-top:12px;font-size:15.5px;}
+  .rule{display:inline-flex;align-items:center;gap:10px;margin-top:22px;background:var(--hi-soft);
+    border:1px solid rgba(75,60,228,.28);border-radius:999px;padding:9px 18px;color:var(--hi-strong);
+    font-weight:800;font-size:14.5px;}
 
-  /* primer */
-  .primer{margin-top:22px;background:linear-gradient(135deg,#141a24,#12151d);border:1px solid var(--line2);border-radius:var(--r);padding:20px 22px;}
-  .primer .kk{color:var(--gold);font-weight:900;font-size:14px;letter-spacing:.04em;margin-bottom:8px;}
+  .gcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+    box-shadow:var(--shadow);padding:26px 26px 28px;margin-top:22px;position:relative;overflow:hidden;}
+  .gcard .wm{position:absolute;top:-18px;right:10px;font-family:var(--num);font-weight:900;
+    font-size:130px;color:rgba(18,18,22,.04);line-height:1;pointer-events:none;}
+  .gcard .ic{width:44px;height:44px;border-radius:12px;background:var(--hi-soft);border:1px solid rgba(75,60,228,.18);
+    display:flex;align-items:center;justify-content:center;color:var(--hi);margin-bottom:16px;}
+  .gcard .ic svg{width:23px;height:23px;}
+  .gcard h2{font-size:22px;font-weight:900;letter-spacing:-.01em;}
+  .gcard h2 small{display:block;color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:700;
+    letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px;}
+  .gcard p{color:var(--ink2);font-size:15.5px;margin-top:12px;}
+  .gcard p b{color:var(--ink);}
+  .tags{display:flex;flex-direction:column;gap:9px;margin-top:16px;}
+  .tag{display:flex;gap:11px;align-items:flex-start;font-size:14.5px;font-weight:600;}
+  .tag .m{flex:none;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:13px;margin-top:1px;}
+  .tag.ok .m{background:rgba(14,159,110,.12);color:var(--good);}
+  .tag.no .m{background:rgba(217,72,59,.12);color:var(--danger);}
+  .tag .t{color:var(--ink2);}
+  .tag .t b{color:var(--ink);}
+
+  /* ---------- 先搞懂：primer ---------- */
+  .primer{margin-top:24px;background:linear-gradient(135deg,var(--hi-soft),var(--surface) 65%);
+    border:1px solid rgba(61,44,224,.25);border-radius:var(--r-lg);padding:24px 26px;box-shadow:var(--shadow);}
+  .primer .kk{font-family:var(--mono);color:var(--hi);font-weight:700;font-size:11.5px;
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:10px;}
   .primer p{color:var(--ink2);font-size:15.5px;}
   .primer p+p{margin-top:10px;}
-  .primer b{color:var(--ink);}
-  .primer .big{color:var(--accent);font-weight:800;}
+  .primer p b{color:var(--ink);}
+  .primer .big{color:var(--hi);font-weight:800;}
 
-  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
-    padding:22px 22px 24px;margin-top:20px;position:relative;overflow:hidden;}
-  .card .wm{position:absolute;top:-14px;right:6px;font-family:var(--num);font-weight:900;font-size:120px;color:rgba(255,255,255,.035);line-height:1;pointer-events:none;}
-  .card .ic{width:44px;height:44px;border-radius:12px;background:var(--surface2);border:1px solid var(--line2);
-    display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:14px;}
-  .card .ic svg{width:23px;height:23px;}
-  .card h2{font-size:22px;font-weight:900;letter-spacing:-.01em;}
-  .card h2 small{display:block;color:var(--muted);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
-  .card .sym{color:var(--ink2);font-size:15.5px;margin-top:10px;}
-  .card .sym b{color:var(--ink);}
-
-  .blk{margin-top:16px;}
-  .blk .lbl{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
-  .blk.why .lbl{color:var(--gold);}
-  .blk.how .lbl{color:var(--accent);}
-  .blk .lbl .dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
+  /* ---------- 為什麼燒 / 正確做法 ---------- */
+  .blk{margin-top:18px;}
+  .blk .lbl{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;
+    font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-bottom:9px;}
+  .blk.why .lbl{color:#C2410C;}
+  .blk.how .lbl{color:var(--hi);}
+  .blk .lbl .dot{width:7px;height:7px;background:currentColor;transform:skewX(-14deg);border-radius:1px;}
   .blk p{color:var(--ink2);font-size:15px;}
   .blk p b{color:var(--ink);}
 
-  ol.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:11px;}
-  ol.steps>li{counter-increment:s;position:relative;padding-left:34px;color:var(--ink2);font-size:15px;}
-  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:23px;height:23px;border-radius:7px;
-    background:rgba(52,225,196,.14);color:var(--accent);font-family:var(--num);font-weight:800;font-size:13px;
+  ol.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:12px;}
+  ol.steps>li{counter-increment:s;position:relative;padding-left:36px;color:var(--ink2);font-size:15px;}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:7px;
+    background:var(--hi-soft);color:var(--hi);font-family:var(--num);font-weight:800;font-size:13px;
     display:flex;align-items:center;justify-content:center;}
   ol.steps>li b{color:var(--ink);}
-  ol.steps code{font-family:var(--num);background:var(--surface2);border:1px solid var(--line2);border-radius:6px;padding:1px 7px;font-size:13.5px;color:var(--accent);}
-  .subline{display:block;color:var(--muted);font-size:13.5px;margin-top:3px;}
+  ol.steps code{font-family:var(--mono);background:var(--surface2);border:1px solid var(--line);
+    border-radius:6px;padding:1px 7px;font-size:13px;color:var(--hi-strong);}
+  .subline{display:block;color:var(--muted);font-size:13.5px;margin-top:4px;line-height:1.7;}
   .subline b{color:var(--ink2);}
-  a.lk{color:var(--accent);text-decoration:underline;text-underline-offset:2px;font-weight:700;}
+  a.lk{color:var(--hi);text-decoration:underline;text-underline-offset:2px;font-weight:700;}
 
-  .dont{margin-top:16px;display:flex;gap:10px;align-items:flex-start;background:rgba(255,90,77,.07);border:1px solid rgba(255,90,77,.22);
-    border-radius:11px;padding:12px 14px;font-size:14.5px;color:var(--ink);}
-  .dont .x{flex:none;width:22px;height:22px;border-radius:6px;background:rgba(255,90,77,.16);color:var(--danger);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;margin-top:1px;}
+  .dont{margin-top:18px;display:flex;gap:10px;align-items:flex-start;background:rgba(232,85,43,.06);
+    border:1px solid rgba(232,85,43,.24);border-radius:var(--r-md);padding:13px 15px;font-size:14.5px;color:var(--ink);}
+  .dont .x{flex:none;width:22px;height:22px;border-radius:6px;background:rgba(232,85,43,.14);color:var(--danger);
+    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;margin-top:1px;}
   .dont b{color:var(--danger);}
 
-  .check{margin-top:24px;background:var(--surface);border:1px dashed var(--line2);border-radius:var(--r);padding:22px;}
-  .check .k{color:var(--gold);font-weight:900;font-size:14px;letter-spacing:.04em;margin-bottom:14px;}
-  .check ul{list-style:none;display:flex;flex-direction:column;gap:11px;}
-  .check li{display:flex;gap:11px;align-items:flex-start;font-size:15.5px;color:var(--ink);}
-  .check li .b{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;margin-top:1px;}
-  .check li b{color:var(--accent);}
+  /* ---------- 30 秒檢查 ---------- */
+  .check{margin-top:26px;background:var(--surface);border:1.5px dashed var(--line2);border-radius:var(--r-lg);padding:24px 26px;}
+  .check .k{font-family:var(--mono);color:var(--hi);font-weight:700;font-size:11.5px;
+    letter-spacing:.18em;text-transform:uppercase;margin-bottom:15px;}
+  .check ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+  .check li{display:flex;gap:12px;align-items:flex-start;font-size:15.5px;color:var(--ink);}
+  .check li .b{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--hi);color:var(--hi);
+    display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;margin-top:1px;}
+  .check li b{color:var(--hi);}
 
-  .sum{margin-top:24px;background:linear-gradient(135deg,#14241f,#141821);border:1px solid rgba(52,225,196,.3);
-    border-radius:var(--r);padding:22px;text-align:center;}
-  .sum .k{color:var(--muted);font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
-  .sum .big{font-size:25px;font-weight:900;margin-top:6px;}
-  .sum .big b{color:var(--accent);}
+  .sum{margin-top:26px;background:linear-gradient(135deg,var(--hi-soft),var(--surface) 60%);
+    border:1px solid rgba(75,60,228,.3);border-radius:var(--r-lg);padding:26px;text-align:center;}
+  .sum .k{font-family:var(--mono);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;}
+  .sum .big{font-size:clamp(20px,3.4vw,26px);font-weight:900;margin-top:8px;letter-spacing:-.01em;}
+  .sum .big b{color:var(--hi);}
 
-  .cta{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;text-align:center;}
+  .cta{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+    box-shadow:var(--shadow);padding:26px;text-align:center;}
   .cta p{font-size:16px;font-weight:700;}
-  .cta p b{color:var(--gold);}
-  .cta .h{display:inline-block;margin-top:12px;color:var(--accent);font-weight:900;font-size:17px;text-decoration:none;}
-  .cta .who{color:var(--muted);font-size:13px;margin-top:6px;}
+  .cta p b{color:var(--hi);}
+  .cta .h{display:inline-flex;align-items:center;gap:8px;margin-top:14px;color:var(--hi);
+    font-weight:900;font-size:16px;text-decoration:none;}
+  .cta .h:hover{text-decoration:underline;}
+  .cta .who{color:var(--muted);font-size:12.5px;margin-top:10px;}
 
-  .more{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;}
-  .more a{flex:1;min-width:150px;background:var(--surface2);border:1px solid var(--line2);border-radius:12px;
-    padding:14px 16px;color:var(--ink);text-decoration:none;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:space-between;}
-  .more a:hover{border-color:var(--accent);}
-  .more a span{color:var(--muted);font-weight:600;font-size:13px;}
-  .foot{margin-top:26px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.8;}
-  .foot a{color:var(--accent);text-decoration:underline;}
+  .more{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;}
+  .more a{flex:1;min-width:180px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);
+    padding:16px 18px;color:var(--ink);text-decoration:none;font-weight:800;font-size:15px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;transition:border-color .15s,transform .15s;}
+  .more a:hover{border-color:var(--hi);transform:translateY(-2px);}
+  .more a span{color:var(--hi);font-weight:800;font-size:13px;white-space:nowrap;}
+
+  .fine-print{margin-top:28px;text-align:center;color:var(--muted);font-size:12px;line-height:1.8;}
+
+  .page-body{padding-bottom:10px;}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/></svg>
-    黑牛 · 省 token 完整做法
-  </div>
-  <h1>別讓 AI 額度一下就<span class="u">燒光</span>。</h1>
-  <p class="lede">你留言了 <b>token</b>，這是完整版——影片塞不下的細節都在這：為什麼會燒、每一招<b>怎麼實際做</b>、還有什麼時候別做過頭。</p>
-  <div class="rule">原則就一句：需要才用</div>
 
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brandmark" href="../" aria-label="回黑牛工具首頁">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg>
+      <span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="../">← 全部工具</a>
+      <a class="cta" href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a>
+    </div>
+  </div>
+</nav>
+
+<header class="tool-head">
+  <div class="wrap-narrow">
+    <span class="eyebrow">完整做法 A · 省 token</span>
+    <h1>別讓 AI 額度一下就<span class="acc">燒光</span>。</h1>
+    <p class="lede">你留言了 <b>token</b>，這是完整版——影片塞不下的細節都在這：為什麼會燒、每一招<b>怎麼實際做</b>、還有什麼時候別做過頭。</p>
+    <div class="rule">原則就一句：需要才用</div>
+  </div>
+</header>
+
+<main class="wrap-narrow page-body">
   <!-- PRIMER -->
-  <div class="primer">
+  <div class="primer rise">
     <div class="kk">先搞懂：token 為什麼會燒</div>
     <p>token 是 AI 讀字、計費的單位。關鍵是一件很多人不知道的事：<b>每次你送出一句話，AI 都會把「整段對話 ＋ 你貼進去的所有東西」從頭到尾重讀一遍，才回你。</b></p>
     <p>所以你背著的東西越多，<span class="big">每一次來回就越貴、也越慢</span>。省 token 的核心只有一句話——別讓它每次都扛不需要的東西。下面 3 個習慣，就是最常見的 3 種「扛太多」。</p>
   </div>
 
   <!-- 1 -->
-  <div class="card">
+  <div class="gcard rise">
     <div class="wm">1</div>
     <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
     <h2><small>Mistake 01</small>大文件：只給需要的部分</h2>
-    <p class="sym">你把整份三百多頁的 PDF（合約、報告、論文）丟進去，<b>只為了問其中一小段</b>。</p>
+    <p>你把整份三百多頁的 PDF（合約、報告、論文）丟進去，<b>只為了問其中一小段</b>。</p>
 
     <div class="blk why">
       <div class="lbl"><span class="dot"></span>為什麼燒 token</div>
@@ -145,11 +175,11 @@
   </div>
 
   <!-- 2 -->
-  <div class="card">
+  <div class="gcard rise" style="animation-delay:.05s">
     <div class="wm">2</div>
     <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
     <h2><small>Mistake 02</small>新任務：開新對話</h2>
-    <p class="sym">一個對話從上上禮拜用到現在，<b>什麼都在裡面</b>。</p>
+    <p>一個對話從上上禮拜用到現在，<b>什麼都在裡面</b>。</p>
 
     <div class="blk why">
       <div class="lbl"><span class="dot"></span>為什麼燒 token</div>
@@ -169,11 +199,11 @@
   </div>
 
   <!-- 3 -->
-  <div class="card">
+  <div class="gcard rise" style="animation-delay:.1s">
     <div class="wm">3</div>
     <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="22" height="12" rx="6"/><circle cx="16" cy="12" r="3"/></svg></div>
     <h2><small>Mistake 03</small>簡單任務：需要才開功能</h2>
-    <p class="sym">只是要改一句話，卻把 Extended Thinking、網路搜尋、連接器、各種工具<b>全部開著</b>。</p>
+    <p>只是要改一句話，卻把 Extended Thinking、網路搜尋、連接器、各種工具<b>全部開著</b>。</p>
 
     <div class="blk why">
       <div class="lbl"><span class="dot"></span>為什麼燒 token</div>
@@ -194,7 +224,7 @@
   </div>
 
   <!-- CHECKLIST -->
-  <div class="check">
+  <div class="check rise">
     <div class="k">30 秒自我檢查（截圖收藏）</div>
     <ul>
       <li><span class="b">✓</span><span>只貼<b>需要的段落</b>，不丟整份文件</span></li>
@@ -204,7 +234,7 @@
     </ul>
   </div>
 
-  <div class="sum">
+  <div class="sum rise">
     <div class="k">一句話總結</div>
     <div class="big"><b>需要才用</b>。給它需要的、開新對話、別全部打開。</div>
   </div>
@@ -216,11 +246,28 @@
   </div>
 
   <div class="more">
-    <a href="/salary">薪水實拿計算機 <span>試算 →</span></a>
-    <a href="/spending">錢花去哪了 <span>花費健檢 →</span></a>
+    <a href="../salary/">薪水實拿計算機 <span>試算 →</span></a>
+    <a href="../spending/">錢花去哪了 <span>花費健檢 →</span></a>
   </div>
 
-  <div class="foot">＊本頁為教育示範，非官方文件，不構成專業建議。功能名稱依你用的 AI（ChatGPT／Claude／Gemini 等）介面為準。MarkItDown 為微軟開源工具（<a href="https://github.com/microsoft/markitdown" target="_blank" rel="noopener">github.com/microsoft/markitdown</a>）。</div>
-</div>
+  <div class="fine-print">＊本頁為教育示範，非官方文件，不構成專業建議。功能名稱依你用的 AI（ChatGPT／Claude／Gemini 等）介面為準。MarkItDown 為微軟開源工具（<a class="lk" href="https://github.com/microsoft/markitdown" target="_blank" rel="noopener">github.com/microsoft/markitdown</a>）。</div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div>
+      <div class="who">我是 <b>黑牛</b> — 工程師出身、AI 博士、AI 公司創辦人</div>
+      <p class="desc">每個東西都是我叫 AI 做的。想看下一個做什麼？到影片留言告訴我。</p>
+    </div>
+    <div class="links">
+      <a href="../">全部工具</a>
+      <a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">公司導入 AI → PrimeStride</a>
+    </div>
+  </div>
+  <div class="fine">黑牛 @fatty_bamba · AI 創業家 · 工程師 · PhD</div>
+</footer>
+
 </body>
 </html>

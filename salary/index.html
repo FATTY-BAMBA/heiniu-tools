@@ -10,53 +10,53 @@
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"薪水實拿計算機（台灣版）","applicationCategory":"FinanceApplication","operatingSystem":"Web","inLanguage":"zh-Hant","offers":{"@type":"Offer","price":"0","priceCurrency":"TWD"},"creator":{"@type":"Person","name":"黑牛"}}
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
 <style>
   :root{
-    --ink:#0C0E14; --ink2:#141824; --line:#2A3040; --paper:#F6F7F4; --paper2:#ECEEE8;
-    --hi:#FFE24B; --danger:#FF3B30; --fix:#34E1C4; --white:#F4F6FB; --muted:#8A93A6;
-    --pink:#12141A; --pmut:#6A6E63; --prule:rgba(18,20,16,.14); --stamp:#C4362B;
-    --cjk:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
-    --mono:"SFMono-Regular","JetBrains Mono","Roboto Mono","DejaVu Sans Mono",ui-monospace,monospace;
+    --paper:#FFFFFF; --paper2:#FBFAF6;
+    --pink:#12141A; --pmut:#7A7E72; --prule:rgba(18,20,16,.13); --stamp:#C4362B;
   }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{background:radial-gradient(900px 500px at 12% -8%,rgba(255,59,48,.09),transparent 60%),
-    radial-gradient(1000px 620px at 100% 108%,rgba(52,225,196,.09),transparent 60%),var(--ink);
-    color:var(--white);font-family:var(--cjk);min-height:100vh;padding:22px 16px 30px;line-height:1.5;}
-  .page{max-width:540px;margin:0 auto;}
-  button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--fix);outline-offset:2px;}
-  input:focus{outline:none;}
+  .tool-head{padding:48px 0 26px;}
+  .tool-head .eyebrow{margin-bottom:16px;}
+  .tool-head h1{font-size:clamp(28px,4.6vw,38px);font-weight:900;line-height:1.2;letter-spacing:-.012em;}
+  .tool-head h1 .acc{color:var(--hi);}
+  .tool-head .lede{margin-top:12px;font-size:15px;}
 
-  .brand{display:flex;align-items:center;gap:11px;margin-bottom:6px;}
-  .brand .name{font-size:22px;font-weight:900;color:var(--hi);letter-spacing:.5px;}
-  .brand .name b{color:var(--white);font-weight:800;font-size:17px;margin-left:6px;}
-  .kbadge{font-size:11.5px;color:var(--fix);font-weight:700;letter-spacing:1px;margin:0 0 16px 43px;}
-
-  /* controls (dark) */
-  .ctrl{background:var(--ink2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px;}
-  .clab{font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px;}
-  .salaryin{display:flex;align-items:baseline;gap:8px;border-bottom:2px solid var(--line);padding-bottom:8px;}
-  .salaryin .cur{color:var(--muted);font-size:18px;font-weight:800;font-family:var(--mono);}
-  #salary{flex:1;background:transparent;border:none;color:var(--white);font-size:34px;font-weight:800;
-    font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:1px;width:100%;}
-  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;margin-top:16px;
-    background:linear-gradient(90deg,var(--hi) 0 40%,#2b3040 40% 100%);}
+  /* controls (light card) */
+  .ctrl{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+    padding:24px;margin:26px 0 18px;box-shadow:var(--shadow);}
+  .clab{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;}
+  .salaryin{display:flex;align-items:baseline;gap:8px;border-bottom:2px solid var(--line2);padding-bottom:10px;
+    transition:border-color .15s;}
+  .salaryin:focus-within{border-color:var(--hi);}
+  .salaryin .cur{color:var(--muted);font-size:18px;font-weight:800;font-family:var(--num);}
+  #salary{flex:1;background:transparent;border:none;color:var(--ink);font-size:36px;font-weight:800;
+    font-family:var(--num);font-variant-numeric:tabular-nums;letter-spacing:.5px;width:100%;}
+  #salary:focus{outline:none;}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;margin-top:18px;
+    background:linear-gradient(90deg,var(--hi) 0 40%,#E5E3DC 40% 100%);}
   input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;
-    background:var(--hi);border:3px solid var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.5);cursor:pointer;}
-  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--hi);border:3px solid var(--ink);cursor:pointer;}
-  .rl{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:5px;font-family:var(--mono);}
-  .segs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
-  .seg-l{font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:7px;}
+    background:var(--hi);border:3px solid #fff;box-shadow:0 2px 8px rgba(18,18,22,.25);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--hi);border:3px solid #fff;cursor:pointer;}
+  .rl{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:6px;font-family:var(--num);}
+  .segs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
+  .seg-l{font-size:12px;color:var(--muted);font-weight:800;letter-spacing:.05em;margin-bottom:8px;}
   .seg{display:flex;gap:6px;}
-  .seg button{flex:1;background:#232838;border:1px solid var(--line);color:var(--white);border-radius:8px;
-    padding:8px 0;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--mono);}
-  .seg button.on{background:var(--hi);color:var(--ink);border-color:var(--hi);}
+  .seg button{flex:1;background:var(--surface2);border:1px solid var(--line);color:var(--ink2);border-radius:9px;
+    padding:9px 0;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--num);transition:all .13s;}
+  .seg button:hover{border-color:var(--hi);color:var(--hi);}
+  .seg button.on{background:var(--hi);color:#fff;border-color:var(--hi);}
 
   /* the payslip (paper) */
-  .slip{background:linear-gradient(180deg,var(--paper),var(--paper2));color:var(--pink);border-radius:5px;
-    padding:22px 20px;box-shadow:0 18px 50px rgba(0,0,0,.5);position:relative;}
-  .slip.annual{margin-top:16px;border-top:4px solid var(--hi);}
-  .slip.annual .net-v{color:#8a5a00;}
-  .slip.annual .stamp{color:#8a5a00;border-color:#8a5a00;}
+  .slip{background:linear-gradient(180deg,var(--paper),var(--paper2));color:var(--pink);border-radius:8px;
+    border:1px solid var(--line);
+    padding:24px 22px;box-shadow:0 2px 4px rgba(18,18,22,.04),0 22px 48px rgba(18,18,22,.08);position:relative;}
+  .slip.annual{margin-top:18px;border-top:4px solid var(--hi);}
+  .slip.annual .net-v{color:var(--hi-strong);}
+  .slip.annual .stamp{color:var(--hi-strong);border-color:var(--hi-strong);}
   .slip-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--pink);padding-bottom:10px;}
   .slip-title{font-size:22px;font-weight:900;letter-spacing:3px;}
   .slip-sub{font-size:10.5px;color:var(--pmut);font-family:var(--mono);letter-spacing:1px;text-align:right;line-height:1.5;}
@@ -65,65 +65,75 @@
   .lrow{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--prule);gap:12px;}
   .lrow .lbl{font-size:14.5px;font-weight:600;}
   .lrow .lbl em{font-style:normal;font-size:10.5px;color:var(--pmut);font-family:var(--mono);margin-left:6px;}
-  .fig{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:700;font-size:16px;white-space:nowrap;}
+  .fig{font-family:var(--num);font-variant-numeric:tabular-nums;font-weight:700;font-size:16px;white-space:nowrap;}
   .fig.neg{color:var(--stamp);}
 
   .net{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:14px;border-top:3px double var(--pink);position:relative;}
   .net-l{font-size:15px;font-weight:900;}
   .net-l small{display:block;font-size:9.5px;color:var(--pmut);font-family:var(--mono);letter-spacing:1.5px;font-weight:700;}
-  .net-v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:900;font-size:40px;letter-spacing:-.5px;}
+  .net-v{font-family:var(--num);font-variant-numeric:tabular-nums;font-weight:900;font-size:42px;letter-spacing:-.5px;}
   .net-v::before{content:"NT$ ";font-size:18px;color:var(--pmut);font-weight:700;}
   .stamp{position:absolute;right:2px;top:-6px;transform:rotate(-11deg);color:var(--stamp);border:2.5px solid var(--stamp);
     border-radius:7px;font-size:13px;font-weight:900;padding:2px 8px;letter-spacing:2px;opacity:.9;pointer-events:none;}
 
-  .bar{height:9px;border-radius:5px;overflow:hidden;display:flex;margin:14px 0 5px;background:var(--stamp);}
-  .bar #barnet{background:#137a56;height:100%;}
+  .bar{height:9px;border-radius:5px;overflow:hidden;display:flex;margin:14px 0 5px;background:#E8B4AD;}
+  .bar #barnet{background:#137A4B;height:100%;transition:width .4s cubic-bezier(.2,.7,.2,1);}
   .barleg{font-size:11px;color:var(--pmut);font-family:var(--mono);}
-  .barleg b{color:#137a56;}
+  .barleg b{color:#137A4B;}
 
-  .tear{position:relative;height:0;margin:18px -20px 6px;border-top:2px dashed var(--prule);}
-  .tear::before,.tear::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--ink);}
-  .tear::before{left:-10px;} .tear::after{right:-10px;}
+  .tear{position:relative;height:0;margin:18px -22px 6px;border-top:2px dashed var(--prule);}
+  .tear::before,.tear::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--bg);}
+  .tear::before{left:-11px;} .tear::after{right:-11px;}
   .note-h{font-size:12px;font-weight:800;color:var(--pmut);letter-spacing:.5px;margin:6px 0 2px;}
   .lrow.tot{border-bottom:none;border-top:1.5px solid var(--pink);margin-top:2px;font-weight:900;}
   .lrow.tot .fig{font-size:18px;}
 
-  .actions{display:flex;gap:8px;margin:16px 0 4px;}
-  .actions button{flex:1;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--cjk);}
-  #sh{background:var(--hi);color:var(--ink);}
-  #cp{background:var(--ink2);color:var(--white);border:1px solid var(--line);}
-  .safe{font-size:11.5px;color:var(--muted);text-align:center;margin-top:12px;font-family:var(--mono);}
+  .actions{display:flex;gap:10px;margin:18px 0 4px;}
+  .actions .btn{flex:1;}
+  .safe-line{font-size:11.5px;color:var(--muted);text-align:center;margin-top:14px;font-family:var(--mono);letter-spacing:.04em;}
 
-  details{margin-top:14px;}
-  summary{cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:700;}
-  .adv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
-  .adv div{background:var(--ink2);border:1px solid var(--line);border-radius:9px;padding:9px;}
-  .adv label{font-size:11.5px;color:var(--muted);display:block;margin-bottom:5px;}
-  .adv input{width:100%;background:#232838;border:1px solid var(--line);color:var(--white);border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:13px;}
-  .fine{color:var(--muted);font-size:11px;line-height:1.65;margin-top:12px;}
+  details{margin-top:16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 18px;}
+  summary{cursor:pointer;color:var(--ink2);font-size:13px;font-weight:800;}
+  .adv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+  .adv div{background:var(--bg-soft);border:1px solid var(--line);border-radius:9px;padding:10px;}
+  .adv label{font-size:11.5px;color:var(--muted);display:block;margin-bottom:6px;font-weight:700;}
+  .adv input{width:100%;background:var(--surface);border:1px solid var(--line2);color:var(--ink);border-radius:6px;padding:7px 9px;font-family:var(--num);font-size:13px;}
+  .adv input:focus{border-color:var(--hi);outline:none;}
+  .fine{color:var(--muted);font-size:11.5px;line-height:1.7;margin-top:14px;}
 
-  .foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--line);text-align:center;}
-  .foot .made{font-size:13.5px;color:var(--white);font-weight:700;}
-  .foot .made b{color:var(--fix);}
-  .foot .hand{color:var(--muted);font-size:12.5px;margin-top:7px;}
-  .foot .links{margin-top:9px;font-size:12.5px;}
-  .foot .links a{color:var(--fix);text-decoration:none;font-weight:700;}
-
-  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--pink);
-    color:var(--white);border:1px solid var(--fix);border-radius:999px;padding:10px 20px;font-size:13.5px;font-weight:700;
-    opacity:0;transition:.22s;pointer-events:none;z-index:9;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--surface);
+    color:var(--ink);border:1px solid var(--hi);border-radius:999px;padding:10px 20px;font-size:13.5px;font-weight:700;
+    box-shadow:var(--shadow);opacity:0;transition:.22s;pointer-events:none;z-index:60;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  .page-body{padding-bottom:10px;}
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="brand">
-    <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#141824" stroke="#34E1C4" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg>
-    <span class="name">黑牛<b>薪水實拿計算機</b></span>
-  </div>
-  <div class="kbadge">AI 創業家 · 工程師 · PhD</div>
 
-  <div class="ctrl">
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brandmark" href="../" aria-label="回黑牛工具首頁">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg>
+      <span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="../">← 全部工具</a>
+      <a class="cta" href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a>
+    </div>
+  </div>
+</nav>
+
+<header class="tool-head">
+  <div class="wrap-narrow">
+    <span class="eyebrow">Tool 01 · 薪資</span>
+    <h1>月薪 6 萬，你真的拿得到 <span class="acc">6 萬</span>嗎？</h1>
+    <p class="lede">輸入月薪，產生你的薪資明細表：扣完勞健保實拿多少，還有老闆「另外」幫你付的錢。</p>
+  </div>
+</header>
+
+<main class="wrap-narrow page-body">
+  <div class="ctrl rise">
     <div class="clab">輸入你的月薪</div>
     <div class="salaryin"><span class="cur">NT$</span><input id="salary" type="text" inputmode="numeric" value="60,000" aria-label="月薪"></div>
     <input id="slider" type="range" min="28000" max="200000" step="500" value="60000" aria-label="月薪滑桿">
@@ -134,11 +144,11 @@
       <div><div class="seg-l">勞退自提</div>
         <div class="seg" id="self"><button data-v="0" class="on">0%</button><button data-v="3">3%</button><button data-v="6">6%</button></div></div>
     </div>
-    <div class="seg-l" style="margin-top:14px">年終獎金（幾個月）</div>
+    <div class="seg-l" style="margin-top:16px">年終獎金（幾個月）</div>
     <div class="seg" id="bonus"><button data-v="0">0</button><button data-v="1" class="on">1</button><button data-v="1.5">1.5</button><button data-v="2">2</button></div>
   </div>
 
-  <article class="slip">
+  <article class="slip rise" style="animation-delay:.06s">
     <div class="slip-head">
       <div class="slip-title">薪資明細表</div>
       <div class="slip-sub">SALARY STATEMENT<br>每月 · 2026 費率</div>
@@ -166,7 +176,7 @@
     <div class="lrow tot"><span class="lbl">合計</span><span class="fig" id="b_total">9,469</span></div>
   </article>
 
-  <article class="slip annual">
+  <article class="slip annual rise" style="animation-delay:.12s">
     <div class="slip-head">
       <div class="slip-title">一年實拿</div>
       <div class="slip-sub">ANNUAL TAKE-HOME<br>月實領 × 12 + 年終</div>
@@ -184,8 +194,11 @@
     <div class="lrow tot"><span class="lbl">一年被扣掉（勞健保 + 自提）</span><span class="fig neg" id="a_cut">−24,912</span></div>
   </article>
 
-  <div class="actions"><button id="sh">分享</button><button id="cp">複製連結</button></div>
-  <div class="safe">本機計算 · 你的數字不會上傳</div>
+  <div class="actions">
+    <button class="btn btn-hi" id="sh">分享</button>
+    <button class="btn btn-ghost" id="cp">複製連結</button>
+  </div>
+  <div class="safe-line">本機計算 · 你的數字不會上傳</div>
 
   <details>
     <summary>進階：自訂費率 / 級距（預設 2026）</summary>
@@ -197,13 +210,24 @@
     </div>
   </details>
   <p class="fine">※ 本工具為<b>估算</b>：以月薪直接套用費率，實際金額依勞保局／健保署公告之「投保薪資／金額分級表」四捨五入，可能小幅差異。「一年實拿」＝月實領×12＋年終，年終以整月月薪估算、未扣所得稅與補充保費。不含個人所得稅（年度結算另計）。費率以 2026 年（民國115年）為準。</p>
+</main>
 
-  <div class="foot">
-    <div class="made">這張「薪資明細表」我沒自己刻，是我叫 <b>AI</b> 做的 · 想自己做一個？留言「薪水」</div>
-    <div class="hand">黑牛 @fatty_bamba　·　AI 創業家 · 工程師 · PhD</div>
-    <div class="links"><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">想幫公司導入 AI？→ PrimeStride</a></div>
+<footer class="site-foot">
+  <div class="wrap">
+    <div>
+      <div class="who">這張「薪資明細表」我沒自己刻，是我叫 <b>AI</b> 做的</div>
+      <p class="desc">想學怎麼自己叫 AI 做一個？到我的影片下面留言「薪水」。</p>
+    </div>
+    <div class="links">
+      <a href="../">全部工具</a>
+      <a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">公司導入 AI → PrimeStride</a>
+    </div>
   </div>
-</div>
+  <div class="fine">黑牛 @fatty_bamba · AI 創業家 · 工程師 · PhD</div>
+</footer>
+
 <div class="toast" id="toast"></div>
 
 <script>
