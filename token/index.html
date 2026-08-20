@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>省 token 三招 · 完整做法｜黑牛</title>
-<meta name="description" content="別讓 AI 額度一下就燒光。省 token 三招完整做法：只給需要的部分、新任務開新對話、需要才開功能。黑牛 @fatty_bamba 整理。">
+<meta name="description" content="別讓 AI 額度一下就燒光。完整做法：先搞懂 token 為什麼會燒，再用 3 個習慣（只給需要的部分、新任務開新對話、需要才開功能）省下大把額度。黑牛 @fatty_bamba 整理。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
@@ -18,15 +18,24 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   body{font-family:"Noto Sans TC","Inter","PingFang TC",system-ui,sans-serif;background:var(--bg);color:var(--ink);
-    line-height:1.6;min-height:100vh;padding:30px 18px 70px;}
-  .wrap{max-width:600px;margin:0 auto;}
+    line-height:1.62;min-height:100vh;padding:30px 18px 70px;overflow-x:hidden;overflow-wrap:break-word;}
+  .wrap{max-width:620px;margin:0 auto;}
   .brand{display:flex;align-items:center;gap:9px;color:var(--accent);font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;}
   .brand svg{width:16px;height:16px;}
-  h1{font-size:34px;line-height:1.18;font-weight:900;letter-spacing:-.01em;margin:12px 0 8px;}
+  h1{font-size:33px;line-height:1.18;font-weight:900;letter-spacing:-.01em;margin:12px 0 8px;}
   h1 .u{color:var(--gold);}
-  .lede{color:var(--ink2);font-size:16px;max-width:48ch;}
+  .lede{color:var(--ink2);font-size:16px;max-width:52ch;}
+  .lede b{color:var(--ink);}
   .rule{display:inline-flex;align-items:center;gap:10px;margin-top:18px;background:rgba(52,225,196,.08);
     border:1px solid rgba(52,225,196,.28);border-radius:999px;padding:9px 16px;color:var(--accent);font-weight:800;font-size:15px;}
+
+  /* primer */
+  .primer{margin-top:22px;background:linear-gradient(135deg,#141a24,#12151d);border:1px solid var(--line2);border-radius:var(--r);padding:20px 22px;}
+  .primer .kk{color:var(--gold);font-weight:900;font-size:14px;letter-spacing:.04em;margin-bottom:8px;}
+  .primer p{color:var(--ink2);font-size:15.5px;}
+  .primer p+p{margin-top:10px;}
+  .primer b{color:var(--ink);}
+  .primer .big{color:var(--accent);font-weight:800;}
 
   .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);
     padding:22px 22px 24px;margin-top:20px;position:relative;overflow:hidden;}
@@ -36,20 +45,44 @@
   .card .ic svg{width:23px;height:23px;}
   .card h2{font-size:22px;font-weight:900;letter-spacing:-.01em;}
   .card h2 small{display:block;color:var(--muted);font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px;}
-  .card p{color:var(--ink2);font-size:15.5px;margin-top:10px;}
-  .card p b{color:var(--ink);}
-  .tags{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
-  .tag{display:flex;gap:10px;align-items:flex-start;font-size:15px;font-weight:600;}
-  .tag .m{flex:none;width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;margin-top:1px;}
-  .tag.ok .m{background:rgba(52,225,196,.15);color:var(--accent);}
-  .tag.no .m{background:rgba(255,90,77,.15);color:var(--danger);}
-  .tag .t{color:var(--ink);}
-  .tag .t b{color:var(--accent);}
+  .card .sym{color:var(--ink2);font-size:15.5px;margin-top:10px;}
+  .card .sym b{color:var(--ink);}
+
+  .blk{margin-top:16px;}
+  .blk .lbl{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;}
+  .blk.why .lbl{color:var(--gold);}
+  .blk.how .lbl{color:var(--accent);}
+  .blk .lbl .dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
+  .blk p{color:var(--ink2);font-size:15px;}
+  .blk p b{color:var(--ink);}
+
+  ol.steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:11px;}
+  ol.steps>li{counter-increment:s;position:relative;padding-left:34px;color:var(--ink2);font-size:15px;}
+  ol.steps>li::before{content:counter(s);position:absolute;left:0;top:1px;width:23px;height:23px;border-radius:7px;
+    background:rgba(52,225,196,.14);color:var(--accent);font-family:var(--num);font-weight:800;font-size:13px;
+    display:flex;align-items:center;justify-content:center;}
+  ol.steps>li b{color:var(--ink);}
+  ol.steps code{font-family:var(--num);background:var(--surface2);border:1px solid var(--line2);border-radius:6px;padding:1px 7px;font-size:13.5px;color:var(--accent);}
+  .subline{display:block;color:var(--muted);font-size:13.5px;margin-top:3px;}
+  .subline b{color:var(--ink2);}
+  a.lk{color:var(--accent);text-decoration:underline;text-underline-offset:2px;font-weight:700;}
+
+  .dont{margin-top:16px;display:flex;gap:10px;align-items:flex-start;background:rgba(255,90,77,.07);border:1px solid rgba(255,90,77,.22);
+    border-radius:11px;padding:12px 14px;font-size:14.5px;color:var(--ink);}
+  .dont .x{flex:none;width:22px;height:22px;border-radius:6px;background:rgba(255,90,77,.16);color:var(--danger);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;margin-top:1px;}
+  .dont b{color:var(--danger);}
+
+  .check{margin-top:24px;background:var(--surface);border:1px dashed var(--line2);border-radius:var(--r);padding:22px;}
+  .check .k{color:var(--gold);font-weight:900;font-size:14px;letter-spacing:.04em;margin-bottom:14px;}
+  .check ul{list-style:none;display:flex;flex-direction:column;gap:11px;}
+  .check li{display:flex;gap:11px;align-items:flex-start;font-size:15.5px;color:var(--ink);}
+  .check li .b{flex:none;width:22px;height:22px;border-radius:6px;border:2px solid var(--accent);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;margin-top:1px;}
+  .check li b{color:var(--accent);}
 
   .sum{margin-top:24px;background:linear-gradient(135deg,#14241f,#141821);border:1px solid rgba(52,225,196,.3);
     border-radius:var(--r);padding:22px;text-align:center;}
   .sum .k{color:var(--muted);font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
-  .sum .big{font-size:26px;font-weight:900;margin-top:6px;}
+  .sum .big{font-size:25px;font-weight:900;margin-top:6px;}
   .sum .big b{color:var(--accent);}
 
   .cta{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;text-align:center;}
@@ -64,29 +97,51 @@
   .more a:hover{border-color:var(--accent);}
   .more a span{color:var(--muted);font-weight:600;font-size:13px;}
   .foot{margin-top:26px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.8;}
+  .foot a{color:var(--accent);text-decoration:underline;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="brand">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/></svg>
-    黑牛 · 省 token 指南
+    黑牛 · 省 token 完整做法
   </div>
   <h1>別讓 AI 額度一下就<span class="u">燒光</span>。</h1>
-  <p class="lede">你留言了 <b>token</b>，這是完整版。90% 的人在浪費 token，都是這 3 個習慣。</p>
+  <p class="lede">你留言了 <b>token</b>，這是完整版——影片塞不下的細節都在這：為什麼會燒、每一招<b>怎麼實際做</b>、還有什麼時候別做過頭。</p>
   <div class="rule">原則就一句：需要才用</div>
+
+  <!-- PRIMER -->
+  <div class="primer">
+    <div class="kk">先搞懂：token 為什麼會燒</div>
+    <p>token 是 AI 讀字、計費的單位。關鍵是一件很多人不知道的事：<b>每次你送出一句話，AI 都會把「整段對話 ＋ 你貼進去的所有東西」從頭到尾重讀一遍，才回你。</b></p>
+    <p>所以你背著的東西越多，<span class="big">每一次來回就越貴、也越慢</span>。省 token 的核心只有一句話——別讓它每次都扛不需要的東西。下面 3 個習慣，就是最常見的 3 種「扛太多」。</p>
+  </div>
 
   <!-- 1 -->
   <div class="card">
     <div class="wm">1</div>
     <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></div>
     <h2><small>Mistake 01</small>大文件：只給需要的部分</h2>
-    <p>你只需要第 37 頁，卻把整份三百多頁的 PDF 全塞進去——AI 每次都要「讀」完整份，<b>token 當然一下就燒光</b>。</p>
-    <div class="tags">
-      <div class="tag ok"><span class="m">✓</span><span class="t">主要讀文字時：先把文件轉成 <b>Markdown／純文字</b>（例如微軟 MarkItDown），再只貼你需要的段落。</span></div>
-      <div class="tag ok"><span class="m">✓</span><span class="t">要看<b>圖表、表格、版面</b>時：留著 PDF，別轉文字（版面資訊會不見）。</span></div>
-      <div class="tag no"><span class="m">✕</span><span class="t">把整份文件原封不動丟進去，只為了問其中一小段。</span></div>
+    <p class="sym">你把整份三百多頁的 PDF（合約、報告、論文）丟進去，<b>只為了問其中一小段</b>。</p>
+
+    <div class="blk why">
+      <div class="lbl"><span class="dot"></span>為什麼燒 token</div>
+      <p>AI 沒辦法「只翻到第 37 頁」——你給它整份，它<b>每次回答都要把整份重讀一遍</b>。你問三個問題，它就等於把那 300 頁讀了三遍。而且雜訊太多，答案還常常不準。</p>
     </div>
+
+    <div class="blk how">
+      <div class="lbl"><span class="dot"></span>正確做法</div>
+      <ol class="steps">
+        <li>先想清楚你<b>真正需要的是哪幾頁、哪一段</b>。</li>
+        <li>主要是<b>讀文字</b>（條款、內文）→ 把文件轉成純文字／Markdown，只貼你需要的段落。
+          <span class="subline"><b>會寫程式：</b>用微軟開源的 <a class="lk" href="https://github.com/microsoft/markitdown" target="_blank" rel="noopener">MarkItDown</a> — <code>pip install markitdown</code>，再 <code>markitdown 檔案.pdf</code> 就轉成 Markdown。</span>
+          <span class="subline"><b>不寫程式：</b>直接在 PDF 裡選取那幾段文字複製貼上；或先把需要的頁（例如第 30–40 頁）另存成小 PDF 再上傳。</span>
+        </li>
+        <li>需要看<b>圖表、表格、排版、掃描件</b> → 留著 PDF 別轉文字（轉了版面會不見），但一樣<b>只上傳需要的那幾頁</b>。</li>
+      </ol>
+    </div>
+
+    <div class="dont"><span class="x">✕</span><span><b>別這樣：</b>整份文件原封不動丟進去，只為了問其中一小段——最貴、最慢，答案還最容易被雜訊帶偏。</span></div>
   </div>
 
   <!-- 2 -->
@@ -94,12 +149,23 @@
     <div class="wm">2</div>
     <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
     <h2><small>Mistake 02</small>新任務：開新對話</h2>
-    <p>一個對話用三個禮拜，AI 每次回你都要<b>重讀前面全部內容</b>。你只是要寫封請假信，它卻扛著三週的歷史在算。</p>
-    <div class="tags">
-      <div class="tag ok"><span class="m">✓</span><span class="t">全新、不相關的任務 → <b>開一個新對話</b>，讓它只看到這件事。</span></div>
-      <div class="tag ok"><span class="m">✓</span><span class="t">同一個專案、前面脈絡真的有用 → 就留著，別為省而丟掉需要的東西。</span></div>
-      <div class="tag no"><span class="m">✕</span><span class="t">把一大段<b>無關</b>的舊對話，硬帶進一個全新的任務。</span></div>
+    <p class="sym">一個對話從上上禮拜用到現在，<b>什麼都在裡面</b>。</p>
+
+    <div class="blk why">
+      <div class="lbl"><span class="dot"></span>為什麼燒 token</div>
+      <p>對話越長，AI 每次回你都要<b>把前面全部重讀一次</b>。你只是要寫一封請假信，它卻扛著三個禮拜、好幾萬字的歷史在算——又慢又貴，還容易被舊內容干擾、答歪。</p>
     </div>
+
+    <div class="blk how">
+      <div class="lbl"><span class="dot"></span>正確做法</div>
+      <ol class="steps">
+        <li>全新、跟前面<b>無關</b>的任務 → 直接<b>開一個新對話</b>，讓它只看到這件事。</li>
+        <li>判斷標準一句話：<b>前面那些內容，對這個新任務「有用嗎」？</b>沒用，就開新的。</li>
+        <li>同一個專案、脈絡<b>真的有用</b> → 就留在同一個對話；長期資料可以放進「專案／Project」功能集中管理，不必每次重貼。</li>
+      </ol>
+    </div>
+
+    <div class="dont"><span class="x">✕</span><span><b>別這樣：</b>把一大段無關的舊對話，硬帶進一個全新的任務。（注意：長對話本身不是錯，重點是「無關」才丟。）</span></div>
   </div>
 
   <!-- 3 -->
@@ -107,12 +173,35 @@
     <div class="wm">3</div>
     <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="22" height="12" rx="6"/><circle cx="16" cy="12" r="3"/></svg></div>
     <h2><small>Mistake 03</small>簡單任務：需要才開功能</h2>
-    <p>只是要改一句話，卻把 Extended Thinking、網路搜尋、連接器、工具<b>全部打開</b>——等於叫全公司來開會改一個字。每個功能都在多花 token。</p>
-    <div class="tags">
-      <div class="tag ok"><span class="m">✓</span><span class="t">需要<b>即時資訊</b>才開搜尋；需要<b>你的檔案</b>才開連接器；其他時候關著。</span></div>
-      <div class="tag ok"><span class="m">✓</span><span class="t">簡單任務用<b>簡單模式</b>——又快又省。</span></div>
-      <div class="tag no"><span class="m">✕</span><span class="t">預設全開，什麼小事都動用所有功能。</span></div>
+    <p class="sym">只是要改一句話，卻把 Extended Thinking、網路搜尋、連接器、各種工具<b>全部開著</b>。</p>
+
+    <div class="blk why">
+      <div class="lbl"><span class="dot"></span>為什麼燒 token</div>
+      <p>每一個功能都會讓 AI <b>多做事、多讀東西</b>：深度思考會讓它「想更久」、搜尋會拉一堆網頁進來、連接器會把你的檔案讀進來。需要時很強，不需要時就是純浪費——等於叫全公司來開會改一個字。</p>
     </div>
+
+    <div class="blk how">
+      <div class="lbl"><span class="dot"></span>正確做法（對症下藥）</div>
+      <ol class="steps">
+        <li>要<b>最新／即時資訊</b> → 才開<b>網路搜尋</b>。</li>
+        <li>要它讀<b>你的檔案、信箱、文件</b> → 才開<b>連接器</b>。</li>
+        <li>遇到<b>真的很難、需要推理</b>的問題 → 才開<b>深度思考（Extended Thinking）</b>。</li>
+        <li>只是改字、翻譯、寫短訊 → <b>全部關掉</b>，用最簡單的模式，又快又省。</li>
+      </ol>
+    </div>
+
+    <div class="dont"><span class="x">✕</span><span><b>別這樣：</b>預設全開，什麼小事都動用所有功能。（功能不是壞，是「需要才開」。）</span></div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="check">
+    <div class="k">30 秒自我檢查（截圖收藏）</div>
+    <ul>
+      <li><span class="b">✓</span><span>只貼<b>需要的段落</b>，不丟整份文件</span></li>
+      <li><span class="b">✓</span><span>全新任務就<b>開新對話</b></span></li>
+      <li><span class="b">✓</span><span>功能<b>需要才開</b>，簡單任務全部關</span></li>
+      <li><span class="b">✓</span><span>心裡默念一句：<b>需要才用</b></span></li>
+    </ul>
   </div>
 
   <div class="sum">
@@ -131,7 +220,7 @@
     <a href="/spending">錢花去哪了 <span>花費健檢 →</span></a>
   </div>
 
-  <div class="foot">＊本頁為教育示範，非官方文件，不構成專業建議。MarkItDown 為微軟開源工具。</div>
+  <div class="foot">＊本頁為教育示範，非官方文件，不構成專業建議。功能名稱依你用的 AI（ChatGPT／Claude／Gemini 等）介面為準。MarkItDown 為微軟開源工具（<a href="https://github.com/microsoft/markitdown" target="_blank" rel="noopener">github.com/microsoft/markitdown</a>）。</div>
 </div>
 </body>
 </html>
