@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PDF 只取你需要的頁 · 轉純文字給 AI｜黑牛工具</title>
+<meta name="description" content="別把整份幾百頁 PDF 丟給 AI。拖進來、選你要的頁，直接抽出純文字複製給 AI——省 token、答更準。100% 在你的瀏覽器裡跑，檔案不會上傳。">
+<meta property="og:title" content="PDF 只取你需要的頁 · 轉純文字給 AI｜黑牛工具">
+<meta property="og:description" content="拖進來、選頁、抽文字、複製給 AI。檔案不會上傳，全在你的裝置裡跑。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+  .tool-head{padding:48px 0 6px;}
+  .tool-head .eyebrow{margin-bottom:16px;}
+  .tool-head h1{font-family:var(--display);font-size:clamp(30px,5vw,44px);font-weight:800;line-height:1.14;letter-spacing:-.02em;}
+  .tool-head h1 .acc{color:var(--hi);}
+  .tool-head .lede{margin-top:14px;font-size:16px;}
+  .rule{display:inline-flex;align-items:center;gap:9px;margin-top:22px;background:var(--hi-soft);
+    border:1px solid rgba(75,60,228,.28);border-radius:999px;padding:9px 18px;color:var(--hi-strong);
+    font-weight:700;font-size:14px;}
+  .rule svg{width:15px;height:15px;}
+
+  main{padding:24px 0 10px;}
+  .steps-wrap{display:flex;flex-direction:column;gap:18px;margin-top:8px;}
+  .panel{padding:22px 22px 24px;}
+  .panel .lbl{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;font-weight:600;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--hi);margin-bottom:14px;}
+  .panel .lbl .no{width:22px;height:22px;border-radius:7px;background:var(--hi);color:#fff;display:flex;
+    align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+  .panel.off{opacity:.5;pointer-events:none;}
+
+  /* drop zone */
+  .drop{border:2px dashed var(--line2);border-radius:var(--r-lg);background:var(--bg-soft);
+    padding:38px 22px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;}
+  .drop:hover,.drop.drag{border-color:var(--hi);background:var(--hi-soft);}
+  .drop .big{font-size:17px;font-weight:800;color:var(--ink);}
+  .drop .sm{color:var(--ink2);font-size:13.5px;margin-top:6px;}
+  .drop svg{width:40px;height:40px;color:var(--hi);margin-bottom:10px;}
+  .loaded{display:none;align-items:center;gap:14px;background:var(--surface2);border:1px solid var(--line);
+    border-radius:var(--r);padding:14px 16px;}
+  .loaded.show{display:flex;}
+  .loaded .fi{width:40px;height:40px;border-radius:10px;background:var(--hi-soft);color:var(--hi);flex:none;
+    display:flex;align-items:center;justify-content:center;}
+  .loaded .fi svg{width:20px;height:20px;}
+  .loaded .meta{flex:1;min-width:0;}
+  .loaded .meta .nm{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .loaded .meta .pg{color:var(--ink2);font-size:13px;}
+  .loaded .re{color:var(--hi);font-size:13px;font-weight:700;cursor:pointer;flex:none;background:none;border:none;}
+
+  .field{display:flex;flex-direction:column;gap:8px;}
+  .field label{font-weight:700;font-size:14.5px;}
+  .field .hint{color:var(--ink2);font-size:13px;}
+  .rangebar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .rangebar input{flex:1;min-width:170px;font-family:var(--mono);font-size:15px;padding:12px 14px;
+    border:1px solid var(--line2);border-radius:var(--r);background:var(--surface);color:var(--ink);}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:2px;}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--ink2);background:var(--surface2);border:1px solid var(--line);
+    border-radius:999px;padding:5px 12px;cursor:pointer;}
+  .chip:hover{border-color:var(--hi);color:var(--hi);}
+  .act{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+
+  .out{position:relative;}
+  .out textarea{width:100%;min-height:240px;resize:vertical;font-family:var(--mono);font-size:13.5px;line-height:1.7;
+    padding:16px;border:1px solid var(--line2);border-radius:var(--r);background:var(--bg-soft);color:var(--ink-soft);}
+  .out .obar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+  .out .cc{font-family:var(--mono);font-size:12.5px;color:var(--muted);}
+  .out .cc b{color:var(--hi);}
+  .obtns{display:flex;gap:10px;flex-wrap:wrap;}
+  .note{display:none;margin-top:14px;background:#fff6f1;border:1px solid rgba(232,85,43,.28);border-radius:var(--r);
+    padding:14px 16px;color:#7a2f16;font-size:13.5px;line-height:1.7;}
+  .note.show{display:block;}
+  .note b{color:var(--danger);}
+  .spin{display:none;align-items:center;gap:10px;color:var(--ink2);font-size:14px;margin-top:14px;}
+  .spin.show{display:flex;}
+  .spin .d{width:16px;height:16px;border:2.5px solid var(--line2);border-top-color:var(--hi);border-radius:50%;animation:sp .7s linear infinite;}
+  @keyframes sp{to{transform:rotate(360deg)}}
+
+  .tieback{margin-top:26px;background:var(--surface2);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 20px;
+    font-size:14px;color:var(--ink2);}
+  .tieback a{color:var(--hi);font-weight:700;text-decoration:none;}
+  .tieback a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brandmark" href="../" aria-label="回黑牛工具首頁">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg>
+      <span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="../">← 全部工具</a>
+      <a class="cta" href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap-narrow">
+  <header class="tool-head rise">
+    <span class="eyebrow">工具 · PDF</span>
+    <h1>整份 PDF 太肥？<br>只<span class="acc">取你需要的頁</span>。</h1>
+    <p class="lede">別把三百多頁的 PDF 整份丟給 AI——它每次都要重讀一遍，<b>token 一下就燒光</b>。拖進來、選你要的頁，直接抽出<b>純文字</b>複製給 AI：省額度、答更準。</p>
+    <span class="rule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/></svg>100% 在你的瀏覽器裡跑 · 檔案不會上傳</span>
+  </header>
+
+  <main>
+    <div class="steps-wrap">
+
+      <!-- STEP 1 -->
+      <section class="card panel rise" style="animation-delay:.05s">
+        <div class="lbl"><span class="no">1</span>放入你的 PDF</div>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="選擇或拖入 PDF">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15l3-3 3 3"/></svg>
+          <div class="big">把 PDF 拖進來，或點這裡選檔</div>
+          <div class="sm">檔案只會在你的裝置裡處理，不會上傳到任何地方</div>
+          <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+        </div>
+        <div class="loaded" id="loaded">
+          <span class="fi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span>
+          <span class="meta"><span class="nm" id="fname">—</span><span class="pg" id="fpg">—</span></span>
+          <button class="re" id="reset">換一份</button>
+        </div>
+      </section>
+
+      <!-- STEP 2 -->
+      <section class="card panel off rise" id="p2" style="animation-delay:.1s">
+        <div class="lbl"><span class="no">2</span>你只要哪幾頁？</div>
+        <div class="field">
+          <div class="rangebar">
+            <input type="text" id="range" placeholder="例如 37　或　30-40　或　1,5,9-12" autocomplete="off">
+          </div>
+          <div class="chips">
+            <span class="chip" data-all>全部</span>
+            <span class="hint">留空 = 全部。可用逗號和連字號組合。</span>
+          </div>
+        </div>
+        <div class="act">
+          <button class="btn btn-hi" id="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>取出文字</button>
+        </div>
+        <div class="spin" id="spin"><span class="d"></span>正在抽文字…</div>
+        <div class="note" id="scan"><b>這份看起來是掃描/圖片 PDF</b>，沒有可複製的文字層。這種要看版面或圖表的，建議<b>直接留著 PDF、只上傳你需要的那幾頁</b>給 AI，不要轉文字（轉了版面資訊會不見）。</div>
+      </section>
+
+      <!-- STEP 3 -->
+      <section class="card panel off rise" id="p3" style="animation-delay:.15s">
+        <div class="lbl"><span class="no">3</span>複製給 AI</div>
+        <div class="out">
+          <div class="obar">
+            <span class="cc">共 <b id="cc">0</b> 字</span>
+            <div class="obtns">
+              <button class="btn btn-ghost" id="copyText"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>複製文字</button>
+              <button class="btn btn-hi" id="copyPrompt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4"/></svg>複製成 AI 指令</button>
+            </div>
+          </div>
+          <textarea id="output" readonly placeholder="抽出來的文字會出現在這裡…"></textarea>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="tieback">
+      為什麼這樣做？完整原理在 <a href="../token/">省 token 三招</a>：只給 AI 需要的部分、新任務開新對話、需要才開功能。
+    </div>
+  </main>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div>
+      <div class="who">我是 <b>黑牛</b> — 工程師出身、AI 博士、AI 公司創辦人</div>
+      <p class="desc">每個東西都是我叫 AI 做的。想看下一個做什麼？到影片留言告訴我。</p>
+    </div>
+    <div class="links">
+      <a href="../">全部工具</a>
+      <a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">公司導入 AI → PrimeStride</a>
+    </div>
+  </div>
+  <div class="fine">黑牛 @fatty_bamba · AI 創業家 · 工程師 · PhD · 檔案不上傳，全部在你的瀏覽器裡運算</div>
+</footer>
+
+<script src="../assets/pdf.min.js"></script>
+<script>
+(function(){
+  const pdfjsLib = window['pdfjsLib'];
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/pdf.worker.min.js';
+
+  const $ = id => document.getElementById(id);
+  const drop=$('drop'), file=$('file'), loaded=$('loaded'), fname=$('fname'), fpg=$('fpg');
+  const p2=$('p2'), p3=$('p3'), range=$('range'), go=$('go'), spin=$('spin'), scan=$('scan');
+  const output=$('output'), cc=$('cc'), copyText=$('copyText'), copyPrompt=$('copyPrompt'), reset=$('reset');
+  let pdf=null, nPages=0;
+
+  function pick(){ file.click(); }
+  drop.addEventListener('click',pick);
+  drop.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();} });
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+  drop.addEventListener('drop',e=>{ const f=e.dataTransfer.files[0]; if(f) load(f); });
+  file.addEventListener('change',e=>{ const f=e.target.files[0]; if(f) load(f); });
+  reset.addEventListener('click',()=>{ pdf=null; loaded.classList.remove('show'); drop.style.display='block';
+    p2.classList.add('off'); p3.classList.add('off'); output.value=''; cc.textContent='0'; scan.classList.remove('show'); file.value=''; });
+
+  async function load(f){
+    if(f.type && f.type.indexOf('pdf')<0 && !/\.pdf$/i.test(f.name)){ alert('請選 PDF 檔'); return; }
+    try{
+      const buf=await f.arrayBuffer();
+      pdf=await pdfjsLib.getDocument({data:buf}).promise;
+      nPages=pdf.numPages;
+      fname.textContent=f.name;
+      fpg.textContent='共 '+nPages+' 頁';
+      drop.style.display='none'; loaded.classList.add('show');
+      p2.classList.remove('off'); p3.classList.add('off'); output.value=''; cc.textContent='0'; scan.classList.remove('show');
+      range.focus();
+    }catch(err){ alert('讀不到這份 PDF，換一份試試。'); console.error(err); }
+  }
+
+  function parseRange(s,max){
+    s=(s||'').trim();
+    if(!s) return Array.from({length:max},(_,i)=>i+1);
+    const out=new Set();
+    s.split(',').forEach(part=>{
+      part=part.trim(); if(!part) return;
+      const m=part.match(/^(\d+)\s*[-–]\s*(\d+)$/);
+      if(m){ let a=+m[1],b=+m[2]; if(a>b)[a,b]=[b,a]; for(let i=a;i<=b;i++) if(i>=1&&i<=max) out.add(i); }
+      else if(/^\d+$/.test(part)){ const n=+part; if(n>=1&&n<=max) out.add(n); }
+    });
+    return [...out].sort((a,b)=>a-b);
+  }
+
+  document.querySelector('[data-all]').addEventListener('click',()=>{ range.value=''; range.focus(); });
+
+  go.addEventListener('click',async()=>{
+    if(!pdf) return;
+    const pages=parseRange(range.value,nPages);
+    if(!pages.length){ alert('那幾頁超出範圍囉，這份只有 '+nPages+' 頁。'); return; }
+    spin.classList.add('show'); scan.classList.remove('show'); go.disabled=true;
+    let text='';
+    try{
+      for(const p of pages){
+        const page=await pdf.getPage(p);
+        const c=await page.getTextContent();
+        const line=c.items.map(it=>it.str).join(' ').replace(/\s+\n/g,'\n');
+        text += (pages.length>1 ? `\n\n──── 第 ${p} 頁 ────\n` : '') + line.trim();
+      }
+    }catch(err){ console.error(err); }
+    spin.classList.remove('show'); go.disabled=false;
+    text=text.trim();
+    if(!text){ scan.classList.add('show'); output.value=''; cc.textContent='0'; p3.classList.add('off'); return; }
+    output.value=text;
+    cc.textContent=text.replace(/\s/g,'').length.toLocaleString();
+    p3.classList.remove('off');
+    p3.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
+  function flash(btn,ok){ const t=btn.querySelector('svg').nextSibling; const old=btn.lastChild.textContent;
+    btn.lastChild.textContent = ok?'已複製 ✓':'複製失敗'; setTimeout(()=>{btn.lastChild.textContent=old;},1400); }
+  async function copy(str,btn){ try{ await navigator.clipboard.writeText(str); flash(btn,true); }
+    catch(e){ output.select(); document.execCommand&&document.execCommand('copy'); flash(btn,true); } }
+
+  copyText.addEventListener('click',()=>{ if(output.value) copy(output.value,copyText); });
+  copyPrompt.addEventListener('click',()=>{
+    if(!output.value) return;
+    const prompt='以下是我從一份文件裡挑出來、真正需要的內容。請只根據這段內容回答我的問題，不用管其他部分：\n\n"""\n'+output.value+'\n"""\n\n我的問題是：';
+    copy(prompt,copyPrompt);
+  });
+})();
+</script>
+</body>
+</html>

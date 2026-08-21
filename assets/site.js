@@ -32,6 +32,14 @@ const HEINIU_ITEMS = [
     date: '2026-08-10',
   },
   {
+    kind: 'tool',
+    num: '03',
+    title: 'PDF 只取需要的頁',
+    desc: '整份 PDF 太肥？拖進來、選你要的頁，直接抽出純文字複製給 AI——省 token、答更準。檔案不上傳，全在你的瀏覽器裡跑。',
+    href: './pdf/',
+    date: '2026-08-21',
+  },
+  {
     kind: 'guide',
     num: 'A',
     title: '省 token 三招',
