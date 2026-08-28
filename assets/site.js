@@ -5,8 +5,8 @@
    首頁的卡片、統計數字、「最新」標記會自動更新。
 
    欄位說明：
-     kind  : 'tool'（工具）或 'guide'（完整做法）
-     num   : 顯示用編號，工具用 '01' '02'，做法用 'A' 'B'
+     kind  : 'tool'（工具）/ 'guide'（完整做法）/ 'radar'（RADAR 懶人包）
+     num   : 顯示用編號，工具用 '01' '02'，做法用 'A' 'B'，RADAR 用 'R1' 'R2'
      title : 標題
      desc  : 一句話說明
      href  : 連結（相對路徑）
@@ -47,19 +47,30 @@ const HEINIU_ITEMS = [
     href: './token/',
     date: '2026-08-05',
   },
+  {
+    kind: 'radar',
+    num: 'R1',
+    title: '值得搞懂的 3 個 AI 專案',
+    desc: '影片裡三個專案的連結，加上我判斷「值不值得看」的三個問題（三問）。不是又一個聊天功能。',
+    href: './radar/ai-projects/',
+    date: '2026-08-28',
+  },
 
   /* ↓↓↓ 接下來要做的（next: true）↓↓↓ */
   { kind: 'tool',  title: '104 職缺分析器', next: true },
   { kind: 'tool',  title: '信用卡帳單分析', next: true },
   { kind: 'guide', title: 'AI 外掛 / 自動化 完整做法', next: true },
+  { kind: 'radar', title: 'AI Agent 真正該有的用法（AGENT）', next: true },
+  { kind: 'radar', title: 'AI 圖的 8 個元素框架（PROMPT）', next: true },
 ];
 
 /* ---------- 以下為渲染邏輯，平常不用動 ---------- */
 (function () {
   const tools  = HEINIU_ITEMS.filter(i => i.kind === 'tool'  && !i.next);
   const guides = HEINIU_ITEMS.filter(i => i.kind === 'guide' && !i.next);
+  const radars = HEINIU_ITEMS.filter(i => i.kind === 'radar' && !i.next);
   const nexts  = HEINIU_ITEMS.filter(i => i.next);
-  const newestDate = Math.max(...[...tools, ...guides].map(i => Date.parse(i.date || 0)));
+  const newestDate = Math.max(...[...tools, ...guides, ...radars].map(i => Date.parse(i.date || 0)));
 
   const card = (i, kindLabel, pillClass) => `
     <a class="shelf-card rise" href="${i.href}">
@@ -78,10 +89,13 @@ const HEINIU_ITEMS = [
   const guideGrid = document.getElementById('guideGrid');
   if (guideGrid) guideGrid.innerHTML = guides.map(i => card(i, '完整版', 'y')).join('');
 
+  const radarGrid = document.getElementById('radarGrid');
+  if (radarGrid) radarGrid.innerHTML = radars.map(i => card(i, '懶人包', '')).join('');
+
   const nextList = document.getElementById('nextList');
   if (nextList) {
     nextList.innerHTML = nexts.map(i =>
-      `<li><span class="n-kind">${i.kind === 'tool' ? '工具' : '做法'}</span>${i.title}</li>`).join('');
+      `<li><span class="n-kind">${i.kind === 'tool' ? '工具' : i.kind === 'radar' ? 'RADAR' : '做法'}</span>${i.title}</li>`).join('');
   }
 
   // 統計數字

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>值得搞懂的 3 個 AI 專案 · AI RADAR｜黑牛</title>
+<meta name="description" content="黑牛 RADAR：每週挑值得你花時間搞懂的 AI 專案。這一期三個——GPT Image prompt 資料庫、用 Claude 做的找工作工作流、Claude 官方 plugin 目錄，還有我判斷「值不值得看」的三個問題。黑牛 @fatty_bamba 整理。">
+<meta property="og:title" content="值得搞懂的 3 個 AI 專案 · AI RADAR｜黑牛">
+<meta property="og:description" content="不是又一個聊天功能。三個代表方向的 AI 專案 ＋ 我判斷值不值得看的三問。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/base.css">
+<style>
+  .radar-head{padding:48px 0 6px;}
+  .radar-head .eyebrow{margin-bottom:16px;}
+  .radar-head h1{font-family:var(--display);font-size:clamp(30px,5vw,44px);font-weight:800;line-height:1.14;letter-spacing:-.02em;}
+  .radar-head h1 .acc{color:var(--hi);}
+  .radar-head .lede{margin-top:14px;font-size:16px;max-width:58ch;}
+  .rule{display:inline-flex;align-items:center;gap:10px;margin-top:24px;background:var(--hi-soft);
+    border:1px solid rgba(75,60,228,.28);border-radius:999px;padding:9px 18px;color:var(--hi-strong);
+    font-weight:800;font-size:14px;flex-wrap:wrap;}
+  .rule .q{font-family:var(--mono);font-weight:600;color:var(--hi);}
+
+  .sec-hd{margin:44px 0 4px;}
+  .sec-hd .eyebrow{margin-bottom:12px;}
+  .sec-hd h2{font-family:var(--display);font-size:clamp(22px,3.2vw,30px);font-weight:800;letter-spacing:-.015em;}
+
+  /* repo card */
+  .repo{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+    box-shadow:var(--shadow);padding:24px 24px 22px;margin-top:18px;position:relative;overflow:hidden;}
+  .repo .rtop{display:flex;align-items:center;gap:13px;padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:16px;}
+  .repo .mk{width:42px;height:42px;border-radius:11px;background:var(--surface2);border:1px solid var(--line2);
+    display:flex;align-items:center;justify-content:center;flex:none;color:var(--ink);}
+  .repo .mk svg{width:23px;height:23px;fill:currentColor;}
+  .repo .path{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--ink2);word-break:break-all;}
+  .repo .path b{color:var(--ink);font-weight:700;}
+  .repo .real{margin-left:auto;flex:none;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.1em;
+    color:#fff;background:var(--good);padding:5px 11px;border-radius:999px;}
+  .repo h3{font-size:19.5px;font-weight:900;letter-spacing:-.01em;line-height:1.4;}
+  .repo h3 .em{color:var(--hi);}
+  .repo p{color:var(--ink2);font-size:15px;margin-top:11px;}
+  .repo p b{color:var(--ink);}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+  .facts span{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--ink2);
+    background:var(--surface2);border:1px solid var(--line);padding:6px 11px;border-radius:8px;}
+  .repo .note{margin-top:14px;font-size:12.5px;color:var(--muted);font-family:var(--mono);letter-spacing:.01em;line-height:1.6;}
+  .repo .go{margin-top:18px;}
+
+  /* 三問 test card */
+  .test{background:var(--dark);border:1px solid var(--dark-line);border-radius:var(--r-lg);
+    padding:28px 26px 24px;margin-top:18px;color:var(--dark-ink);}
+  .test .kick{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--dark-acc);}
+  .test h2{font-family:var(--display);font-size:24px;font-weight:800;margin:8px 0 20px;letter-spacing:-.01em;color:#fff;}
+  .q3{display:flex;gap:15px;align-items:flex-start;padding:15px 0;border-top:1px solid var(--dark-line);}
+  .q3:first-of-type{border-top:0;padding-top:2px;}
+  .q3 .n{flex:none;width:36px;height:36px;border-radius:10px;background:linear-gradient(145deg,#6b5bff,#3d2ce0);
+    color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;font-family:var(--num);}
+  .q3 .qt{font-size:16.5px;font-weight:800;color:#fff;line-height:1.5;}
+  .q3 .qt em{font-style:normal;color:var(--dark-ink2);font-weight:600;font-size:14.5px;display:block;margin-top:2px;}
+  .test .close{margin-top:20px;padding-top:16px;border-top:1px solid var(--dark-line);
+    font-size:15px;font-weight:800;color:#fff;}
+  .test .close b{color:var(--dark-acc);}
+
+  /* subscribe */
+  .sub{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);
+    padding:28px 26px;margin-top:44px;text-align:center;}
+  .sub h3{font-family:var(--display);font-size:24px;font-weight:800;letter-spacing:-.01em;}
+  .sub p{color:var(--ink2);font-size:15px;margin:10px auto 20px;max-width:44ch;}
+  .sub .row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+</style>
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brandmark" href="../../" aria-label="回黑牛工具首頁">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg>
+      <span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="../../">← 全部工具</a>
+      <a class="cta" href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a>
+    </div>
+  </div>
+</nav>
+
+<header class="radar-head">
+  <div class="wrap-narrow">
+    <span class="eyebrow rise">AI RADAR · EP.1</span>
+    <h1 class="rise" style="animation-delay:.05s">值得搞懂的 <span class="acc">3 個</span> AI 專案</h1>
+    <p class="lede rise" style="animation-delay:.1s">我每天在追 AI，但真正值得你花時間搞懂的沒幾個。這三個代表三個重要方向——<b>不是又一個聊天功能</b>。</p>
+    <div class="rule rise" style="animation-delay:.16s">我只問三個問題：<span class="q">真的問題？· 能重現？· 能放進工作流？</span></div>
+  </div>
+</header>
+
+<main class="wrap-narrow">
+
+  <div class="sec-hd">
+    <span class="eyebrow">The Three</span>
+    <h2>三個專案</h2>
+  </div>
+
+  <!-- repo 1 -->
+  <article class="repo rise">
+    <div class="rtop">
+      <span class="mk"><svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></span>
+      <span class="path">YouMind-OpenLab / <b>awesome-gpt-image-2</b></span>
+      <span class="real">真實專案</span>
+    </div>
+    <h3>世界最大的 <span class="em">GPT Image prompt</span> 資料庫</h3>
+    <p>大量 prompt ＋ 成品。但真正有用的，<b>不是那堆 prompt</b>——好圖背後其實有一套「結構」，好的 prompt 比較像<b>美術指導</b>，不是寫一句很厲害的話。</p>
+    <div class="facts"><span>2000+ prompts</span><span>16 languages</span><span>附 preview 圖</span></div>
+    <div class="go"><a class="btn btn-ghost" href="https://github.com/YouMind-OpenLab/awesome-gpt-image-2" target="_blank" rel="noopener">看專案 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div>
+  </article>
+
+  <!-- repo 2 -->
+  <article class="repo rise">
+    <div class="rtop">
+      <span class="mk"><svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></span>
+      <span class="path">MadsLorentzen / <b>ai-job-search</b></span>
+      <span class="real">真實專案</span>
+    </div>
+    <h3>一整套 <span class="em">找工作</span> 工作流 · built on Claude</h3>
+    <p>重點不是 AI 會寫求職信，而是把整個過程<b>串成一個「可重複的系統」</b>：找職缺 → 評估適配 → 改履歷 → 準備面試。</p>
+    <div class="facts"><span>評估職缺</span><span>改履歷</span><span>面試準備</span></div>
+    <p class="note">// 作者自述用它找到工作：69 封客製申請 · 20 場面試 · 1 份合約。（作者自述，非黑牛驗證）</p>
+    <div class="go"><a class="btn btn-ghost" href="https://github.com/MadsLorentzen/ai-job-search" target="_blank" rel="noopener">看專案 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div>
+  </article>
+
+  <!-- repo 3 -->
+  <article class="repo rise">
+    <div class="rtop">
+      <span class="mk"><svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></span>
+      <span class="path">anthropics / <b>claude-plugins-official</b></span>
+      <span class="real">官方</span>
+    </div>
+    <h3>Anthropic 官方 <span class="em">Claude Code plugin</span> 目錄</h3>
+    <p>方向非常明確：從「問 AI 問題」→「<b>給 AI 工具做事</b>」。值得看的是這個方向——不是又多了一個聊天功能。</p>
+    <div class="facts"><span>官方管理</span><span>Apache-2.0</span><span>直接安裝</span></div>
+    <div class="go"><a class="btn btn-ghost" href="https://github.com/anthropics/claude-plugins-official" target="_blank" rel="noopener">看專案 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg></a></div>
+  </article>
+
+  <!-- 三問 test -->
+  <div class="sec-hd">
+    <span class="eyebrow">The Radar Test</span>
+    <h2>怎麼判斷值不值得看</h2>
+  </div>
+  <section class="test rise">
+    <span class="kick">THE RADAR TEST · 三問</span>
+    <h2>我只問這三個問題</h2>
+    <div class="q3"><span class="n">1</span><div class="qt">有解決真的問題嗎？<em>還是只是 demo 很炫？</em></div></div>
+    <div class="q3"><span class="n">2</span><div class="qt">結果能重現嗎？<em>換個人、換個輸入，還做得出來嗎？</em></div></div>
+    <div class="q3"><span class="n">3</span><div class="qt">能放進真的工作流嗎？<em>還是玩一次就關掉？</em></div></div>
+    <div class="close">答案是不行，我就<b>不會那麼有興趣</b>。</div>
+  </section>
+
+  <!-- subscribe -->
+  <section class="sub rise">
+    <span class="eyebrow" style="justify-content:center">每週更新</span>
+    <h3 style="margin-top:12px">想每週收到「值得看的」？</h3>
+    <p>我每週把值得搞懂的 AI 專案整理成一則。追蹤黑牛、開啟通知，下一期直接送到你面前。</p>
+    <div class="row">
+      <a class="btn btn-hi" href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤 IG
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn-ghost" href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a>
+    </div>
+    <!-- TODO: 有 LINE 官方帳號後，把「追蹤 IG」換成 LINE 加好友連結（台灣觀眾更會加 LINE） -->
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div>
+      <div class="who">我是 <b>黑牛</b> — 工程師出身、AI 博士、AI 公司創辦人</div>
+      <p class="desc">每個東西都是我叫 AI 做的。想看下一個做什麼？到影片留言告訴我。</p>
+    </div>
+    <div class="links">
+      <a href="../../">全部工具</a>
+      <a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">公司導入 AI → PrimeStride</a>
+    </div>
+  </div>
+  <div class="fine">黑牛 @fatty_bamba · AI 創業家 · 工程師 · PhD</div>
+</footer>
+
+</body>
+</html>
