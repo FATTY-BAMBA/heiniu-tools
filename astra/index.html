@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>黑牛茶鋪｜直接玩＋ASTRA 實作提示詞｜黑牛工具</title>
+<meta name="description" content="60 秒，你能接幾位客人？直接玩黑牛茶鋪，再用四階段提示詞做自己的珍奶小店。免費試玩、複製提示詞，不用下載 PDF。">
+<meta property="og:title" content="黑牛茶鋪｜60 秒接客挑戰＋實作提示詞">
+<meta property="og:description" content="先玩一輪，再做自己的。黑牛整理的四階段 AI 珍奶店實作提示詞。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://heiniu-tools.vercel.app/astra/shop.jpg">
+<meta property="og:image:alt" content="黑牛茶鋪遊戲的店面與單張練習畫面">
+<meta name="theme-color" content="#3D2CE0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="./astra.css">
+<script src="./astra.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要內容</a>
+<nav class="site-nav" aria-label="主要導覽"><div class="wrap">
+<a class="brandmark" href="../" aria-label="回黑牛工具首頁"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg><span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span></a>
+<div class="nav-links"><a href="../">← 全部工具</a><a class="cta" href="#guide">拿提示詞</a></div>
+</div></nav>
+<main id="main">
+<header class="hero wrap">
+<div class="hero-copy"><span class="eyebrow">ASTRA 實作 · 黑牛茶鋪</span><h1 class="h-display">60 秒，<br>你能接<span class="acc">幾位客人？</span></h1><p class="lede">影片裡的珍奶小店，你也可以直接玩。<br>想做自己的？四階段提示詞都在這裡。</p>
+<div class="hero-actions"><a class="btn btn-hi play-link" href="https://black-ox-tea-shop.afatty13.chatgpt.site" target="_blank" rel="noopener">直接玩黑牛茶鋪 <span aria-hidden="true">↗</span></a><a class="btn btn-ghost" href="#guide">我也想做 →</a></div>
+<p class="play-note">免費試玩 · 手機、電腦瀏覽器都能開 · 不用下載</p>
+<div class="how-to-play"><span class="tagpill">開始挑戰</span><p>進入遊戲後，按<b>「開始製作」</b>→<b>「60 秒接客」</b>。</p><p>我影片那輪接了 <b class="num">4</b> 位。換你挑戰 🧋</p></div></div>
+<figure class="game-preview card"><img src="./shop.jpg" alt="黑牛茶鋪遊戲畫面：綠色店面前，客人正在點珍珠奶茶。" width="1080" height="1920" fetchpriority="high"><figcaption><span>遊戲實際畫面 · 單張練習</span><span class="preview-dot">可以直接玩</span></figcaption></figure>
+</header>
+<section class="guide wrap" id="guide" aria-labelledby="guide-title">
+<div class="section-intro"><span class="eyebrow">做一間自己的店</span><h2 id="guide-title">先做出第一杯，再慢慢加。</h2><p>不用一次完成整間店。每一步玩得動，再貼下一段提示詞。</p></div>
+<ol class="setup"><li><span class="num">01</span><div><strong>準備一張照片</strong><p>自己的珍奶或店面照片，再想一個店名。</p></div></li><li><span class="num">02</span><div><strong>開啟 Codex</strong><p>建立新專案，把照片附在對話裡。<a href="https://learn.chatgpt.com/docs/app" target="_blank" rel="noopener">查看官方入門 ↗</a></p></div></li><li><span class="num">03</span><div><strong>複製，貼上，玩一輪</strong><p>從第一段開始，開啟 AI 提供的預覽，親自點一輪。</p></div></li></ol>
+<div class="guide-toolbar"><p>這是整理後的做法；成品經過多輪修改與測試。</p><a class="text-link" href="./prompts.txt" download="黑牛茶鋪_四階段提示詞.txt">下載全部提示詞 ↓</a></div>
+<div class="prompts"><details class="prompt-card" id="step-1">
+<summary><span class="step-num num">01</span><span class="summary-text"><strong>先做出第一杯</strong><span>接單、加料、選甜度冰量，再把飲料交給客人。</span></span><span class="expand" aria-hidden="true">+</span></summary>
+<div class="prompt-body"><div class="prompt-actions"><span class="prompt-label">提示詞 01</span><button class="btn btn-hi copy" type="button" data-copy="prompt-1" aria-label="複製第 1 階段提示詞">複製提示詞</button></div><pre id="prompt-1" tabindex="0">請以我附的照片作為美術參考，製作一個可以在瀏覽器操作的台灣珍珠奶茶小店遊戲，店名先用「我的珍奶店」。
+
+風格：溫暖、乾淨的 3D 小店，使用深綠、奶油白與木色。畫面要像一間有設計感的小店。以繁體中文呈現店名、訂單、提示與操作按鈕。
+
+先完成一位客人的不限時練習：
+1. 客人走到櫃台，清楚顯示珍珠奶茶訂單、甜度、冰量。
+2. 玩家按「加入珍珠」，看到珍珠落入透明杯；按「倒入奶茶」，看到奶茶液面上升。
+3. 玩家自行選擇甜度與冰量，不要自動替玩家選正確答案。
+4. 按「出餐」時，檢查珍珠、奶茶、甜度與冰量。錯誤要清楚提示並允許修正；正確才交杯。
+5. 同一杯完成的飲料移到取餐處，由客人拿走，再沿旁邊的通道離開。
+6. 「重新開始」要恢復空杯、未選的甜度冰量與新的顧客狀態。
+
+請直接完成可操作的原型、提供本機預覽，並實際核對整個流程。優先採用簡單可靠的前端方案，先不新增帳號、付款或模型連線。完成後簡短說明怎麼玩，以及還有哪些地方尚未驗證。</pre></div>
+</details>
+<details class="prompt-card" id="step-2">
+<summary><span class="step-num num">02</span><span class="summary-text"><strong>加入 60 秒接客</strong><span>客人持續補位，時間到就看你服務了幾位。</span></span><span class="expand" aria-hidden="true">+</span></summary>
+<div class="prompt-body"><div class="prompt-actions"><span class="prompt-label">提示詞 02</span><button class="btn btn-hi copy" type="button" data-copy="prompt-2" aria-label="複製第 2 階段提示詞">複製提示詞</button></div><pre id="prompt-2" tabindex="0">在目前已能操作的小店上，加入「60 秒接客」模式，保留不限時練習。
+
+目標是看玩家在完整 60 秒內能服務幾位客人。正確接受一張訂單加一位；完成三張後仍繼續。
+
+隊伍保持一位目前客人與五位後方客人。前一位拿到飲料、開始往旁邊離開時，下一位就向前補位，新客人從隊尾加入。不要等前一位完全走出店門才讓下一位前進。
+
+第一位到櫃台、製作介面可操作後才開始倒數。倒數開始後，切換視角或暫時切到其他分頁仍會消耗時間。
+
+左側清楚顯示剩餘秒數、已服務人數、目前及接下來兩張訂單，以及「後面還有 5 位・持續排隊」。到 0 秒就停止接受新出餐，顯示「時間到！你服務了 N 位客人」。截止前已接受的飲料可以完成交杯動畫。
+
+使用不同甜度與冰量的訂單，給每位客人獨立編號，防止重複計分。重新挑戰時，要清空倒數、分數、杯子與排隊狀態。
+
+請用一輪能服務超過三位的操作驗證玩法，並檢查錯誤訂單、最後一秒出餐、重新挑戰，以及前後兩位客人交接時隊伍是否持續移動。</pre></div>
+</details>
+<details class="prompt-card" id="step-3">
+<summary><span class="step-num num">03</span><span class="summary-text"><strong>讓畫面與操作更順</strong><span>近看杯子、看清隊伍，手機也能找到按鈕。</span></span><span class="expand" aria-hidden="true">+</span></summary>
+<div class="prompt-body"><div class="prompt-actions"><span class="prompt-label">提示詞 03</span><button class="btn btn-hi copy" type="button" data-copy="prompt-3" aria-label="複製第 3 階段提示詞">複製提示詞</button></div><pre id="prompt-3" tabindex="0">請改善目前遊戲的展示與操作視角：
+
+- 提供看得到製作檯、目前客人及完整隊伍的側面視角，讓後方客人的頭部不會全部重疊。
+- 提供近看製作杯的視角，方便看清珍珠落下與奶茶注入。
+- 玩家自行選好視角後，出餐或換客人時不要強制把鏡頭切回去。
+- 製作按鈕、甜度、冰量、出餐與重新挑戰在桌面視窗中都能找到；短視窗或手機畫面可以捲動操作面板。
+- 每個顧客交杯與離場動作，要和實際訂單與計分一致。
+
+請保留已經正確的玩法，只修改展示和操作上的問題，完成後重新檢查一輪 60 秒流程。</pre></div>
+</details>
+<details class="prompt-card" id="step-4">
+<summary><span class="step-num num">04</span><span class="summary-text"><strong>加上稱號與最佳紀錄</strong><span>實習店員 → 熟手店員 → 店長，再挑戰自己的紀錄。</span></span><span class="expand" aria-hidden="true">+</span></summary>
+<div class="prompt-body"><div class="prompt-actions"><span class="prompt-label">提示詞 04</span><button class="btn btn-hi copy" type="button" data-copy="prompt-4" aria-label="複製第 4 階段提示詞">複製提示詞</button></div><pre id="prompt-4" tabindex="0">在現有 60 秒玩法上，加上清楚的結算卡，不改變倒數、製作速度或出餐判定。
+
+到 0 秒時，用最大字顯示這輪真正完成的客人人數，依分數給予稱號：0–2 位「實習店員」、3–4 位「熟手店員」、5 位以上「店長」。同時顯示三個門檻，讓玩家知道下一輪差幾位。
+
+在同一個瀏覽器儲存最高完成數，顯示「此瀏覽器最佳」。較低分數不覆蓋高分，重新整理後仍保留。只有真正超過既有紀錄才顯示「突破自己的最佳紀錄」。如果瀏覽器不允許儲存，不要讓遊戲壞掉，改顯示「本次開啟最佳」。
+
+新增「再挑戰 60 秒」按鈕。按下後，這輪計分回到 0、杯子清空、訂單回到第一位、六人隊伍重設；第一位到位才重新開始 60 秒。個人最佳保留。也可以切回不限時練習。
+
+請檢查稱號邊界 2→3 與 4→5、同分、較低分、新高分、重新整理，以及手機上結果卡與其他按鈕是否重疊。不要用預設高分或假排行榜。</pre></div>
+</details></div>
+<aside class="fix-card"><div><span class="tagpill">卡住時這樣問</span><h3>把問題說具體，下一輪才好修。</h3><p id="fix-prompt">我按了【哪個按鈕】，畫面出現【實際情況】。我希望【預期結果】。請先找出原因，保留已正常的功能，修好後再測一次。</p></div><button class="btn btn-ghost copy" type="button" data-copy="fix-prompt" aria-label="複製修正問題的提示詞">複製修正句</button></aside>
+<noscript><p class="no-script">你可以直接選取提示詞文字複製，或下載上方的完整文字檔。</p></noscript>
+</section>
+<section class="questions wrap" aria-labelledby="questions-title"><h2 id="questions-title">開始前，你可能想問</h2>
+<details class="faq"><summary>玩遊戲需要付費或 AI 帳號嗎？</summary><p>不用。按上面的「直接玩黑牛茶鋪」，就能在瀏覽器試玩。自己用 AI 製作遊戲時，才需要開發工具帳號；可用模型、功能與額度以你的方案為準。</p></details>
+<details class="faq"><summary>貼一次，就會跟影片一模一樣嗎？</summary><p>不會每次都一樣。照片、模型和每次修改都會影響結果；這四段是整理後的起點。先確認接單、製作、交杯能順利完成，再加上排隊與倒數。</p></details>
+<details class="faq"><summary>遊戲在 IG 裡開不起來怎麼辦？</summary><p>試著用手機的 Safari 或 Chrome 開啟遊戲連結，再重新載入。教學與提示詞可以留在這一頁，隨時回來看。</p></details>
+</section>
+<section class="closing wrap"><div class="card"><div><span class="eyebrow">從一杯開始</span><h2>先玩一輪，手感最有感。</h2><p>做自己的版本時，也可以換店名、配色和訂單。</p></div><a class="btn btn-hi" href="https://black-ox-tea-shop.afatty13.chatgpt.site" target="_blank" rel="noopener">去接第一位客人 ↗</a></div></section>
+</main>
+<footer class="site-foot"><div class="wrap"><div><div class="who">黑牛 <b>／ AI 實作</b></div><p class="desc">把 AI 用在生活裡，從看得懂到做得出來。</p></div><div class="links"><a href="../">全部工具</a><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a></div></div></footer>
+<div id="copy-status" class="copy-status" role="status" aria-live="polite" aria-atomic="true"></div>
+</body>
+</html>
