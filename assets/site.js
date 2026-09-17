@@ -16,6 +16,14 @@
 
 const HEINIU_ITEMS = [
   {
+    kind: 'guide',
+    num: 'B',
+    title: '黑牛茶鋪 · ASTRA 實作',
+    desc: '先玩 60 秒接客挑戰，再複製四階段提示詞，做一間自己的珍奶小店。',
+    href: './astra/',
+    date: '2026-09-17',
+  },
+  {
     kind: 'tool',
     num: '01',
     title: '薪水實拿計算機',
