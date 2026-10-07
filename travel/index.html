@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主揪救星 · AI 朋友旅行規劃｜黑牛</title>
+<meta name="description" content="一個想看海，一個想睡到自然醒。整理朋友的願望，做出看得懂、可以分享的台灣旅行計畫。">
+<link rel="stylesheet" href="../assets/base.css"><link rel="stylesheet" href="./travel.css">
+<script type="module" src="./travel.js"></script>
+</head>
+<body>
+<nav class="site-nav"><div class="wrap"><a class="brandmark" href="../"><span class="brand-symbol" aria-hidden="true">黑</span><span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">BUILT FOR REAL LIFE</span></span></a><a class="nav-back" href="../">所有工具 ↗</a></div></nav>
+<main class="wrap planner">
+<header class="travel-hero">
+  <div><span class="eyebrow">TRIP TOGETHER / 朋友旅行規劃</span><h1>大家都可以，<br>但大家都有<span>條件。</span></h1><p class="intro">想看海、想吃好料、十一點前不出門。<br>把每個人的「但是」，排進同一趟旅行。</p>
+  <div class="hero-actions"><a class="btn btn-hi" href="#workspace">開始規劃 <span aria-hidden="true">↗</span></a><button class="text-btn" id="open-example">先看國慶高雄範例 →</button></div><p class="micro">主揪救星 · 台灣旅行 · 1–8 位成人 · 最多 7 天</p></div>
+  <div class="wish-board" aria-label="朋友的旅行願望示意"><div class="board-caption">群組：這次真的要出門</div><div class="bubble b1"><span class="avatar coral">A</span><p>都可以啊，<strong>但我要看海 🌊</strong></p></div><div class="bubble b2"><span class="avatar gold">B</span><p>去哪都好，<strong>但要有好吃的 🍜</strong></p></div><div class="bubble b3"><span class="avatar lavender">C</span><p>我沒意見，<strong>11 點前不要找我 💤</strong></p></div><div class="board-answer"><span class="spark">✳</span><div><strong>好，把你們都排進去。</strong><small>每個人的期待，都有一個位置。</small></div></div></div>
+</header>
+<div id="workspace" class="workspace">
+<section class="editor card" aria-labelledby="editor-title">
+<div class="editor-heading"><div><span class="section-kicker">LET'S MAKE IT HAPPEN</span><h2 id="editor-title">這次，真的出發。</h2></div><span class="step-count" id="step-count">01 / 02</span></div>
+<ol class="steps" aria-label="規劃步驟"><li id="step-trip" class="active" aria-current="step">1 旅行條件</li><li id="step-friends">2 朋友願望</li></ol>
+<form id="trip-form">
+<div id="trip-fields">
+<div class="field-grid"><label>從哪裡出發<input name="origin" required maxlength="40" value="台北" autocomplete="off"></label><label>想去哪裡<select name="destination"><option value="">還沒決定，幫我們選</option>高雄</option><option>台南</option><option>花蓮</option><option>台東</option><option>屏東</option><option>宜蘭</option><option>台中</option><option>嘉義</option><option>南投</option><option>台北</option><option>新北</option><option>桃園</option><option>新竹</option><option>苗栗</option><option>彰化</option><option>雲林</option><option>基隆</option><option>澎湖</option><option>金門</option><option>連江</option></select></label></div>
+<div class="field-grid"><label>出發日期<input name="startDate" type="date" required></label><label>回程日期<input name="endDate" type="date" required></label></div>
+<div class="field-grid"><label>每人預算上限（NT$）<input name="budget" type="number" min="500" max="100000" step="100" value="6500" required><small>含交通、住宿、餐飲與活動</small></label><label>幾位成人<input name="people" type="number" min="1" max="8" value="4" required><small>包含主揪本人</small></label></div>
+<div class="field-grid"><label>交通方式<select name="transport"><option value="public">大眾運輸，不開車</option><option value="car">自行開車</option></select></label><label>每天最早出發時間<input name="earliest" type="time" required value="11:00"><small>包含第一天出發</small></label></div>
+<label>住宿需求<select name="rooms"><option value="twin">每兩人一間，分床睡</option><option value="double">每兩人一間，可共用雙人床</option><option value="flexible">房型可討論</option></select></label>
+<button class="btn btn-hi full" type="button" id="next">下一步：朋友們想要什麼？ →</button>
+</div>
+<div id="friends-fields" hidden><p class="field-note">一人一個最想要、一個不想要。真的沒意見，也可以留白。</p><div id="friends-list"></div><label>主揪補充<textarea name="notes" maxlength="400" rows="2" placeholder="例如：不要一直換車，預留坐下來休息的時間。"></textarea></label><p class="privacy">按下產生後，旅行條件與暱稱會傳送給 AI 服務及搜尋服務。請使用暱稱，避免填入電話、住址或其他個資。</p><div class="form-actions"><button type="button" class="btn btn-ghost" id="back">← 上一步</button><button type="submit" class="btn btn-hi" id="generate">產生 AI 旅行提案 ↗</button></div></div>
+</form>
+<p id="form-error" class="error" role="alert" hidden></p>
+<div id="busy" class="busy" role="status" hidden><span class="spinner" aria-hidden="true"></span><strong>正在整理願望、查找資料與安排路線…</strong><p>保留大家的條件；查不到的價格會標示待確認。</p><button class="text-btn" id="cancel">取消這次產生</button></div>
+<p class="api-status" id="api-status">可以先看範例，了解行程會長什麼樣。</p>
+</section>
+<aside class="trip-ticket" aria-labelledby="ticket-title"><div class="ticket-top"><span>YOUR NEXT TRIP</span><span>↗</span></div><h2 id="ticket-title">我們的旅行備忘</h2><div id="ticket-summary"></div><div class="ticket-divider"></div><p class="ticket-quote">「都可以」也沒關係，<br><b>說出一件你期待的事就好。</b></p><p class="micro">草稿只保留在這個頁面。產生結果後可複製、分享或下載。</p></aside>
+</div>
+<section id="results" class="results" hidden tabindex="-1" aria-labelledby="result-title"></section>
+<p id="toast" role="status" class="toast" hidden></p>
+</main>
+<footer class="planner-footer wrap"><a href="../">← 回黑牛工具</a><p>AI 協助規劃，人來做最後決定。票價、房況、天候與營業異動，出發前再確認。</p></footer>
+</body></html>

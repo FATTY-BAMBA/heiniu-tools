@@ -1,0 +1,4 @@
+{
+  "functions": { "api/travel.js": { "maxDuration": 120 } },
+  "headers": [{ "source": "/api/(.*)", "headers": [{ "key": "Cache-Control", "value": "no-store" }] }]
+}

@@ -16,6 +16,14 @@
 
 const HEINIU_ITEMS = [
   {
+    kind: 'tool',
+    num: '04',
+    title: '主揪救星 · 朋友旅行規劃',
+    desc: '每個人都說「都可以」，但每個人都有條件。整理朋友的願望，先看高雄行程範例；AI 規劃功能準備中。',
+    href: './travel/',
+    date: '2026-10-07',
+  },
+  {
     kind: 'guide',
     num: 'B',
     title: '黑牛茶鋪 · ASTRA 實作',
