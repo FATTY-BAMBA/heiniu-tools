@@ -1,0 +1,23 @@
+{
+  "name": "heiniu-tools",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "check": "tsc -p tsconfig.json",
+    "dev": "node scripts/dev.mjs"
+  },
+  "dependencies": {
+    "@ai-sdk/gateway": "^4.0.106",
+    "ai": "^7.0.130",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "typescript": "^6.0.2"
+  }
+}
