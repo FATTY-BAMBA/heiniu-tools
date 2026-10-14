@@ -35,7 +35,7 @@
       <a class="btn btn-hi" href="./heiniu-video-editor.zip" download>免費下載技能 ↓</a>
       <a class="btn btn-ghost" href="#install">看安裝步驟 →</a>
     </div>
-    <p class="hero-note">免費 · Claude 免費版也能裝技能 · 素材只在你自己的 Claude 對話裡處理</p>
+    <p class="hero-note">免費 · Claude 免費版也能裝 · 素材只在你自己的 Claude 對話裡處理</p>
     <div class="proof">
       <div><div class="v num">81″ <b>→</b> 30″</div><div class="k">原始素材 → 成品（第一支）</div></div>
       <div><div class="v num">0</div><div class="k">打開剪輯軟體的次數</div></div>
@@ -68,11 +68,12 @@
 </section>
 
 <section class="sec wrap" id="install" aria-labelledby="install-title">
-  <div class="section-intro"><span class="eyebrow">三步裝好</span><h2 id="install-title">裝一次，之後每支影片都能用。</h2><p>用電腦版 Claude（網頁或桌面 App）安裝最順。裝好之後手機上的 Claude 也能用。</p></div>
-  <ol class="setup">
-    <li><span class="num">01</span><div><strong>下載技能檔</strong><p>按下面的按鈕，下載 <b>heiniu-video-editor.zip</b>。不用解壓縮。</p><a class="path" href="./heiniu-video-editor.zip" download>heiniu-video-editor.zip ↓</a></div></li>
-    <li><span class="num">02</span><div><strong>上傳到 Claude</strong><p>打開 Claude，進入 <b>Customize → Skills</b>，按 <b>＋</b> → <b>Create skill</b> → <b>Upload a skill</b>，選剛剛的 zip。</p><a href="https://support.claude.com/en/articles/12512180-use-skills-in-claude" target="_blank" rel="noopener">官方說明 ↗</a></div></li>
-    <li><span class="num">03</span><div><strong>確認已開啟</strong><p>技能清單裡看到 <b>heiniu-video-editor</b> 並開啟。技能需要 Claude 的<b>程式碼執行（Code execution）</b>功能，若沒開，到設定裡打開。</p></div></li>
+  <div class="section-intro"><span class="eyebrow">五分鐘裝好</span><h2 id="install-title">裝一次，之後每支影片都能用。</h2><p>請用<b>電腦</b>操作（Claude 網頁版或桌面 App）。之後剪片也建議用電腦，上傳影片比較順。</p></div>
+  <ol class="setup four">
+    <li><span class="num">01</span><div><strong>先打開「程式碼執行」</strong><p>技能要靠它才能跑。到 Claude 左下角頭像 → <b>Settings</b> → <b>Capabilities</b>，打開 <b>Code execution and file creation</b>。</p><span class="path">Settings → Capabilities</span><p class="sub">公司帳號（Team / Enterprise）要請管理員在 Organization settings → Plugins &amp; skills 打開。</p></div></li>
+    <li><span class="num">02</span><div><strong>下載技能檔</strong><p>下載 <b>heiniu-video-editor.zip</b>，<b>不要解壓縮</b>，直接用整個 zip。</p><a class="path" href="./heiniu-video-editor.zip" download>heiniu-video-editor.zip ↓</a><p class="sub">Mac 的 Safari 可能會自動解壓成資料夾：到「下載項目」找 .zip 檔，或改用 Chrome 下載。</p></div></li>
+    <li><span class="num">03</span><div><strong>上傳到 Claude</strong><p>進入 <b>Customize</b> → <b>Skills</b>，按 <b>＋</b> → <b>＋ Create skill</b> → <b>Upload a skill</b>，選剛剛的 zip。</p><span class="path">Customize → Skills → ＋ → Upload a skill</span></div></li>
+    <li><span class="num">04</span><div><strong>確認開啟，開始用</strong><p>技能清單出現 <b>heiniu-video-editor</b>，右邊開關是<b>開的</b>就完成了。開一個新對話，第一句寫「用黑牛 AI 剪輯⋯」，Claude 就會照這套流程剪。</p><a href="https://support.claude.com/en/articles/12512180-use-skills-in-claude" target="_blank" rel="noopener">Claude 官方說明 ↗</a></div></li>
   </ol>
 
   <div class="prompt-card">
@@ -112,6 +113,8 @@ claude plugin install heiniu-video-editor@heiniu-tools</pre>
 
 <section class="questions wrap" aria-labelledby="faq-title"><h2 id="faq-title">開始前，你可能想問</h2>
   <details class="faq"><summary>要付費嗎？</summary><p>技能免費。Claude 的免費版就能安裝技能；剪輯需要跑程式，影片越長、越多次修改，用到的額度越多，可用量以你的 Claude 方案為準。</p></details>
+  <details class="faq"><summary>上傳 zip 時失敗了？</summary><p>最常見的三個原因：① 上傳的是解壓後的資料夾，不是 <b>.zip</b>；② 沒有先打開 Settings → Capabilities 裡的 <b>Code execution and file creation</b>；③ 自己改過 zip 裡的資料夾名稱。重新下載原本的 zip 再上傳一次就好。</p></details>
+  <details class="faq"><summary>裝好了，但 Claude 好像沒有用到技能？</summary><p>先到 Customize → Skills 確認開關是開的，然後在對話第一句直接說「<b>用黑牛 AI 剪輯</b>幫我剪這支影片」。Claude 開始給你分鏡頁，就代表技能在運作。</p></details>
   <details class="faq"><summary>我的素材是 4K、檔案很大，上傳不了怎麼辦？</summary><p>先在手機或電腦把素材輸出成 <b>1080p</b> 再上傳就好，成品本來就是 1080×1920。如果你用 Claude 桌面版並連結了電腦資料夾，也可以直接讓 Claude 讀那個資料夾。</p></details>
   <details class="faq"><summary>我的影片會被傳到黑牛這邊嗎？</summary><p>不會。技能是一包說明和程式，在<b>你自己的 Claude 對話</b>裡執行，素材和成品都只在你的對話裡。</p></details>
   <details class="faq"><summary>只能剪中文嗎？</summary><p>中文（會轉成台灣繁體）、英文、粵語、日文、韓文都可以轉字幕。第一次使用時會自動下載語音辨識模型，如果你的環境不能下載，Claude 會請你提供一份字幕檔（.srt，剪映或手機自動字幕都能匯出）。</p></details>
