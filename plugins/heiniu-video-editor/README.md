@@ -2,7 +2,7 @@
 
 A Claude skill (Agent Skills format) that edits talking-head short videos end to end: raw takes → transcript → storyboard to approve → one-sentence revisions → a finished 1080×1920 video with karaoke captions, giant words behind the head, prompt boxes, a before/after reveal, a magazine-cover cold open and a comment-CTA ending.
 
-Step-by-step guide (繁體中文): https://heiniu-tools.vercel.app/edit/
+Step-by-step guide (繁體中文): https://fattybamba.com/edit/
 
 ## Install
 
