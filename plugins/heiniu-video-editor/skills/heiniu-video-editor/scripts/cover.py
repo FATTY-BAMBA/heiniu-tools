@@ -37,7 +37,7 @@ def cover_layers(it, P, W, H, ht, layout="open"):
         for i, c in enumerate(title):
             q = eq(p * 1.4 - i * 0.25); d.text((x, MT + (1 - q) * S(60)), c, font=fm, fill=IV + (int(255 * min(1, q * 1.3)),)); x += ws[i] + trk
         return to_np(shadow(im, (0, S(16)), S(26), 0.45))
-    issue = it.get("issue", ["NO. 01", "", "AI 剪輯特刊"]); head = it.get("headline", ["一句話，", "剪完整支影片"]); stat = it.get("stat", [])
+    issue = it.get("issue", ["NO. 01", "", "AI 剪輯特刊"]); head = it.get("headline", ["一秒都沒剪，", "全靠跟 AI 聊"]); stat = it.get("stat", [])
     kicker = it.get("kicker", "COVER STORY")
     def front(t):
         im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); a = lambda t0, dur=0.35: eq((t - t0) / dur)

@@ -6,7 +6,7 @@
     {
       "name": "heiniu-video-editor",
       "source": "./plugins/heiniu-video-editor",
-      "description": "一句話剪完整支短影音：原始素材 → 分鏡 → 一句話修改 → 成品"
+      "description": "跟 AI 聊天剪完整支短影音：原始素材 → 分鏡 → 一句話修改 → 成品"
     }
   ]
 }

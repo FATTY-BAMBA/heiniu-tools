@@ -3,7 +3,7 @@ name: heiniu-video-editor
 description: Edit talking-head short videos (Reels / TikTok / Shorts, 9:16) end to end from raw takes — transcript, pick the good takes, storyboard page to review, one-sentence revisions (「字幕再大一點」「做成雜誌封面」), then render with premium 墨牛-style karaoke captions, giant words behind the head, AI-prompt boxes, before/after reveal, magazine-cover cold open, comment-CTA ending, SFX, loudness and lip-sync-safe cuts. Use this whenever someone uploads phone/camera footage and wants it cut, captioned, made "more premium", turned into a Reel, or says 剪影片、幫我剪、上字幕、短影音、口播、AI 剪輯 — even if they don't mention a skill.
 ---
 
-# 黑牛 AI 剪輯 — one sentence, a finished video
+# 黑牛 AI 剪輯 — chat with AI, get a finished video
 
 The promise to the person: **you talk, AI edits.** They upload raw takes (NG included), approve a storyboard, and change anything by writing one sentence. They never open an editing app.
 

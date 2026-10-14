@@ -18,7 +18,7 @@ const HEINIU_ITEMS = [
   {
     kind: 'guide',
     num: 'C',
-    title: '黑牛 AI 剪輯 · 一句話剪完整支影片',
+    title: '黑牛 AI 剪輯 · 跟 AI 聊天剪影片',
     desc: '免費 Claude 技能：丟原始素材 → 看分鏡 → 一句話修改，拿到有字幕、封面和留言結尾的短影音。附三步安裝。',
     href: './edit/',
     date: '2026-10-14',
