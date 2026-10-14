@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>黑牛 AI 剪輯｜一句話剪完整支影片（免費 Claude 技能）｜黑牛工具</title>
+<meta name="description" content="影片裡那支，我一秒都沒有自己剪。把同一套 AI 剪輯流程裝進你的 Claude：丟原始素材、確認分鏡、一句話修改，就拿到有字幕、有封面、有留言結尾的短影音。免費下載，附完整步驟。">
+<meta property="og:title" content="黑牛 AI 剪輯｜一句話剪完整支影片">
+<meta property="og:description" content="丟原始素材 → 看分鏡 → 一句話修改 → 成品。免費 Claude 技能＋完整步驟。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://heiniu-tools.vercel.app/edit/poster.jpg">
+<meta property="og:image:alt" content="黑牛 AI 剪輯：雜誌封面開場畫面">
+<meta name="theme-color" content="#3D2CE0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="./edit.css">
+<script src="./edit.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要內容</a>
+<nav class="site-nav" aria-label="主要導覽"><div class="wrap">
+<a class="brandmark" href="../" aria-label="回黑牛工具首頁"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg><span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span></a>
+<div class="nav-links"><a href="../">← 全部工具</a><a class="cta" href="#install">安裝技能</a></div>
+</div></nav>
+
+<main id="main">
+<header class="hero wrap">
+  <div>
+    <span class="eyebrow">AI 剪輯 · Claude 技能</span>
+    <h1 class="h-display">一句話，<br>剪完<span class="acc">整支影片</span>。</h1>
+    <p class="lede">影片裡那支，我一秒都沒有自己剪。<br>同一套流程我整理成 Claude 技能（Skill），你也可以直接裝：丟原始素材、看分鏡、用一句話改，就拿到成品。</p>
+    <div class="hero-actions">
+      <a class="btn btn-hi" href="./heiniu-video-editor.zip" download>免費下載技能 ↓</a>
+      <a class="btn btn-ghost" href="#install">看安裝步驟 →</a>
+    </div>
+    <p class="hero-note">免費 · Claude 免費版也能裝技能 · 素材只在你自己的 Claude 對話裡處理</p>
+    <div class="proof">
+      <div><div class="v num">81″ <b>→</b> 30″</div><div class="k">原始素材 → 成品（第一支）</div></div>
+      <div><div class="v num">0</div><div class="k">打開剪輯軟體的次數</div></div>
+      <div><div class="v num"><b>1</b> 句</div><div class="k">想改哪裡，說一句就好</div></div>
+    </div>
+  </div>
+  <figure class="phone">
+    <video id="demo" src="./demo.mp4" poster="./poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="黑牛 AI 剪輯成品影片"></video>
+    <button class="sound" type="button" id="sound" aria-pressed="false">開聲音 🔈</button>
+    <figcaption class="badge">這支是 AI 剪的</figcaption>
+  </figure>
+</header>
+
+<section class="sec wrap" id="what" aria-labelledby="what-title">
+  <div class="section-intro"><span class="eyebrow">它會幫你做的事</span><h2 id="what-title">不是只有上字幕。</h2><p>這些都是影片裡真的出現的畫面，技能會照同一套風格幫你做。哪個不要，一句話拿掉。</p></div>
+  <div class="features">
+    <div class="feat"><img src="./f1.jpg" alt="巨大的「一秒」兩個字在頭頂後方逐字打出" loading="lazy" width="540" height="960"><div><strong>頭後巨字</strong><span>重點字逐字打出，頭部擋在字前面</span></div></div>
+    <div class="feat"><img src="./f2.jpg" alt="畫面上方的「對 AI 說」指令框正在打字" loading="lazy" width="540" height="960"><div><strong>對 AI 說</strong><span>指令框邊說邊打，送出就套用</span></div></div>
+    <div class="feat"><img src="./f3.jpg" alt="斜線把畫面分成 AI 調色與原始兩半" loading="lazy" width="540" height="960"><div><strong>前後對比</strong><span>斜線慢慢掃過，原始 vs AI 調色</span></div></div>
+    <div class="feat"><img src="./f4.jpg" alt="朱印風格的字幕：一句話，整支影片跟著改" loading="lazy" width="540" height="960"><div><strong>逐字字幕</strong><span>卡拉 OK 式亮起，重點字自動上色</span></div></div>
+    <div class="feat"><img src="./f5.jpg" alt="雜誌封面風格的畫面，刊頭「黑牛」在頭後" loading="lazy" width="540" height="960"><div><strong>雜誌封面</strong><span>開場 1.4 秒，先讓人停下來</span></div></div>
+    <div class="feat"><img src="./f6.jpg" alt="留言卡片：留言 EDIT，作者回覆" loading="lazy" width="540" height="960"><div><strong>留言結尾</strong><span>打字、愛心、作者回覆，避開 IG 按鈕區</span></div></div>
+  </div>
+  <ol class="flow">
+    <li><strong>丟原始素材</strong><p>NG、重講都留著。附上講稿更準。</p></li>
+    <li><strong>AI 先給分鏡</strong><p>每一拍的畫面、字幕、轉場，下面都有留言框。</p></li>
+    <li><strong>一句話修改</strong><p>「字幕再大一點」「這句剪掉」，改到你滿意。</p></li>
+    <li><strong>拿到成品</strong><p>1080×1920，聲音和嘴型對齊，檔案不超過 30MB。</p></li>
+  </ol>
+</section>
+
+<section class="sec wrap" id="install" aria-labelledby="install-title">
+  <div class="section-intro"><span class="eyebrow">三步裝好</span><h2 id="install-title">裝一次，之後每支影片都能用。</h2><p>用電腦版 Claude（網頁或桌面 App）安裝最順。裝好之後手機上的 Claude 也能用。</p></div>
+  <ol class="setup">
+    <li><span class="num">01</span><div><strong>下載技能檔</strong><p>按下面的按鈕，下載 <b>heiniu-video-editor.zip</b>。不用解壓縮。</p><a class="path" href="./heiniu-video-editor.zip" download>heiniu-video-editor.zip ↓</a></div></li>
+    <li><span class="num">02</span><div><strong>上傳到 Claude</strong><p>打開 Claude，進入 <b>Customize → Skills</b>，按 <b>＋</b> → <b>Create skill</b> → <b>Upload a skill</b>，選剛剛的 zip。</p><a href="https://support.claude.com/en/articles/12512180-use-skills-in-claude" target="_blank" rel="noopener">官方說明 ↗</a></div></li>
+    <li><span class="num">03</span><div><strong>確認已開啟</strong><p>技能清單裡看到 <b>heiniu-video-editor</b> 並開啟。技能需要 Claude 的<b>程式碼執行（Code execution）</b>功能，若沒開，到設定裡打開。</p></div></li>
+  </ol>
+
+  <div class="prompt-card">
+    <div class="prompt-head"><div><strong>開新對話，附上素材，貼這段</strong><span>把【】裡換成你的內容。講稿可以用手打的，不用很完整。</span></div><button class="btn btn-hi copy" type="button" data-copy="p-start">複製第一句</button></div>
+<pre id="p-start" tabindex="0">用黑牛 AI 剪輯幫我剪這支短影音。原始素材都附上了（NG 和重講也在裡面）。
+
+我的講稿：【貼上你的講稿】
+我的帳號名稱：【例如：黑牛】，結尾想請大家留言：【例如：EDIT】，留言後會拿到：【例如：完整流程】
+
+先幫我挑最好的那幾段、給我一份分鏡確認。我說可以之後再算圖。</pre>
+  </div>
+
+  <div class="prompt-card">
+    <div class="prompt-head"><div><strong>看完分鏡，一句話修改</strong><span>點一下就複製，貼回對話。也可以直接在分鏡頁的留言框寫。</span></div></div>
+    <div class="chips" style="padding:0 24px 24px">
+      <button class="chip" type="button" data-copy="c1">字幕再大一點</button><span class="chip-src" id="c1">字幕再大一點</span>
+      <button class="chip" type="button" data-copy="c2">第 03 拍這句剪掉</button><span class="chip-src" id="c2">第 03 拍這句剪掉</span>
+      <button class="chip" type="button" data-copy="c3">節奏再快一點</button><span class="chip-src" id="c3">節奏再快一點</span>
+      <button class="chip" type="button" data-copy="c4">開場做成雜誌封面</button><span class="chip-src" id="c4">開場做成雜誌封面</span>
+      <button class="chip" type="button" data-copy="c5">「最誇張」放成大字</button><span class="chip-src" id="c5">「最誇張」放成大字</span>
+      <button class="chip" type="button" data-copy="c6">讓它更有質感，加前後對比</button><span class="chip-src" id="c6">讓它更有質感，加前後對比</span>
+      <button class="chip" type="button" data-copy="c7">最後這段顏色跟前面不一樣，幫我對齊</button><span class="chip-src" id="c7">最後這段顏色跟前面不一樣，幫我對齊</span>
+      <button class="chip" type="button" data-copy="c8">結尾加留言「EDIT」</button><span class="chip-src" id="c8">結尾加留言「EDIT」</span>
+    </div>
+  </div>
+
+  <aside class="fix-card"><div><span class="tagpill">卡住時這樣說</span><h3>指出哪一拍、哪裡不對，只改那裡。</h3><p id="p-fix">第【幾】拍的【哪個地方】看起來【實際情況】，我想要【你要的樣子】。只改這一拍，其他保留，改好先給我看那一段的畫面。</p></div><button class="btn btn-ghost copy" type="button" data-copy="p-fix">複製修正句</button></aside>
+
+  <div class="code-card">
+    <h3>用 Claude Code？兩行裝好</h3>
+    <p>在終端機貼上，之後有更新也會跟著收到。</p>
+<pre id="p-cc">claude plugin marketplace add FATTY-BAMBA/heiniu-tools
+claude plugin install heiniu-video-editor@heiniu-tools</pre>
+    <div class="row"><span class="mono-note">// 原始碼在 GitHub：FATTY-BAMBA/heiniu-tools</span><button class="btn btn-hi copy" type="button" data-copy="p-cc">複製指令</button></div>
+  </div>
+</section>
+
+<section class="questions wrap" aria-labelledby="faq-title"><h2 id="faq-title">開始前，你可能想問</h2>
+  <details class="faq"><summary>要付費嗎？</summary><p>技能免費。Claude 的免費版就能安裝技能；剪輯需要跑程式，影片越長、越多次修改，用到的額度越多，可用量以你的 Claude 方案為準。</p></details>
+  <details class="faq"><summary>我的素材是 4K、檔案很大，上傳不了怎麼辦？</summary><p>先在手機或電腦把素材輸出成 <b>1080p</b> 再上傳就好，成品本來就是 1080×1920。如果你用 Claude 桌面版並連結了電腦資料夾，也可以直接讓 Claude 讀那個資料夾。</p></details>
+  <details class="faq"><summary>我的影片會被傳到黑牛這邊嗎？</summary><p>不會。技能是一包說明和程式，在<b>你自己的 Claude 對話</b>裡執行，素材和成品都只在你的對話裡。</p></details>
+  <details class="faq"><summary>只能剪中文嗎？</summary><p>中文（會轉成台灣繁體）、英文、粵語、日文、韓文都可以轉字幕。第一次使用時會自動下載語音辨識模型，如果你的環境不能下載，Claude 會請你提供一份字幕檔（.srt，剪映或手機自動字幕都能匯出）。</p></details>
+  <details class="faq"><summary>貼一次，就會跟黑牛的影片一模一樣嗎？</summary><p>不會一模一樣。素材、講稿和你每次的修改都會影響結果。先確認分鏡、再用一句話慢慢調，通常兩三輪就會很像你要的樣子。影片裡的「台北 101 頂樓換景」是另外用 AI 影片工具做的，這個技能不包含。</p></details>
+  <details class="faq"><summary>加音樂呢？</summary><p>建議發 IG / TikTok 時直接在 App 裡選熱門音樂，音量調到 10–15%。也可以給 Claude 一首可商用的音樂檔，它會自動在你講話時把音樂壓低。</p></details>
+</section>
+
+<section class="closing wrap"><div class="card"><div><span class="eyebrow">從一支開始</span><h2>下一支影片，讓 AI 先剪。</h2><p>剪完記得到影片留言告訴我，你最常用哪一句修改。</p></div><a class="btn btn-hi" href="./heiniu-video-editor.zip" download>免費下載技能 ↓</a></div></section>
+</main>
+
+<footer class="site-foot"><div class="wrap"><div><div class="who">黑牛 <b>／ AI 實作</b></div><p class="desc">把 AI 用在生活裡，從看得懂到做得出來。</p></div><div class="links"><a href="../">全部工具</a><a href="https://github.com/FATTY-BAMBA/heiniu-tools" target="_blank" rel="noopener">GitHub</a><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a></div></div></footer>
+<div id="copy-status" class="copy-status" role="status" aria-live="polite" aria-atomic="true"></div>
+<script>
+(function(){
+  var v = document.getElementById('demo'), b = document.getElementById('sound');
+  if (!v || !b) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { v.removeAttribute('autoplay'); v.pause(); v.controls = true; }
+  b.addEventListener('click', function(){
+    v.muted = !v.muted; if (!v.muted) { v.currentTime = 0; v.play(); }
+    b.textContent = v.muted ? '開聲音 🔈' : '靜音 🔇'; b.setAttribute('aria-pressed', String(!v.muted));
+  });
+})();
+</script>
+</body>
+</html>
