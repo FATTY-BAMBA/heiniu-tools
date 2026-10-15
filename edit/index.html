@@ -327,8 +327,24 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--cjk);font-size
 .guide-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#F3F4F6}
 .guide-video figcaption{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;font-size:13px;color:var(--ink2)}
 
+
+.chip-body{padding:0 24px 24px}
+.ctabs{display:flex;gap:6px;margin-top:14px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.ctabs::-webkit-scrollbar{display:none}
+.ctab{appearance:none;flex:0 0 auto;border:0;background:transparent;border-radius:999px;padding:7px 14px;font:600 13.5px/1.2 var(--cjk);color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
+.ctab:hover{color:var(--ink)}
+.ctab[aria-selected="true"]{background:var(--ink);color:#fff}
+.chip-group{margin-top:14px;min-height:44px}
+.chip-group[hidden]{display:none}
+.after-row{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;margin-top:18px;padding-top:16px;border-top:1px dashed var(--line2)}
+.after-row .chips{margin-top:0;gap:8px}
+.after-label{font:600 11.5px/1 var(--mono);letter-spacing:.08em;color:var(--muted)}
+.chip-ok{background:var(--hi);border-color:var(--hi);color:#fff}
+.chip-ok::after{color:rgba(255,255,255,.75)}
+.chip-ok:hover{color:#fff;opacity:.92}
+@media (max-width:520px){.chip-body{padding:0 18px 20px}.ctab{padding:7px 12px}.after-row .chip{padding:9px 13px;font-size:13.5px}.after-row .chip::after{display:none}.after-label{width:100%}}
 </style>
-<script src="/edit/edit.js?v=20261015" defer></script>
+<script src="/edit/edit.js?v=20261016" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">跳到主要內容</a>
@@ -404,16 +420,15 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--cjk);font-size
   </div>
 
   <div class="prompt-card">
-    <div class="prompt-head"><div><strong>看完分鏡，一句話修改</strong><span>點一下就複製，貼回對話。也可以直接在分鏡頁的留言框寫。</span></div></div>
-    <div class="chips" style="padding:0 24px 24px">
-      <button class="chip" type="button" data-copy="c1">字幕再大一點</button><span class="chip-src" id="c1">字幕再大一點</span>
-      <button class="chip" type="button" data-copy="c2">第 03 拍這句剪掉</button><span class="chip-src" id="c2">第 03 拍這句剪掉</span>
-      <button class="chip" type="button" data-copy="c3">節奏再快一點</button><span class="chip-src" id="c3">節奏再快一點</span>
-      <button class="chip" type="button" data-copy="c4">開場做成雜誌封面</button><span class="chip-src" id="c4">開場做成雜誌封面</span>
-      <button class="chip" type="button" data-copy="c5">「最誇張」放成大字</button><span class="chip-src" id="c5">「最誇張」放成大字</span>
-      <button class="chip" type="button" data-copy="c6">讓它更有質感，加前後對比</button><span class="chip-src" id="c6">讓它更有質感，加前後對比</span>
-      <button class="chip" type="button" data-copy="c7">最後這段顏色跟前面不一樣，幫我對齊</button><span class="chip-src" id="c7">最後這段顏色跟前面不一樣，幫我對齊</span>
-      <button class="chip" type="button" data-copy="c8">結尾加留言「EDIT」</button><span class="chip-src" id="c8">結尾加留言「EDIT」</span>
+    <div class="prompt-head"><div><strong>看完分鏡，一句話修改</strong><span>點一下就複製，貼回對話。也可以直接寫在分鏡頁的留言框。</span></div></div>
+    <div class="chip-body">
+      <div class="ctabs" role="tablist" aria-label="修改類型"><button class="ctab" type="button" role="tab" aria-selected="true" aria-controls="cg0" id="ct0">字幕</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg1" id="ct1">節奏</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg2" id="ct2">特效</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg3" id="ct3">修正</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg4" id="ct4">結尾</button></div>
+      <div class="chips chip-group" id="cg0" role="tabpanel" aria-labelledby="ct0"><button class="chip" type="button" data-copy="c1">這拍字幕再大一點</button><span class="chip-src" id="c1">這拍字幕再大一點</span><button class="chip" type="button" data-copy="c2">「幾千塊」換成紅色</button><span class="chip-src" id="c2">「幾千塊」換成紅色</span><button class="chip" type="button" data-copy="c3">字幕往上一點，不要擋到嘴巴</button><span class="chip-src" id="c3">字幕往上一點，不要擋到嘴巴</span></div>
+      <div class="chips chip-group" id="cg1" role="tabpanel" aria-labelledby="ct1"><button class="chip" type="button" data-copy="c4">節奏再快一點</button><span class="chip-src" id="c4">節奏再快一點</span><button class="chip" type="button" data-copy="c5">第 03 拍這句剪掉</button><span class="chip-src" id="c5">第 03 拍這句剪掉</span><button class="chip" type="button" data-copy="c6">這段講太快了，慢一點</button><span class="chip-src" id="c6">這段講太快了，慢一點</span></div>
+      <div class="chips chip-group" id="cg2" role="tabpanel" aria-labelledby="ct2"><button class="chip" type="button" data-copy="c7">「一秒」放成頭後面的大字</button><span class="chip-src" id="c7">「一秒」放成頭後面的大字</span><button class="chip" type="button" data-copy="c8">開場做成雜誌封面</button><span class="chip-src" id="c8">開場做成雜誌封面</span><button class="chip" type="button" data-copy="c9">讓它更有質感，加前後對比</button><span class="chip-src" id="c9">讓它更有質感，加前後對比</span></div>
+      <div class="chips chip-group" id="cg3" role="tabpanel" aria-labelledby="ct3"><button class="chip" type="button" data-copy="c10">最後這段顏色跟前面不一樣，幫我對齊</button><span class="chip-src" id="c10">最後這段顏色跟前面不一樣，幫我對齊</span><button class="chip" type="button" data-copy="c11">推近一點，更有電影感</button><span class="chip-src" id="c11">推近一點，更有電影感</span><button class="chip" type="button" data-copy="c12">檔案太大，要傳 IG</button><span class="chip-src" id="c12">檔案太大，要傳 IG</span></div>
+      <div class="chips chip-group" id="cg4" role="tabpanel" aria-labelledby="ct4"><button class="chip" type="button" data-copy="c13">結尾加留言「EDIT」</button><span class="chip-src" id="c13">結尾加留言「EDIT」</span><button class="chip" type="button" data-copy="c14">第 04 拍加轉場</button><span class="chip-src" id="c14">第 04 拍加轉場</span><button class="chip" type="button" data-copy="c15">結尾停久一點</button><span class="chip-src" id="c15">結尾停久一點</span></div>
+      <div class="after-row"><span class="after-label">看完預覽</span><div class="chips"><button class="chip chip-ok" type="button" data-copy="c16">OK，輸出完整版</button><span class="chip-src" id="c16">OK，輸出完整版</span><button class="chip" type="button" data-copy="c17">再大一點</button><span class="chip-src" id="c17">再大一點</span><button class="chip" type="button" data-copy="c18">改回原本</button><span class="chip-src" id="c18">改回原本</span></div></div>
     </div>
   </div>
 
