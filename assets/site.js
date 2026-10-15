@@ -17,6 +17,14 @@
 const HEINIU_ITEMS = [
   {
     kind: 'guide',
+    num: 'C',
+    title: '黑牛 AI 剪輯 · 跟 AI 聊天剪影片',
+    desc: '免費 Claude 技能：丟原始素材 → 看分鏡 → 一句話修改，拿到有字幕、封面和留言結尾的短影音。附三步安裝。',
+    href: './edit/',
+    date: '2026-10-14',
+  },
+  {
+    kind: 'guide',
     num: 'B',
     title: '黑牛茶鋪 · ASTRA 實作',
     desc: '先玩 60 秒接客挑戰，再複製四階段提示詞，做一間自己的珍奶小店。',

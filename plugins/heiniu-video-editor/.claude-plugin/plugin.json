@@ -1,0 +1,10 @@
+{
+  "name": "heiniu-video-editor",
+  "version": "1.0.0",
+  "description": "黑牛 AI 剪輯：把原始口播素材剪成 9:16 短影音——逐字字幕、分鏡確認、一句話修改、雜誌封面開場、留言 CTA 結尾。",
+  "author": { "name": "黑牛 Heiniu (@fatty_bamba)", "url": "https://fattybamba.com" },
+  "homepage": "https://fattybamba.com/edit/",
+  "repository": "https://github.com/FATTY-BAMBA/heiniu-tools",
+  "license": "MIT",
+  "keywords": ["video", "editing", "reels", "subtitles", "短影音", "剪輯"]
+}
