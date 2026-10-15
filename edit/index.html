@@ -69,11 +69,16 @@
 
 <section class="sec wrap" id="install" aria-labelledby="install-title">
   <div class="section-intro"><span class="eyebrow">五分鐘裝好</span><h2 id="install-title">裝一次，之後每支影片都能用。</h2><p>請用<b>電腦</b>操作（Claude 網頁版或桌面 App）。之後剪片也建議用電腦，上傳影片比較順。</p></div>
+  <figure class="guide-video">
+    <video src="./setup-guide.mp4" poster="./setup-guide.jpg" controls muted playsinline preload="metadata" aria-label="黑牛 AI 剪輯安裝教學影片：從打開程式碼執行到開始剪"></video>
+    <figcaption><span class="tagpill">40 秒看完</span>實際操作畫面：從打開程式碼執行、上傳技能，到附上影片開始剪。</figcaption>
+  </figure>
+
   <ol class="setup four">
     <li><span class="num">01</span><div><strong>先打開「程式碼執行」</strong><p>技能要靠它才能跑。到 Claude 左下角頭像 → <b>Settings</b> → <b>Capabilities</b>，打開 <b>Code execution and file creation</b>。</p><span class="path">Settings → Capabilities</span><p class="sub">公司帳號（Team / Enterprise）要請管理員在 Organization settings → Plugins &amp; skills 打開。</p></div></li>
     <li><span class="num">02</span><div><strong>下載技能檔</strong><p>下載 <b>heiniu-video-editor.zip</b>，<b>不要解壓縮</b>，直接用整個 zip。</p><a class="path" href="./heiniu-video-editor.zip" download>heiniu-video-editor.zip ↓</a><p class="sub">Mac 的 Safari 可能會自動解壓成資料夾：到「下載項目」找 .zip 檔，或改用 Chrome 下載。</p></div></li>
-    <li><span class="num">03</span><div><strong>上傳到 Claude</strong><p>進入 <b>Customize</b> → <b>Skills</b>，按 <b>＋</b> → <b>＋ Create skill</b> → <b>Upload a skill</b>，選剛剛的 zip。</p><span class="path">Customize → Skills → ＋ → Upload a skill</span></div></li>
-    <li><span class="num">04</span><div><strong>確認開啟，開始用</strong><p>技能清單出現 <b>heiniu-video-editor</b>，右邊開關是<b>開的</b>就完成了。開一個新對話，第一句寫「用黑牛 AI 剪輯⋯」，Claude 就會照這套流程剪。</p><a href="https://support.claude.com/en/articles/12512180-use-skills-in-claude" target="_blank" rel="noopener">Claude 官方說明 ↗</a></div></li>
+    <li><span class="num">03</span><div><strong>上傳到 Claude</strong><p>左側進入 <b>Customize</b>，在 Skills 頁按右上角 <b>＋ Add</b> → <b>Upload skill</b>，選剛剛的 zip，再按 <b>Upload</b>。</p><span class="path">Customize → ＋ Add → Upload skill</span></div></li>
+    <li><span class="num">04</span><div><strong>確認開啟，開始用</strong><p>技能清單出現 <b>heiniu-video-editor</b>，右邊開關是<b>開的</b>就完成了。開一個新對話，輸入 <b>/</b> 選 <b>heiniu-video-editor</b>，附上影片再送出，Claude 就會照這套流程剪。</p><a href="https://support.claude.com/en/articles/12512180-use-skills-in-claude" target="_blank" rel="noopener">Claude 官方說明 ↗</a></div></li>
   </ol>
 
   <div class="prompt-card">

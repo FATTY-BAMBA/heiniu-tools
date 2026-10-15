@@ -102,3 +102,7 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--cjk);font-size
 }
 @media(max-width:520px){.features{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr}}
 @media(max-width:390px){.wrap{padding-left:18px;padding-right:18px}.hero h1{font-size:34px}.hero-actions .btn{font-size:14px;padding:12px 16px}}
+
+.guide-video{margin-top:26px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow)}
+.guide-video video{display:block;width:100%;height:auto;aspect-ratio:16/9;background:#F3F4F6}
+.guide-video figcaption{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;font-size:13px;color:var(--ink2)}
