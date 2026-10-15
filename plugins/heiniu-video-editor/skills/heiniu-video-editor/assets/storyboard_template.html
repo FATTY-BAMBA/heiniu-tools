@@ -1,130 +1,440 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
 <style>
-/* 墨牛 palette: soft ink, ivory, ember. Layout: an editor's storyboard binder — mono header + proportional beat strip, then one row per beat (frames left, script and cues right). */
+/* 黑牛剪輯室 — a review room, not a storyboard binder: watch the draft, mark every beat OK or 要改, send notes to Claude, lock, deliver.
+   Ink / ivory / ember. Light by default, dark when the viewer prefers it. */
 :root {
-  --bg: #151516; --panel: #1d1d1f; --line: #2e2e31; --fg: #f3eee4; --muted: #9b968c; --gold: #ff6a1a; --red: #e85a45; --input: #121213;
+  --bg: #f3eee4; --panel: #fbf8f2; --panel2: #f6f1e7; --line: #ddd5c6; --fg: #1a1a1b; --muted: #6b665d; --ember: #c84a0c; --ember-soft: #f6e2d4;
+  --ok: #2f7d4f; --ok-soft: #dcefe2; --ink: #151516; --input: #ffffff; --shadow: 0 10px 30px rgba(30, 20, 10, .10);
   --display: "Noto Serif TC", "Songti TC", serif; --body: "Noto Sans TC", "PingFang TC", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
-  color-scheme: dark;
+  color-scheme: light;
 }
-@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) {
-  --bg: #f3eee4; --panel: #fbf8f2; --line: #ddd5c6; --fg: #1a1a1b; --muted: #6b665d; --gold: #c84a0c; --red: #b6432f; --input: #ffffff; color-scheme: light } }
-:root[data-theme="light"] { --bg: #f3eee4; --panel: #fbf8f2; --line: #ddd5c6; --fg: #1a1a1b; --muted: #6b665d; --gold: #c84a0c; --red: #b6432f; --input: #ffffff; color-scheme: light }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #141415; --panel: #1c1c1e; --panel2: #222225; --line: #303034; --fg: #f3eee4; --muted: #9b968c; --ember: #ff7a2e; --ember-soft: #3a2418;
+  --ok: #5fc48a; --ok-soft: #1d3326; --ink: #0d0d0e; --input: #121213; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark } }
+:root[data-theme="dark"] { --bg: #141415; --panel: #1c1c1e; --panel2: #222225; --line: #303034; --fg: #f3eee4; --muted: #9b968c; --ember: #ff7a2e; --ember-soft: #3a2418;
+  --ok: #5fc48a; --ok-soft: #1d3326; --ink: #0d0d0e; --input: #121213; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark }
 * { box-sizing: border-box }
-body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6; padding-inline: 16px; padding-block: 0 48px }
-.wrap { max-width: 980px; margin: 0 auto }
-header.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line);
-  display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-block: 14px; font-family: var(--mono); font-size: 13px }
-header.bar .path { color: var(--fg) } header.bar .ver { color: var(--muted) }
-.intro { padding-block: 28px 8px; display: grid; gap: 10px }
-.intro h1 { font-family: var(--display); font-weight: 700; font-size: clamp(26px, 5vw, 40px); line-height: 1.2; margin: 0; text-wrap: balance }
-.intro h1 em { font-style: normal; color: var(--gold) }
-.intro p { margin: 0; color: var(--muted); max-width: 62ch }
-.strip { display: flex; gap: 3px; margin-block: 22px 6px; height: 34px }
-.seg { min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; display: flex; align-items: center; justify-content: center;
-  font-family: var(--mono); font-size: 11px; color: var(--muted); text-decoration: none; overflow: hidden }
-.seg:hover, .seg:focus-visible { border-color: var(--gold); color: var(--gold); outline: none }
-.scale { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums }
-.beats { display: grid; gap: 14px; margin-top: 26px }
-.beat { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 20px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; scroll-margin-top: 70px }
-.beat::before { content: ""; position: absolute; left: 0; top: 18px; bottom: 18px; width: 4px; border-radius: 2px; background: var(--gold) }
-.beat.planned::before { background: var(--line) }
-.beat.planned { background: transparent; border-style: dashed }
-.thumbs { display: flex; gap: 8px; align-items: flex-start }
-figure { margin: 0; display: grid; gap: 4px }
-figure img { display: block; width: 108px; height: auto; aspect-ratio: 9 / 16; border-radius: 6px; border: 1px solid var(--line); background: #000 }
-figcaption { font-family: var(--mono); font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums }
-.ph { width: 108px; aspect-ratio: 9 / 16; border: 1px dashed var(--line); border-radius: 6px; display: flex; align-items: center; justify-content: center;
-  font-size: 12px; color: var(--muted); text-align: center; padding: 8px }
-.info { min-width: 0; display: grid; gap: 10px; align-content: start }
-.meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums }
-.meta .num { color: var(--gold); font-weight: 500 }
-.meta .shot { color: var(--fg) }
-.meta .badge { color: var(--bg); background: var(--gold); border-radius: 4px; padding: 0 6px; font-weight: 600 }
-.beat.changed { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) }
-.planned .meta .shot { color: var(--gold) }
-blockquote { margin: 0; font-family: var(--display); font-weight: 500; font-size: 21px; line-height: 1.45; text-wrap: balance }
-ul { margin: 0; padding-left: 1.1em; display: grid; gap: 2px }
-dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 14px; font-size: 14px }
-dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--gold); padding-top: 3px }
-dd { margin: 0; min-width: 0 }
-.note { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--muted); margin-top: 4px }
-textarea { width: 100%; resize: vertical; font: inherit; font-size: 14px; color: var(--fg); background: var(--input); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px }
-textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px }
-.send { margin-top: 30px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 12px }
-.send h2, .pipe h2 { font-family: var(--display); font-size: 20px; margin: 0 }
-.send p { margin: 0; color: var(--muted) }
-.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center }
-button { font: inherit; font-weight: 700; background: var(--gold); color: var(--bg); border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer }
-button:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px }
-#status { font-size: 13px; color: var(--muted) }
-#out { min-height: 90px; font-family: var(--mono); font-size: 13px }
-.pipe { margin-top: 30px; display: grid; gap: 14px }
-.pipe ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; counter-reset: s }
-.pipe li { counter-increment: s; border-top: 2px solid var(--line); padding-top: 10px; font-size: 14px; min-width: 0 }
-.pipe li::before { content: counter(s, decimal-leading-zero); display: block; font-family: var(--mono); font-size: 11px; color: var(--muted) }
-.pipe li.here { border-top-color: var(--gold) } .pipe li.here::before { color: var(--gold) }
-.pipe li small { display: block; color: var(--muted); font-size: 12px }
-@media (max-width: 640px) {
-  .beat { grid-template-columns: 1fr; gap: 14px }
-  .pipe ol { grid-template-columns: 1fr 1fr }
-  .seg span { display: none }
-  blockquote { font-size: 19px }
+[hidden] { display: none !important }
+html, body { margin: 0 }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.6; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 120px }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 25; background: var(--bg) }
+.wrap { max-width: 1120px; margin: 0 auto }
+button { font: inherit; cursor: pointer }
+:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums }
+
+/* top bar */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--bg); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; flex-wrap: wrap }
+.bar .path { font-family: var(--mono); font-size: 13px }
+.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px; font-size: 12.5px; font-weight: 700; background: var(--ember-soft); color: var(--ember) }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor }
+.pill.ok { background: var(--ok-soft); color: var(--ok) }
+.bar .ver { font-family: var(--mono); font-size: 12.5px; color: var(--muted) }
+
+.intro { padding: 22px 0 6px }
+.intro h1 { font-family: var(--display); font-size: clamp(24px, 4.4vw, 36px); line-height: 1.25; margin: 0 0 6px; text-wrap: balance }
+.intro h1 em { font-style: normal; color: var(--ember) }
+.intro p { margin: 0; color: var(--muted); max-width: 60ch }
+.how { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 13.5px; color: var(--muted) }
+.how b { color: var(--fg) }
+
+/* version banner */
+.changes { margin-top: 16px; border: 1px solid var(--ember); background: var(--ember-soft); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px }
+.changes strong { color: var(--ember) }
+.changes ul { margin: 0; padding-left: 1.1em; font-size: 14px }
+
+/* layout */
+.room { display: grid; grid-template-columns: minmax(260px, 360px) 1fr; gap: 24px; margin-top: 18px; align-items: start }
+.stage { position: sticky; top: 64px; display: grid; gap: 10px }
+.screen { position: relative; aspect-ratio: 9 / 16; background: #000; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow) }
+.screen video { width: 100%; height: 100%; object-fit: cover; display: block }
+.screen .empty { position: absolute; inset: 0; display: grid; place-items: center; color: #aaa; text-align: center; padding: 24px; font-size: 14px }
+.screen .now { position: absolute; left: 10px; top: 10px; background: rgba(0, 0, 0, .62); color: #fff; border-radius: 8px; padding: 3px 9px; font: 600 12px/1.4 var(--mono) }
+.screen .big { position: absolute; inset: 0; margin: auto; width: 64px; height: 64px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, .55); color: #fff; font-size: 24px; display: grid; place-items: center }
+.screen.playing .big { display: none }
+.controls { display: grid; gap: 8px }
+.scrub { position: relative; height: 30px; display: flex; gap: 2px; cursor: pointer; touch-action: none }
+.scrub .s { position: relative; flex: 1 1 0; min-width: 0; border-radius: 4px; background: var(--panel2); border: 1px solid var(--line); overflow: hidden; display: flex; align-items: center; justify-content: center; font: 500 10.5px var(--mono); color: var(--muted) }
+.scrub .s.ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok) }
+.scrub .s.fix { background: var(--ember-soft); border-color: var(--ember); color: var(--ember) }
+.scrub .s.on { outline: 2px solid var(--fg); outline-offset: -1px }
+.scrub .head { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--fg); left: 0; pointer-events: none }
+.ctl { display: flex; align-items: center; gap: 6px }
+.ctl button { border: 1px solid var(--line); background: var(--panel); color: var(--fg); border-radius: 8px; height: 36px; min-width: 40px; padding: 0 10px; font-weight: 700 }
+.ctl .tc { margin-left: auto; font: 500 12.5px var(--mono); color: var(--muted) }
+.ctl label { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); margin-left: 4px }
+
+/* beats */
+.beats { display: grid; gap: 12px }
+.beat { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; display: grid; grid-template-columns: 92px 1fr; gap: 14px; scroll-margin-top: 72px; transition: border-color .15s, box-shadow .15s }
+.beat.on { border-color: var(--fg); box-shadow: var(--shadow) }
+.beat.st-ok { border-left: 4px solid var(--ok) }
+.beat.st-fix { border-left: 4px solid var(--ember) }
+.thumb { position: relative; width: 92px; aspect-ratio: 9 / 16; border-radius: 9px; overflow: hidden; border: 1px solid var(--line); background: #000; padding: 0 }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block }
+.thumb span { position: absolute; inset: auto 6px 6px auto; width: 28px; height: 28px; border-radius: 50%; background: rgba(0, 0, 0, .6); color: #fff; display: grid; place-items: center; font-size: 12px }
+.info { min-width: 0; display: grid; gap: 8px; align-content: start }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font: 500 12px var(--mono); color: var(--muted) }
+.meta .n { color: var(--ember); font-weight: 600; font-size: 13px }
+.meta .shot { color: var(--fg); font-family: var(--body) }
+.meta .tag { background: var(--ember); color: #fff; border-radius: 4px; padding: 0 6px; font-family: var(--body); font-weight: 700; font-size: 11.5px }
+blockquote { margin: 0; font-family: var(--display); font-weight: 600; font-size: 19px; line-height: 1.45; text-wrap: balance }
+details.plan summary { cursor: pointer; font-size: 13px; color: var(--muted); list-style: none }
+details.plan summary::-webkit-details-marker { display: none }
+details.plan summary::before { content: "＋ "; }
+details.plan[open] summary::before { content: "－ "; }
+details.plan ul { margin: 6px 0 0; padding-left: 1.1em; font-size: 14px; display: grid; gap: 2px }
+.applied { font-size: 13.5px; background: var(--ember-soft); border-radius: 8px; padding: 6px 10px }
+.applied b { color: var(--ember) }
+.verdict { display: flex; flex-wrap: wrap; gap: 8px }
+.verdict button { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 13.5px }
+.verdict button.play { margin-right: auto; background: var(--fg); color: var(--bg); border-color: var(--fg) }
+.verdict button[aria-pressed="true"].okb { background: var(--ok); border-color: var(--ok); color: #fff }
+.verdict button[aria-pressed="true"].fixb { background: var(--ember); border-color: var(--ember); color: #fff }
+.fixbox { display: none; gap: 8px }
+.beat.st-fix .fixbox { display: grid }
+.quick { display: flex; flex-wrap: wrap; gap: 6px }
+.quick button { border: 1px dashed var(--line); background: transparent; color: var(--muted); border-radius: 999px; padding: 4px 10px; font-size: 12.5px }
+.quick button:hover { color: var(--ember); border-color: var(--ember) }
+textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-size: 14.5px; color: var(--fg); background: var(--input); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px }
+
+/* action dock */
+.dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
+.dock .in { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap }
+.dock .prog { font-size: 13.5px; color: var(--muted); margin-right: auto }
+.dock .prog b { color: var(--fg) }
+.meter { width: 120px; height: 6px; border-radius: 3px; background: var(--panel2); overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px }
+.meter i { display: block; height: 100%; background: var(--ok); width: 0 }
+.btn { border: 0; border-radius: 10px; padding: 11px 18px; font-weight: 700; font-size: 15px; background: var(--ember); color: #fff }
+.btn.ok { background: var(--ok) }
+.btn.ghost { background: transparent; color: var(--fg); border: 1px solid var(--line) }
+.btn[disabled] { opacity: .45; cursor: not-allowed }
+#status { flex-basis: 100%; font-size: 13px; color: var(--muted); min-height: 0 }
+#status:empty { display: none }
+
+/* processing / delivered overlay */
+.veil { position: fixed; inset: 0; z-index: 40; background: rgba(10, 8, 6, .55); display: none; place-items: center; padding: 20px }
+.veil.show { display: grid }
+.sheet { width: min(460px, 100%); background: var(--panel); color: var(--fg); border-radius: 18px; padding: 22px; box-shadow: var(--shadow); display: grid; gap: 12px }
+.sheet h2 { margin: 0; font-family: var(--display); font-size: 22px }
+.sheet p { margin: 0; color: var(--muted) }
+.steps { list-style: none; margin: 4px 0; padding: 0; display: grid; gap: 8px; font-size: 14.5px }
+.steps li { display: flex; gap: 10px; align-items: center; color: var(--muted) }
+.steps li::before { content: ""; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line); flex: none }
+.steps li.done { color: var(--fg) } .steps li.done::before { background: var(--ok); border-color: var(--ok) }
+.steps li.now { color: var(--fg); font-weight: 700 } .steps li.now::before { border-color: var(--ember); border-top-color: transparent; animation: spin .9s linear infinite }
+@keyframes spin { to { transform: rotate(360deg) } }
+@media (prefers-reduced-motion: reduce) { .steps li.now::before { animation: none; background: var(--ember) } }
+.sheet .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end }
+.sheet .elapsed { font: 500 12.5px var(--mono); color: var(--muted) }
+.manual { width: 100%; min-height: 110px; font: 13px/1.5 var(--mono) }
+
+.deliver { margin-top: 18px; border: 1px solid var(--ok); background: var(--ok-soft); border-radius: 14px; padding: 16px; display: grid; gap: 8px }
+.deliver h2 { margin: 0; font-family: var(--display); font-size: 21px; color: var(--ok) }
+.deliver dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px; font-size: 14px }
+.deliver dt { color: var(--muted) } .deliver dd { margin: 0 }
+.deliver .row { display: flex; gap: 8px; flex-wrap: wrap }
+
+@media (max-width: 760px) {
+  .room { grid-template-columns: 1fr; gap: 14px }
+  .stage { top: 52px; z-index: 10; background: var(--bg); padding-bottom: 8px; grid-template-columns: 112px 1fr; align-items: center; gap: 12px }
+  .screen { border-radius: 10px }
+  .screen .big { width: 44px; height: 44px; font-size: 18px }
+  .ctl label { display: none }
+  .beat { grid-template-columns: 72px 1fr; gap: 12px; padding: 12px }
+  .thumb { width: 72px }
+  blockquote { font-size: 17px }
+  .meter { width: 70px }
+  .dock .prog { flex-basis: 100%; margin: 0 }
+  .dock .btn { padding: 11px 12px; font-size: 14px }
+  .dock #send { flex: 1 }
+  .bar { flex-wrap: nowrap } .bar .ver { display: none }
+  .bar .path { font-size: 12px }
+  .verdict { gap: 6px }
+  .verdict button { padding: 6px 11px; font-size: 13px }
 }
-@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth } }
 </style>
+
 <div class="wrap">
-  <header class="bar"><span class="path">{{PATH}} / storyboard</span><span class="ver">v{{VER}} · {{COUNT}} 拍 · {{DUR}} 秒</span></header>
+  <header class="bar">
+    <span class="path">{{PATH}} / 剪輯室</span>
+    <span id="phase" class="pill">粗剪審片</span>
+    <span class="ver">v{{VER}} · {{COUNT}} 拍 · {{DUR}} 秒</span>
+  </header>
+
   <section class="intro">
-    <h1>剪之前，先看 AI <em>打算怎麼剪</em></h1>
-    <p>每一拍的畫面、台詞、字幕重點、轉場和音效都列在這裡。想改哪裡，就在那一拍下面寫一句話，最後一次複製給 Claude，確認後才算圖。</p>
+    <h1>先看<em>粗剪</em>，每一拍給個判斷</h1>
+    <p>左邊是這一版的預覽。每一拍按「▶ 播這拍」看清楚，再選 <b>這拍 OK</b> 或 <b>要改</b>，要改就寫一句話。全部看完，按下面的按鈕交給 Claude。</p>
+    <ul class="how"><li><b>空白鍵</b> 播放／暫停</li><li><b>← →</b> 上一拍／下一拍</li><li>預覽是低解析度，成品是 1080×1920</li></ul>
   </section>
-  <nav class="strip" aria-label="各拍時間長度">{{STRIP}}</nav>
-  <div class="scale"><span>0:00</span><span>{{MID}}</span><span>{{END}}</span></div>
-  <section class="beats">
-{{CARDS}}
-  </section>
-  <section class="send">
-    <h2>把修改意見交給 Claude</h2>
-    <p>只會收集有寫內容的拍。複製後貼回對話即可。</p>
-    <div class="row"><button type="button" id="copy">複製全部修改</button><span id="status" role="status"></span></div>
-    <textarea id="out" readonly aria-label="彙整後的修改意見"></textarea>
-  </section>
-  <section class="pipe">
-    <h2>剪輯流程</h2>
-    <ol>
-      <li>原始素材<small>直接丟進來，NG 也留著</small></li>
-      <li>語音轉文字<small>每個字都有時間碼</small></li>
-      <li class="here">分鏡<small>你在這裡</small></li>
-      <li>一句話修改<small>例：字幕再大一點</small></li>
-      <li>算圖輸出<small>1080×1920・30fps</small></li>
-    </ol>
-  </section>
+
+  <section id="changes" class="changes" hidden></section>
+  <section id="deliver" class="deliver" hidden></section>
+
+  <div class="room">
+    <aside class="stage" aria-label="預覽播放器">
+      <div class="screen" id="screen">
+        <video id="v" playsinline preload="auto" poster="{{POSTER}}" src="{{VIDEO}}"></video>
+        <span class="now mono" id="now">01</span>
+        <button class="big" id="big" type="button" aria-label="播放">▶</button>
+        <div class="empty" id="novid" hidden>這一版還沒有預覽影片<br>（先看縮圖和台詞判斷）</div>
+      </div>
+      <div class="controls">
+        <div class="scrub" id="scrub" role="slider" aria-label="時間軸" tabindex="0" aria-valuemin="0" aria-valuemax="{{DUR}}" aria-valuenow="0"><div class="head" id="head"></div></div>
+        <div class="ctl">
+          <button type="button" id="prev" aria-label="上一拍">◀︎</button>
+          <button type="button" id="pp" aria-label="播放／暫停">▶</button>
+          <button type="button" id="next" aria-label="下一拍">▶︎▶︎</button>
+          <label><input type="checkbox" id="loop"> 重播這拍</label>
+          <span class="tc" id="tc">0:00.0 / {{END}}</span>
+        </div>
+      </div>
+    </aside>
+    <section class="beats" id="beats" aria-label="各拍"></section>
+  </div>
 </div>
+
+<div class="dock" id="dock">
+  <div class="in">
+    <span class="prog" id="prog">已看 <b>0</b>/{{COUNT}} 拍<span class="meter"><i id="meter"></i></span></span>
+    <button class="btn ghost" type="button" id="copy">複製修改</button>
+    <button class="btn" type="button" id="send">送出修改給 Claude</button>
+    <span id="status" role="status" aria-live="polite"></span>
+  </div>
+</div>
+
+<div class="veil" id="veil" role="dialog" aria-modal="true" aria-labelledby="veilTitle">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script type="application/json" id="data">{{DATA}}</script>
 <script>
 (function () {
-  var KEY = "{{KEY}}";
-  var notes = {};
-  try { notes = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { notes = {}; }
-  var areas = document.querySelectorAll("textarea[data-beat]");
-  areas.forEach(function (t) {
-    if (notes[t.dataset.beat]) t.value = notes[t.dataset.beat];
-    t.addEventListener("input", function () {
-      notes[t.dataset.beat] = t.value;
-      try { localStorage.setItem(KEY, JSON.stringify(notes)); } catch (e) {}
+  "use strict";
+  var D = JSON.parse(document.getElementById("data").textContent);
+  var B = D.beats, VER = D.version, KEY = "hn-room-" + D.name;
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var fmt = function (x) { x = Math.max(0, x || 0); var m = Math.floor(x / 60), s = x - m * 60; return m + ":" + (s < 10 ? "0" : "") + s.toFixed(1); };
+  var QUICK = ["字幕再大一點", "這句剪掉", "重點字換紅色", "放成頭後面的大字", "節奏快一點", "加轉場"];
+  var OKWORDS = /^(ok|okay|好|可以|沒問題|不用改|讚|👍)[。.!！\s]*$/i;
+
+  /* ---------- per-viewer draft (survives reloads of the same version) ---------- */
+  var S = { v: VER, st: {}, note: {}, pending: null };
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (saved && saved.v === VER) S = saved;
+    else if (saved && saved.v < VER) {                      // new version: keep approvals on beats that did not change
+      if (saved.pending) S.justUpdated = saved.v;
+      B.forEach(function (b) { if (!b.changed && saved.st && saved.st[b.n] === "ok") S.st[b.n] = "ok"; });
+    }
+  } catch (e) {}
+  var save = function () { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+  /* ---------- render beats ---------- */
+  var list = $("beats");
+  B.forEach(function (b, i) {
+    var el = document.createElement("article");
+    el.className = "beat"; el.id = "b" + b.n; el.dataset.i = i;
+    el.innerHTML =
+      '<button class="thumb" type="button" data-act="play" aria-label="播放第 ' + b.n + ' 拍"><img src="' + b.thumb + '" alt="" width="92" height="164"><span>▶</span></button>' +
+      '<div class="info">' +
+        '<div class="meta"><span class="n">' + b.n + '</span><span>' + fmt(b.start) + '–' + fmt(b.end) + '</span><span>' + (b.end - b.start).toFixed(1) + 's</span><span class="shot">' + esc(b.shot) + '</span>' + (b.changed ? '<span class="tag">v' + VER + ' 已修改</span>' : '') + '</div>' +
+        '<blockquote>「' + esc(b.line) + '」</blockquote>' +
+        (b.applied ? '<div class="applied"><b>這次改了：</b>' + esc(b.applied) + '</div>' : '') +
+        '<details class="plan"><summary>這拍怎麼剪</summary><ul>' + b.acts.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + '</ul></details>' +
+        '<div class="verdict"><button class="play" type="button" data-act="play">▶ 播這拍</button>' +
+          '<button class="okb" type="button" data-act="ok" aria-pressed="false">✓ 這拍 OK</button>' +
+          '<button class="fixb" type="button" data-act="fix" aria-pressed="false">✎ 要改</button></div>' +
+        '<div class="fixbox"><label class="mono" for="t' + b.n + '" style="font-size:11.5px;color:var(--muted)">一句話說要怎麼改</label>' +
+          '<textarea id="t' + b.n + '" maxlength="300" placeholder="例如：這拍字幕再大一點，「' + esc(b.key || "重點字") + '」換成紅色"></textarea>' +
+          '<div class="quick">' + QUICK.map(function (q) { return '<button type="button" data-q="' + esc(q) + '">＋ ' + esc(q) + '</button>'; }).join("") + '</div></div>' +
+      '</div>';
+    list.appendChild(el);
+    var ta = el.querySelector("textarea");
+    if (S.note[b.n]) ta.value = S.note[b.n];
+    ta.addEventListener("input", function () { S.note[b.n] = ta.value; save(); refresh(); });
+  });
+  list.addEventListener("click", function (e) {
+    var t = e.target.closest("button"); if (!t) return;
+    var card = t.closest(".beat"), i = +card.dataset.i, b = B[i];
+    if (t.dataset.act === "play") return playBeat(i);
+    if (t.dataset.act === "ok") { S.st[b.n] = S.st[b.n] === "ok" ? "" : "ok"; }
+    if (t.dataset.act === "fix") { S.st[b.n] = S.st[b.n] === "fix" ? "" : "fix"; if (S.st[b.n] === "fix") setTimeout(function () { card.querySelector("textarea").focus(); }, 30); }
+    if (t.dataset.q) { var ta = card.querySelector("textarea"); ta.value = (ta.value.trim() ? ta.value.trim().replace(/[，。]$/, "") + "，" : "") + t.dataset.q; S.note[b.n] = ta.value; S.st[b.n] = "fix"; }
+    save(); refresh();
+  });
+
+  /* ---------- scrub bar ---------- */
+  var scrub = $("scrub"), head = $("head"), TOTAL = D.duration;
+  B.forEach(function (b, i) { var s = document.createElement("div"); s.className = "s"; s.style.flexGrow = Math.max(0.05, b.end - b.start); s.textContent = b.n; s.dataset.i = i; scrub.insertBefore(s, head); });
+  var segs = scrub.querySelectorAll(".s");
+
+  /* ---------- player ---------- */
+  var v = $("v"), screen = $("screen"), cur = 0, stopAt = null, hasVideo = !!v.getAttribute("src");
+  if (!hasVideo) { v.remove(); $("novid").hidden = false; $("big").hidden = true; }
+  var beatAt = function (t) { for (var i = 0; i < B.length; i++) if (t < B[i].end - 0.001) return i; return B.length - 1; };
+  function setCur(i, scroll) {
+    cur = i; $("now").textContent = B[i].n + " · " + fmt(B[i].start);
+    document.querySelectorAll(".beat").forEach(function (c, k) { c.classList.toggle("on", k === i); });
+    segs.forEach(function (s, k) { s.classList.toggle("on", k === i); });
+    if (scroll) document.getElementById("b" + B[i].n).scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+  function playBeat(i) {
+    setCur(i, true);
+    if (!hasVideo) return;
+    stopAt = B[i].end; v.currentTime = B[i].start + 0.01; v.play().catch(function () {});
+  }
+  function toggle() { if (!hasVideo) return; if (v.paused) { if (v.currentTime >= TOTAL - 0.05) v.currentTime = 0; stopAt = null; v.play().catch(function () {}); } else v.pause(); }
+  if (hasVideo) {
+    v.addEventListener("timeupdate", function () {
+      var t = v.currentTime; head.style.left = (100 * Math.min(1, t / TOTAL)) + "%";
+      $("tc").textContent = fmt(t) + " / " + fmt(TOTAL); scrub.setAttribute("aria-valuenow", t.toFixed(1));
+      var i = beatAt(t); if (i !== cur) setCur(i, false);
+      if (stopAt !== null && t >= stopAt - 0.04) {
+        if ($("loop").checked) { v.currentTime = B[cur].start + 0.01; } else { v.pause(); stopAt = null; }
+      }
     });
+    v.addEventListener("play", function () { screen.classList.add("playing"); $("pp").textContent = "❚❚"; });
+    v.addEventListener("pause", function () { screen.classList.remove("playing"); $("pp").textContent = "▶"; });
+    v.addEventListener("click", toggle);
+  }
+  $("big").addEventListener("click", toggle); $("pp").addEventListener("click", toggle);
+  $("prev").addEventListener("click", function () { playBeat(Math.max(0, cur - 1)); });
+  $("next").addEventListener("click", function () { playBeat(Math.min(B.length - 1, cur + 1)); });
+  var seekFromX = function (x) { var r = scrub.getBoundingClientRect(); var f = Math.min(1, Math.max(0, (x - r.left) / r.width)); var t = f * TOTAL; if (hasVideo) { stopAt = null; v.currentTime = t; } setCur(beatAt(t), true); };
+  scrub.addEventListener("pointerdown", function (e) { seekFromX(e.clientX); scrub.setPointerCapture(e.pointerId); var mv = function (ev) { seekFromX(ev.clientX); }; scrub.addEventListener("pointermove", mv); scrub.addEventListener("pointerup", function up() { scrub.removeEventListener("pointermove", mv); scrub.removeEventListener("pointerup", up); }); });
+  document.addEventListener("keydown", function (e) {
+    if (/^(TEXTAREA|INPUT)$/.test(e.target.tagName) || $("veil").classList.contains("show")) return;
+    if (e.key === " ") { e.preventDefault(); toggle(); }
+    if (e.key === "ArrowRight") { e.preventDefault(); playBeat(Math.min(B.length - 1, cur + 1)); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); playBeat(Math.max(0, cur - 1)); }
   });
-  var out = document.getElementById("out"), status = document.getElementById("status");
-  document.getElementById("copy").addEventListener("click", function () {
-    var lines = [];
-    areas.forEach(function (t) { var v = t.value.trim(); if (v) lines.push("第 " + t.dataset.beat + " 拍：" + v); });
-    if (!lines.length) { out.value = ""; status.textContent = "還沒有任何修改意見。"; return; }
-    var text = "分鏡修改（v{{VER}}）\n" + lines.join("\n");
-    out.value = text;
-    var done = function () { status.textContent = "已複製 " + lines.length + " 條修改。"; };
-    var fallback = function () { out.focus(); out.select(); status.textContent = "已選取文字，請手動複製。"; };
-    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (e) { fallback(); }
-  });
+
+  /* ---------- state → UI ---------- */
+  function notes() {
+    var out = [];
+    B.forEach(function (b) {
+      var n = (S.note[b.n] || "").trim();
+      if (S.st[b.n] === "fix" && n && !OKWORDS.test(n)) out.push({ n: b.n, text: n });
+    });
+    return out;
+  }
+  function refresh() {
+    var seen = 0;
+    B.forEach(function (b, i) {
+      var st = S.st[b.n] || "", card = document.getElementById("b" + b.n);
+      card.classList.toggle("st-ok", st === "ok"); card.classList.toggle("st-fix", st === "fix");
+      card.querySelector(".okb").setAttribute("aria-pressed", st === "ok"); card.querySelector(".fixb").setAttribute("aria-pressed", st === "fix");
+      segs[i].classList.toggle("ok", st === "ok"); segs[i].classList.toggle("fix", st === "fix");
+      if (st) seen++;
+    });
+    var N = notes().length, all = seen === B.length;
+    $("prog").innerHTML = "已看 <b>" + seen + "</b>/" + B.length + " 拍" + (N ? " · <b>" + N + "</b> 條修改" : "") + '<span class="meter"><i style="width:' + (100 * seen / B.length) + '%"></i></span>';
+    var send = $("send");
+    if (D.delivered) { send.textContent = "再改一版"; send.className = "btn"; send.disabled = !N; }
+    else if (N) { send.textContent = "送出 " + N + " 條修改給 Claude"; send.className = "btn"; send.disabled = false; }
+    else if (all) { send.textContent = "全部 OK，輸出完整版"; send.className = "btn ok"; send.disabled = false; }
+    else { send.textContent = "先看完每一拍（" + seen + "/" + B.length + "）"; send.className = "btn"; send.disabled = true; }
+    $("copy").disabled = !N && !all;
+  }
+
+  function message(kind) {
+    var head = "【黑牛剪輯室】" + D.name + " v" + VER;
+    if (kind === "approve") return head + " 全部 OK，請輸出完整版（1080×1920）。";
+    var ok = B.filter(function (b) { return S.st[b.n] === "ok"; }).map(function (b) { return b.n; });
+    return head + " 修改\n" + notes().map(function (x) { return "第 " + x.n + " 拍：" + x.text; }).join("\n") + (ok.length ? "\n（第 " + ok.join("、") + " 拍 OK，保持不變）" : "") + "\n改好請更新這個剪輯室頁面，並先給我看改過的那幾拍。";
+  }
+
+  /* ---------- Claude bridge: send-to-Claude when the viewer offers it, copy otherwise ---------- */
+  var comments = null;
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("comments").then(function (c) { comments = c; }).catch(function () {});
+  }
+  function status(t) { $("status").textContent = t; }
+  function copyText(t) {
+    var ok = function () { status("已複製。回到 Claude 對話貼上送出，改好後這頁會更新。"); };
+    var fb = function () { openManual(t); };
+    try { navigator.clipboard.writeText(t).then(ok, fb); } catch (e) { fb(); }
+  }
+  async function deliver(kind) {
+    var text = message(kind).slice(0, 3900);
+    var can = "off";
+    if (comments && comments.canSendToClaude) { try { can = await comments.canSendToClaude(); } catch (e) { can = "off"; } }
+    if (can !== "available") { copyText(text); return; }
+    var btn = $("send"); btn.disabled = true; status("送出中…");
+    try {
+      var anchor = await comments.anchorFor($("dock"));
+      await comments.sendToClaude({ anchor: anchor, text: text });
+      S.pending = { kind: kind, at: Date.now(), beats: notes().map(function (x) { return x.n; }) }; save();
+      showWorking(); status("");
+    } catch (err) {
+      btn.disabled = false;
+      var code = err && err.code;
+      if (code === "rate_limited") status("送太快了，等幾秒再按一次。");
+      else if (code === "consent_required" || code === "forbidden" || code === "not_granted") status("沒有權限直接送出，已改成複製。"), copyText(text);
+      else copyText(text);
+    }
+  }
+  $("send").addEventListener("click", function () { deliver(notes().length ? "fix" : "approve"); });
+  $("copy").addEventListener("click", function () { copyText(message(notes().length ? "fix" : "approve")); });
+
+  /* ---------- overlay ---------- */
+  var veil = $("veil"), sheet = $("sheet"), timer = null;
+  function close() { veil.classList.remove("show"); clearInterval(timer); }
+  veil.addEventListener("click", function (e) { if (e.target === veil) close(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+  function showWorking() {
+    var p = S.pending, approve = p.kind === "approve";
+    var steps = approve ? ["Claude 收到", "算 1080×1920 成品", "音量、嘴型、檔案大小檢查", "成品傳到對話"] : ["Claude 收到", "修改第 " + p.beats.join("、") + " 拍", "算新的預覽", "更新這個頁面（v" + (VER + 1) + "）"];
+    sheet.innerHTML = '<h2 id="veilTitle">' + (approve ? "正在輸出完整版…" : "Claude 正在修改…") + '</h2>' +
+      '<p>' + (approve ? "通常 1–4 分鐘。好了以後完整影片會出現在對話裡，可以直接下載。" : "通常 1–3 分鐘。改好這頁會自動更新，改過的拍會標「已修改」。") + '</p>' +
+      '<ol class="steps">' + steps.map(function (s, k) { return '<li data-k="' + k + '">' + esc(s) + '</li>'; }).join("") + '</ol>' +
+      '<div class="row"><span class="elapsed" id="el" style="margin-right:auto"></span><button class="btn ghost" type="button" id="hide">先關掉</button></div>';
+    veil.classList.add("show"); $("hide").onclick = close;
+    var lis = sheet.querySelectorAll(".steps li");
+    var tick = function () {
+      var s = (Date.now() - p.at) / 1000, k = s < 8 ? 0 : s < 70 ? 1 : 2;
+      lis.forEach(function (li, j) { li.className = j < k ? "done" : j === k ? "now" : ""; });
+      var el = $("el"); if (el) el.textContent = "已等 " + Math.floor(s / 60) + ":" + ("0" + Math.floor(s % 60)).slice(-2);
+    };
+    tick(); clearInterval(timer); timer = setInterval(tick, 1000);
+  }
+  function openManual(t) {
+    sheet.innerHTML = '<h2 id="veilTitle">複製這段，貼回 Claude 對話</h2><p>這個畫面不能直接送出，複製後回到對話貼上就好。</p><textarea class="manual" id="mt" readonly></textarea><div class="row"><button class="btn" type="button" id="mclose">好</button></div>';
+    $("mt").value = t; veil.classList.add("show"); $("mt").focus(); $("mt").select(); $("mclose").onclick = close;
+  }
+
+  /* ---------- version banner / delivered ---------- */
+  if (D.changes && D.changes.length) {
+    var c = $("changes"); c.hidden = false;
+    c.innerHTML = "<strong>v" + VER + " 已更新" + (S.justUpdated ? "（剛剛改好的）" : "") + "</strong><ul>" + D.changes.map(function (x) { return "<li>第 " + esc(x.beat) + " 拍：" + esc(x.note) + "</li>"; }).join("") + "</ul>";
+    if (S.justUpdated) { S.justUpdated = null; save(); }
+  }
+  if (D.delivered) {
+    var dv = $("deliver"); dv.hidden = false; $("phase").textContent = "已交片"; $("phase").className = "pill ok";
+    var f = D.delivered;
+    dv.innerHTML = '<h2>✓ 完整版已輸出</h2><dl><dt>規格</dt><dd>' + esc(f.spec || "1080×1920 · 30fps") + '</dd><dt>大小</dt><dd>' + esc(f.size || "") + '</dd><dt>檔案</dt><dd>' + esc(f.file || "") + '</dd></dl>' +
+      '<p style="margin:0">完整影片在<b>對話裡</b>，點檔案就能下載。下面兩個可以從這裡存：</p>' +
+      '<div class="row"><button class="btn ok" type="button" id="dlCover">下載封面 JPG</button><button class="btn ghost" type="button" id="dlSrt">下載字幕 SRT</button></div><span id="dlmsg" class="mono" style="font-size:12.5px;color:var(--muted)"></span>';
+    var downloads = null;
+    if (window.claude && window.claude.use) window.claude.use("downloads").then(function (d) { downloads = d; });
+    var saveFile = async function (name, data, type) {
+      try {
+        if (downloads) { await downloads.save({ filename: name, data: data }); $("dlmsg").textContent = "已存：" + name; return; }
+      } catch (e) { if (e && e.code === "cancelled") return; }
+      var blob = data instanceof Blob ? data : new Blob([data], { type: type }); var a = document.createElement("a");
+      a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    };
+    $("dlCover").onclick = function () { fetch(D.cover || B[0].thumb).then(function (r) { return r.blob(); }).then(function (bl) { saveFile(D.name + "_cover.jpg", bl, "image/jpeg"); }); };
+    $("dlSrt").onclick = function () { saveFile(D.name + ".srt", D.srt || "", "text/plain"); };
+  }
+  if (S.pending && S.pending.at && Date.now() - S.pending.at < 15 * 60 * 1000 && !D.delivered) showWorking();
+
+  setCur(0, false); refresh();
 })();
 </script>

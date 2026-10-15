@@ -27,3 +27,6 @@ These came from a long round of real feedback; each one cost a re-render to disc
 **Memory.** Don't cache full-frame float layers without a bound — 1080×1920×4 float32 is 33 MB each.
 
 **Honesty.** If the video claims "AI edited this", the workflow must actually be what produced it. Name the real tool.
+
+- **Relative `--work`/`--out` paths broke the concat step** (ffmpeg resolves concat list entries relative to the list file). `render.py` now makes both absolute.
+- **The review room must work without capabilities.** `sendToClaude` only goes through when a Claude session is watching the artifact (`canSendToClaude() === "available"`); otherwise the page copies the notes. Never remove the copy path.

@@ -21,11 +21,11 @@ ap = argparse.ArgumentParser(); ap.add_argument("spec"); ap.add_argument("--out"
 args = ap.parse_args()
 SPEC_DIR = os.path.dirname(os.path.abspath(args.spec)); spec = json.load(open(args.spec))
 O = dict(w=1080, h=1920, fps=30, max_mb=30, lufs=-14); O.update(spec.get("output", {}))
-if args.preview: O.update(w=540, h=960)
+if args.preview: O.update(w=540, h=960, max_mb=min(float(O["max_mb"]), 6))
 W, H, FPS = int(O["w"]), int(O["h"]), int(O["fps"]); SR = 48000; SC = W / 1080.0
 P = palette(spec.get("style")); INK, IV, EM = P["ink"], P["ivory"], P["accent"]
-WORK = args.work or os.path.join(SPEC_DIR, "_render"); os.makedirs(WORK, exist_ok=True)
-OUT = args.out or os.path.join(SPEC_DIR, spec.get("name", "final") + ".mp4")
+WORK = os.path.abspath(args.work or os.path.join(SPEC_DIR, "_render")); os.makedirs(WORK, exist_ok=True)
+OUT = os.path.abspath(args.out or os.path.join(SPEC_DIR, spec.get("name", "final") + ".mp4"))
 def src_path(p): return p if os.path.isabs(p) else os.path.join(SPEC_DIR, p)
 def S(v): return int(round(v * SC))                                  # scale 1080-based layout values
 GRADES = {
