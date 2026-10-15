@@ -41,6 +41,13 @@ button { font: inherit; cursor: pointer }
 .intro p { margin: 0; color: var(--muted); max-width: 60ch }
 .how { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 13.5px; color: var(--muted) }
 .how b { color: var(--fg) }
+.flow { display: flex; gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; flex-wrap: wrap }
+.flow li { display: flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px 5px 6px }
+.flow li span { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 600 12px var(--mono); background: var(--panel2); color: var(--muted) }
+.flow li.now { color: var(--fg); border-color: var(--fg); font-weight: 700 } .flow li.now span { background: var(--fg); color: var(--bg) }
+.flow li.done { color: var(--ok) } .flow li.done span { background: var(--ok); color: #fff }
+.dlbig { font-size: 17px; padding: 14px 22px; display: inline-flex; align-items: center; gap: 10px }
+.dlbig small { font: 500 12.5px var(--mono); opacity: .85 }
 
 /* version banner */
 .changes { margin-top: 16px; border: 1px solid var(--ember); background: var(--ember-soft); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px }
@@ -169,6 +176,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
   <section class="intro">
     <h1>先看<em>粗剪</em>，每一拍給個判斷</h1>
     <p>左邊是這一版的預覽。每一拍按「▶ 播這拍」看清楚，再選 <b>這拍 OK</b> 或 <b>要改</b>，要改就寫一句話。全部看完，按下面的按鈕交給 Claude。</p>
+    <ol class="flow" id="flow" aria-label="剪輯進度"><li class="now"><span>1</span>審片・逐拍修改</li><li><span>2</span>全部 OK，輸出完整版</li><li><span>3</span>下載影片</li></ol>
     <ul class="how"><li><b>空白鍵</b> 播放／暫停</li><li><b>← →</b> 上一拍／下一拍</li><li>預覽是低解析度，成品是 1080×1920</li></ul>
   </section>
 
@@ -215,7 +223,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
 <script>
 (function () {
   "use strict";
-  var D = JSON.parse(document.getElementById("data").textContent);
+  var D = JSON.parse(document.getElementById("data").textContent), DL = null;
   var B = D.beats, VER = D.version, KEY = "hn-room-" + D.name;
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
@@ -336,7 +344,8 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     var N = notes().length, all = seen === B.length;
     $("prog").innerHTML = "已看 <b>" + seen + "</b>/" + B.length + " 拍" + (N ? " · <b>" + N + "</b> 條修改" : "") + '<span class="meter"><i style="width:' + (100 * seen / B.length) + '%"></i></span>';
     var send = $("send");
-    if (D.delivered) { send.textContent = "再改一版"; send.className = "btn"; send.disabled = !N; }
+    if (D.delivered && !N) { send.textContent = D.delivered.url ? "⬇ 下載完整影片" : "完整影片在對話裡"; send.className = "btn ok"; send.disabled = !D.delivered.url; }
+    else if (D.delivered) { send.textContent = "送出 " + N + " 條修改（再改一版）"; send.className = "btn"; send.disabled = false; }
     else if (N) { send.textContent = "送出 " + N + " 條修改給 Claude"; send.className = "btn"; send.disabled = false; }
     else if (all) { send.textContent = "全部 OK，輸出完整版"; send.className = "btn ok"; send.disabled = false; }
     else { send.textContent = "先看完每一拍（" + seen + "/" + B.length + "）"; send.className = "btn"; send.disabled = true; }
@@ -380,7 +389,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
       else copyText(text);
     }
   }
-  $("send").addEventListener("click", function () { deliver(notes().length ? "fix" : "approve"); });
+  $("send").addEventListener("click", function () { if (D.delivered && !notes().length) { if (DL) DL(); return; } deliver(notes().length ? "fix" : "approve"); });
   $("copy").addEventListener("click", function () { copyText(message(notes().length ? "fix" : "approve")); });
 
   /* ---------- overlay ---------- */
@@ -418,9 +427,14 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
   if (D.delivered) {
     var dv = $("deliver"); dv.hidden = false; $("phase").textContent = "已交片"; $("phase").className = "pill ok";
     var f = D.delivered;
-    dv.innerHTML = '<h2>✓ 完整版已輸出</h2><dl><dt>規格</dt><dd>' + esc(f.spec || "1080×1920 · 30fps") + '</dd><dt>大小</dt><dd>' + esc(f.size || "") + '</dd><dt>檔案</dt><dd>' + esc(f.file || "") + '</dd></dl>' +
-      '<p style="margin:0">完整影片在<b>對話裡</b>，點檔案就能下載。下面兩個可以從這裡存：</p>' +
-      '<div class="row"><button class="btn ok" type="button" id="dlCover">下載封面 JPG</button><button class="btn ghost" type="button" id="dlSrt">下載字幕 SRT</button></div><span id="dlmsg" class="mono" style="font-size:12.5px;color:var(--muted)"></span>';
+    dv.innerHTML = '<h2>✓ 完整版已輸出，可以下載了</h2>' +
+      (f.url ? '<div class="row"><button class="btn ok dlbig" type="button" id="dlVid">⬇ 下載完整影片 <small>MP4 · ' + esc(f.size || "") + '</small></button></div>'
+             : '<p style="margin:0">完整影片在<b>對話裡</b>，點檔案就能下載。</p>') +
+      '<dl><dt>規格</dt><dd>' + esc(f.spec || "1080×1920 · 30fps") + '</dd><dt>檔案</dt><dd>' + esc(f.file || "") + '</dd>' + (f.note ? '<dt>備註</dt><dd>' + esc(f.note) + '</dd>' : '') + '</dl>' +
+      '<div class="row"><button class="btn ghost" type="button" id="dlCover">封面 JPG</button><button class="btn ghost" type="button" id="dlSrt">字幕 SRT</button></div><span id="dlmsg" class="mono" style="font-size:12.5px;color:var(--muted)"></span>';
+    document.querySelectorAll("#flow li").forEach(function (li, k) { li.className = k < 2 ? "done" : "now"; });
+    document.querySelector(".intro h1").innerHTML = "影片<em>完成了</em>，可以下載";
+    document.querySelector(".intro p").textContent = "按「下載完整影片」存到電腦或手機，就能直接上傳 IG / TikTok。還想改？在任何一拍按「要改」寫一句話，再送出就會出新的一版。";
     var downloads = null;
     if (window.claude && window.claude.use) window.claude.use("downloads").then(function (d) { downloads = d; });
     var saveFile = async function (name, data, type) {
@@ -432,8 +446,17 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     };
     $("dlCover").onclick = function () { fetch(D.cover || B[0].thumb).then(function (r) { return r.blob(); }).then(function (bl) { saveFile(D.name + "_cover.jpg", bl, "image/jpeg"); }); };
     $("dlSrt").onclick = function () { saveFile(D.name + ".srt", D.srt || "", "text/plain"); };
+    var getVideo = function () {
+      var btn = $("dlVid"); if (!btn) return; var label = btn.innerHTML; btn.disabled = true; btn.textContent = "準備下載…";
+      fetch(f.url).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); })
+        .then(function (bl) { return saveFile(f.file || (D.name + ".mp4"), bl, "video/mp4"); })
+        .catch(function () { $("dlmsg").textContent = "下載失敗，請到對話裡點影片檔下載。"; })
+        .finally(function () { btn.disabled = false; btn.innerHTML = label; });
+    };
+    if ($("dlVid")) $("dlVid").onclick = getVideo;
+    DL = getVideo;
   }
-  if (S.pending && S.pending.at && Date.now() - S.pending.at < 15 * 60 * 1000 && !D.delivered) showWorking();
+  if (S.pending && S.pending.at && Date.now() - S.pending.at < 15 * 60 * 1000 && !D.delivered) { showWorking(); $("phase").textContent = S.pending.kind === "approve" ? "輸出中" : "修改中"; if (S.pending.kind === "approve") document.querySelectorAll("#flow li").forEach(function (li, k) { li.className = k < 1 ? "done" : k === 1 ? "now" : ""; }); }
 
   setCur(0, false); refresh();
 })();

@@ -10,7 +10,8 @@ Options:
   --video       the draft render (render.py --preview); re-encoded small and embedded so each beat can be played
   --prev        the previous edit.json: beats that differ get a 「已修改」 tag
   --change N=…  what was changed on beat N in this version (repeatable) — shown on the card and in the banner
-  --delivered   the final master: switches the page to 已交片 and enables cover / SRT downloads
+  --delivered   the final master: switches the page to 已交片 with a 下載完整影片 button (the video is published next to the
+                page with Artifact `files`; a ≤ 14 MB download copy is made when the master is bigger) plus cover / SRT downloads
 Publish the HTML as an artifact with capabilities {"comments": {}, "downloads": true} and keep its URL: every later
 version is republished to the SAME URL so the open page reloads itself (see SKILL.md, step 6).
 """
@@ -99,7 +100,18 @@ data = dict(name=spec.get("name", "edit"), version=a.version, duration=round(TOT
             srt="\n".join(f"{i + 1}\n{fmt_srt(s0)} --> {fmt_srt(s1)}\n{txt}\n" for i, (s0, s1, txt) in enumerate(srt)))
 if a.delivered:
     fp = P(a.delivered); mb = os.path.getsize(fp) / 1048576
-    data["delivered"] = dict(file=os.path.basename(fp), size=f"{mb:.1f} MB", spec="1080×1920 · 30fps · H.264 / AAC")
+    # the page carries the video as a supporting file (Artifact `files`, ≤ 15 MB per file): use the master when it fits,
+    # otherwise make a download copy at Instagram-level bitrate that fits; the full master is always also sent in chat.
+    dl = fp; note = ""
+    if mb > 14.5:
+        dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", fp], capture_output=True, text=True).stdout or 1)
+        vbr = int(max(1.2e6, (14.0 * 8 * 1048576) / dur - 160_000)); dl = os.path.splitext(fp)[0] + "_download.mp4"
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", fp, "-c:v", "libx264", "-b:v", str(vbr), "-maxrate", str(int(vbr * 1.15)), "-bufsize", str(vbr * 2),
+                        "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", dl], check=True)
+        note = f"下載版 {vbr / 1e6:.1f} Mbps（IG 上傳後的畫質相同）；{mb:.0f} MB 的最高畫質原檔在對話裡"
+    dmb = os.path.getsize(dl) / 1048576
+    data["delivered"] = dict(file=os.path.basename(dl), url=os.path.basename(dl), size=f"{dmb:.1f} MB", spec="1080×1920 · 30fps · H.264 / AAC", note=note)
+    print(f"   publish with files: {{\"{os.path.basename(dl)}\": \"{dl}\"}}")
     cov = os.path.join(D, "_render", "cover.jpg"); os.makedirs(os.path.dirname(cov), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "0.6", "-i", fp, "-frames:v", "1", "-q:v", "3", cov], check=True)
     data["cover"] = "data:image/jpeg;base64," + base64.b64encode(open(cov, "rb").read()).decode()
