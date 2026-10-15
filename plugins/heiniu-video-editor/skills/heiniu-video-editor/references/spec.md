@@ -31,7 +31,7 @@ All times inside a clip are **source seconds of that clip's file** (what `transc
 | `match_color` | `true` (or a timeline index) when this take was shot in different light — matches brightness/colour to that clip. |
 | `normalize` | per-clip loudness levelling (default true). |
 | `captions` | `[{text, keys:[...], start, end, size?, y?, instant?}]` karaoke captions; `keys` are lit in the accent colour. Keep each ≤ 9 characters, split long lines. |
-| `bigwords` | `[{word, start, end, size?, place?: "auto"|"low"}]` giant serif word typed in letter by letter. `auto` puts it above the head with the head in front (needs the person matte); falls back to `low` (lower third) when there is no head-room. Captions hide while a low word shows. |
+| `bigwords` | `[{word, start, end, size?, place?: "auto"|"low", overlap?}]` giant serif word typed in letter by letter. `auto` puts it above the head with the head in front (needs the person matte); falls back to `low` (lower third) when there is no head-room. `overlap` (0.10 default … 0.5) sets how much of the letters the head covers — use ~0.45 for 「放在頭後面」. Captions hide while a low word shows. |
 | `prompts` | `[{text, start, send?, end?, label?}]` the cream 「對 AI 說」 box at the top typing the instruction, pressing send, ✓. Time `send` to land on the word it refers to. |
 | `cta` | comment call-to-action on glass cards: `{show, type_at?, heart_at?, reply_at?, keyword, headline?, sub, reply, author?}`. Captions hide once it shows. Put `reply_at` ≥ 1.2 s before the clip ends so people can read it. |
 | `shot`, `transition`, `sound`, `notes` | text only, shown on the storyboard card. |

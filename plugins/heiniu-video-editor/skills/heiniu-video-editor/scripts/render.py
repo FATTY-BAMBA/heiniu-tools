@@ -269,9 +269,10 @@ for n in range(TOTAL_N):
             key = (id(bw),)
             if key not in bigpos:
                 ht = head_top(m) if m is not None else None
-                size = int(max(S(170), min(S(bw.get("size", 300)), (ht + S(20) - S(120)) / 1.12, W * 0.9 / max(1, nch)))) if ht else 0
+                ov = float(bw.get("overlap", 0.10))                   # share of the letters the head covers (0.10 subtle … 0.5 deep behind the head)
+                size = int(max(S(170), min(S(bw.get("size", 300)), (ht + S(20) - S(120)) / max(0.6, 1.18 - ov), W * 0.9 / max(1, nch)))) if ht else 0
                 if m is None or size <= S(170) or place == "low": bigpos[key] = ("low", int(min(S(bw.get("size", 300)), W * 0.9 / max(1, nch))), S(1150))
-                else: bigpos[key] = ("top", size, max(S(120), int(ht + 0.10 * size - size * 1.18)))
+                else: bigpos[key] = ("top", size, max(S(120), int(ht + ov * size - size * 1.18)))
             mode, size, top = bigpos[key]
             if k > 1: comp = over(comp, bigword(word, k - 1, size, top))
             comp = over(comp, bigword(word, k, size, top), frac)

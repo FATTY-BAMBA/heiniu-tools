@@ -10,6 +10,7 @@ People talk in outcomes. Translate the sentence, change the spec, re-render, and
 | 字幕小一點 | size −8 (min 52). |
 | 字幕往上 / 往下 | `captions_style.y` ∓80; keep it out of the face and above the bottom UI zone (y ≤ 1500). |
 | 重點字換顏色 / 這個字要亮 | add the word to that caption's `keys`; `color:"red"` for a correction or punchline. |
+| 放成頭後面的大字 / 字要在頭後面 | `bigwords` entry with `overlap: 0.45` (head covers the lower part of the letters) and a large `size` (400+); 1–3 chars reads best. |
 | 加大字 / 這句要很大 | add a `bigwords` entry on the key word (1–4 chars). |
 | 太慢了 / 節奏快一點 | `speed` 1.2→1.3 on talking clips; trim pauses by moving `in`/`out` to word edges. |
 | 太快聽不懂 | speed 1.0–1.15 on that clip. |
