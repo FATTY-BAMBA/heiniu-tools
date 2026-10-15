@@ -6,7 +6,7 @@ Step-by-step guide (繁體中文): https://fattybamba.com/edit/
 
 ## Install
 
-**Claude (web / desktop app)** — download [`heiniu-video-editor.zip`](../../edit/heiniu-video-editor.zip), then Customize → Skills → ＋ → Create skill → Upload a skill. Code execution must be enabled.
+**Claude (web / desktop app)** — download [`heiniu-video-editor.zip`](../../edit/heiniu-video-editor.zip), then Customize → Skills → ＋ Add → Upload skill. Turn on Settings → Capabilities → **Cloud code execution and file creation** first.
 
 **Claude Code**
 
