@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{{TITLE}}</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -47,6 +48,7 @@ button { font: inherit; cursor: pointer }
 .flow li.now { color: var(--fg); border-color: var(--fg); font-weight: 700 } .flow li.now span { background: var(--fg); color: var(--bg) }
 .flow li.done { color: var(--ok) } .flow li.done span { background: var(--ok); color: #fff }
 .dlbig { font-size: 17px; padding: 14px 22px; display: inline-flex; align-items: center; gap: 10px }
+.dlnote { background: var(--panel); border: 1px solid var(--ok); border-radius: 10px; padding: 10px 12px; font-size: 14px }
 .dlbig small { font: 500 12.5px var(--mono); opacity: .85 }
 
 /* version banner */
@@ -430,8 +432,10 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     dv.innerHTML = '<h2>✓ 完整版已輸出，可以下載了</h2>' +
       (f.url ? '<div class="row"><button class="btn ok dlbig" type="button" id="dlVid">⬇ 下載完整影片 <small>MP4 · ' + esc(f.size || "") + '</small></button></div>'
              : '<p style="margin:0">完整影片在<b>對話裡</b>，點檔案就能下載。</p>') +
+      '<p style="margin:0;font-size:13.5px;color:var(--muted)">最高畫質原檔一律也會傳在 Claude 對話裡。</p>' +
       '<dl><dt>規格</dt><dd>' + esc(f.spec || "1080×1920 · 30fps") + '</dd><dt>檔案</dt><dd>' + esc(f.file || "") + '</dd>' + (f.note ? '<dt>備註</dt><dd>' + esc(f.note) + '</dd>' : '') + '</dl>' +
-      '<div class="row"><button class="btn ghost" type="button" id="dlCover">封面 JPG</button><button class="btn ghost" type="button" id="dlSrt">字幕 SRT</button></div><span id="dlmsg" class="mono" style="font-size:12.5px;color:var(--muted)"></span>';
+      '<div class="row"><button class="btn ghost" type="button" id="dlCover">封面 JPG</button><button class="btn ghost" type="button" id="dlSrt">字幕 SRT</button></div><span id="dlmsg" class="mono" style="font-size:12.5px;color:var(--muted)"></span>' +
+      '<div class="dlnote" id="dlnote" role="status" hidden><b>✓ 影片已存好，可以直接上傳 IG / TikTok。</b><br>最高畫質原檔' + (f.master ? '（' + esc(f.master) + '）' : '') + '一律也會傳在 Claude 對話裡，需要時回到對話點影片檔下載。</div>';
     document.querySelectorAll("#flow li").forEach(function (li, k) { li.className = k < 2 ? "done" : "now"; });
     document.querySelector(".intro h1").innerHTML = "影片<em>完成了</em>，可以下載";
     document.querySelector(".intro p").textContent = "按「下載完整影片」存到電腦或手機，就能直接上傳 IG / TikTok。還想改？在任何一拍按「要改」寫一句話，再送出就會出新的一版。";
@@ -439,8 +443,8 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     if (window.claude && window.claude.use) window.claude.use("downloads").then(function (d) { downloads = d; });
     var saveFile = async function (name, data, type) {
       try {
-        if (downloads) { await downloads.save({ filename: name, data: data }); $("dlmsg").textContent = "已存：" + name; return; }
-      } catch (e) { if (e && e.code === "cancelled") return; }
+        if (downloads) { await downloads.save({ filename: name, data: data }); $("dlmsg").textContent = "已存：" + name; return true; }
+      } catch (e) { if (e && e.code === "cancelled") return false; }
       var blob = data instanceof Blob ? data : new Blob([data], { type: type }); var a = document.createElement("a");
       a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove();
     };
@@ -450,6 +454,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
       var btn = $("dlVid"); if (!btn) return; var label = btn.innerHTML; btn.disabled = true; btn.textContent = "準備下載…";
       fetch(f.url).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); })
         .then(function (bl) { return saveFile(f.file || (D.name + ".mp4"), bl, "video/mp4"); })
+        .then(function (ok) { if (ok !== false) { var n = $("dlnote"); n.hidden = false; } })
         .catch(function () { $("dlmsg").textContent = "下載失敗，請到對話裡點影片檔下載。"; })
         .finally(function () { btn.disabled = false; btn.innerHTML = label; });
     };
