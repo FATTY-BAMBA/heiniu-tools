@@ -14,15 +14,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/base.css">
-<link rel="stylesheet" href="./edit.css">
-<script src="./edit.js" defer></script>
+<link rel="stylesheet" href="/assets/base.css">
+<link rel="stylesheet" href="/edit/edit.css">
+<script src="/edit/edit.js" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main">跳到主要內容</a>
 <nav class="site-nav" aria-label="主要導覽"><div class="wrap">
-<a class="brandmark" href="../" aria-label="回黑牛工具首頁"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg><span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span></a>
-<div class="nav-links"><a href="../">← 全部工具</a><a class="cta" href="#install">安裝技能</a></div>
+<a class="brandmark" href="/" aria-label="回黑牛工具首頁"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg><span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span></a>
+<div class="nav-links"><a href="/">← 全部工具</a><a class="cta" href="#install">安裝技能</a></div>
 </div></nav>
 
 <main id="main">
@@ -32,7 +32,7 @@
     <h1 class="h-display">跟 AI 聊天，<br>剪完<span class="acc">整支影片</span>。</h1>
     <p class="lede">影片裡那支，我一秒都沒有自己剪。<br>同一套流程我整理成 Claude 技能（Skill），你也可以直接裝：丟原始素材、看分鏡、用一句話改，就拿到成品。</p>
     <div class="hero-actions">
-      <a class="btn btn-hi" href="./heiniu-video-editor.zip" download>免費下載技能 ↓</a>
+      <a class="btn btn-hi" href="/edit/heiniu-video-editor.zip" download>免費下載技能 ↓</a>
       <a class="btn btn-ghost" href="#install">看安裝步驟 →</a>
     </div>
     <p class="hero-note">免費 · Claude 免費版也能裝 · 素材只在你自己的 Claude 對話裡處理</p>
@@ -43,7 +43,7 @@
     </div>
   </div>
   <figure class="phone">
-    <video id="demo" src="./demo.mp4" poster="./poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="黑牛 AI 剪輯成品影片"></video>
+    <video id="demo" src="/edit/demo.mp4" poster="/edit/poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="黑牛 AI 剪輯成品影片"></video>
     <button class="sound" type="button" id="sound" aria-pressed="false">開聲音 🔈</button>
     <figcaption class="badge">這支是 AI 剪的</figcaption>
   </figure>
@@ -52,12 +52,12 @@
 <section class="sec wrap" id="what" aria-labelledby="what-title">
   <div class="section-intro"><span class="eyebrow">它會幫你做的事</span><h2 id="what-title">不是只有上字幕。</h2><p>這些都是影片裡真的出現的畫面，技能會照同一套風格幫你做。哪個不要，一句話拿掉。</p></div>
   <div class="features">
-    <div class="feat"><img src="./f1.jpg" alt="巨大的「一秒」兩個字在頭頂後方逐字打出" loading="lazy" width="540" height="960"><div><strong>頭後巨字</strong><span>重點字逐字打出，頭部擋在字前面</span></div></div>
-    <div class="feat"><img src="./f2.jpg" alt="畫面上方的「對 AI 說」指令框正在打字" loading="lazy" width="540" height="960"><div><strong>對 AI 說</strong><span>指令框邊說邊打，送出就套用</span></div></div>
-    <div class="feat"><img src="./f3.jpg" alt="斜線把畫面分成 AI 調色與原始兩半" loading="lazy" width="540" height="960"><div><strong>前後對比</strong><span>斜線慢慢掃過，原始 vs AI 調色</span></div></div>
-    <div class="feat"><img src="./f4.jpg" alt="朱印風格的字幕：一句話，整支影片跟著改" loading="lazy" width="540" height="960"><div><strong>逐字字幕</strong><span>卡拉 OK 式亮起，重點字自動上色</span></div></div>
-    <div class="feat"><img src="./f5.jpg" alt="雜誌封面風格的畫面，刊頭「黑牛」在頭後" loading="lazy" width="540" height="960"><div><strong>雜誌封面</strong><span>開場 1.4 秒，先讓人停下來</span></div></div>
-    <div class="feat"><img src="./f6.jpg" alt="留言卡片：留言 EDIT，作者回覆" loading="lazy" width="540" height="960"><div><strong>留言結尾</strong><span>打字、愛心、作者回覆，避開 IG 按鈕區</span></div></div>
+    <div class="feat"><img src="/edit/f1.jpg" alt="巨大的「一秒」兩個字在頭頂後方逐字打出" loading="lazy" width="540" height="960"><div><strong>頭後巨字</strong><span>重點字逐字打出，頭部擋在字前面</span></div></div>
+    <div class="feat"><img src="/edit/f2.jpg" alt="畫面上方的「對 AI 說」指令框正在打字" loading="lazy" width="540" height="960"><div><strong>對 AI 說</strong><span>指令框邊說邊打，送出就套用</span></div></div>
+    <div class="feat"><img src="/edit/f3.jpg" alt="斜線把畫面分成 AI 調色與原始兩半" loading="lazy" width="540" height="960"><div><strong>前後對比</strong><span>斜線慢慢掃過，原始 vs AI 調色</span></div></div>
+    <div class="feat"><img src="/edit/f4.jpg" alt="朱印風格的字幕：一句話，整支影片跟著改" loading="lazy" width="540" height="960"><div><strong>逐字字幕</strong><span>卡拉 OK 式亮起，重點字自動上色</span></div></div>
+    <div class="feat"><img src="/edit/f5.jpg" alt="雜誌封面風格的畫面，刊頭「黑牛」在頭後" loading="lazy" width="540" height="960"><div><strong>雜誌封面</strong><span>開場 1.4 秒，先讓人停下來</span></div></div>
+    <div class="feat"><img src="/edit/f6.jpg" alt="留言卡片：留言 EDIT，作者回覆" loading="lazy" width="540" height="960"><div><strong>留言結尾</strong><span>打字、愛心、作者回覆，避開 IG 按鈕區</span></div></div>
   </div>
   <ol class="flow">
     <li><strong>丟原始素材</strong><p>NG、重講都留著。附上講稿更準。</p></li>
@@ -70,13 +70,13 @@
 <section class="sec wrap" id="install" aria-labelledby="install-title">
   <div class="section-intro"><span class="eyebrow">五分鐘裝好</span><h2 id="install-title">裝一次，之後每支影片都能用。</h2><p>用<b>電腦瀏覽器</b>打開 <b>claude.ai</b> 就可以，<b>不用另外下載 App</b>（有桌面 App 也一樣能用）。之後剪片也建議用電腦，上傳影片比較順。</p></div>
   <figure class="guide-video">
-    <video src="./setup-guide.mp4" poster="./setup-guide.jpg" controls muted playsinline preload="metadata" aria-label="黑牛 AI 剪輯教學影片：下載、安裝、送出影片、一句話修改並看預覽"></video>
+    <video src="/edit/setup-guide.mp4" poster="/edit/setup-guide.jpg" controls muted playsinline preload="metadata" aria-label="黑牛 AI 剪輯教學影片：下載、安裝、送出影片、一句話修改並看預覽"></video>
     <figcaption><span class="tagpill">1 分鐘看完</span>實際操作畫面：下載技能、打開程式碼執行、上傳，到送出影片、在分鏡寫一句話修改，再看「修改前｜修改後」預覽。</figcaption>
   </figure>
 
   <ol class="setup four">
     <li><span class="num">01</span><div><strong>先打開「程式碼執行」</strong><p>技能要靠它才能跑。到 Claude 左下角頭像 → <b>Settings</b> → <b>Capabilities</b>，往下滑到 <b>Code execution and file creation</b>，打開 <b>Cloud code execution and file creation</b> 的開關（變藍色）。</p><span class="path">Settings → Capabilities → Cloud code execution</span><p class="sub">公司帳號（Team / Enterprise）要請管理員在 Organization settings → Plugins &amp; skills 打開。</p></div></li>
-    <li><span class="num">02</span><div><strong>下載技能檔</strong><p>下載 <b>heiniu-video-editor.zip</b>，<b>不要解壓縮</b>，直接用整個 zip。</p><a class="path" href="./heiniu-video-editor.zip" download>heiniu-video-editor.zip ↓</a><p class="sub">Mac 的 Safari 可能會自動解壓成資料夾：到「下載項目」找 .zip 檔，或改用 Chrome 下載。</p></div></li>
+    <li><span class="num">02</span><div><strong>下載技能檔</strong><p>下載 <b>heiniu-video-editor.zip</b>，<b>不要解壓縮</b>，直接用整個 zip。</p><a class="path" href="/edit/heiniu-video-editor.zip" download>heiniu-video-editor.zip ↓</a><p class="sub">Mac 的 Safari 可能會自動解壓成資料夾：到「下載項目」找 .zip 檔，或改用 Chrome 下載。</p></div></li>
     <li><span class="num">03</span><div><strong>上傳到 Claude</strong><p>左側進入 <b>Customize</b>，在 Skills 頁按右上角 <b>＋ Add</b> → <b>Upload skill</b>，選剛剛的 zip，再按 <b>Upload</b>。</p><span class="path">Customize → ＋ Add → Upload skill</span></div></li>
     <li><span class="num">04</span><div><strong>確認開啟，開始用</strong><p>技能清單出現 <b>heiniu-video-editor</b>，右邊開關是<b>開的</b>就完成了。開一個新對話，輸入 <b>/</b> 選 <b>heiniu-video-editor</b>，附上影片再送出，Claude 就會照這套流程剪。</p><a href="https://support.claude.com/en/articles/12512180-use-skills-in-claude" target="_blank" rel="noopener">Claude 官方說明 ↗</a></div></li>
   </ol>
@@ -127,10 +127,10 @@ claude plugin install heiniu-video-editor@heiniu-tools</pre>
   <details class="faq"><summary>加音樂呢？</summary><p>建議發 IG / TikTok 時直接在 App 裡選熱門音樂，音量調到 10–15%。也可以給 Claude 一首可商用的音樂檔，它會自動在你講話時把音樂壓低。</p></details>
 </section>
 
-<section class="closing wrap"><div class="card"><div><span class="eyebrow">從一支開始</span><h2>下一支影片，讓 AI 先剪。</h2><p>剪完記得到影片留言告訴我，你最常用哪一句修改。</p></div><a class="btn btn-hi" href="./heiniu-video-editor.zip" download>免費下載技能 ↓</a></div></section>
+<section class="closing wrap"><div class="card"><div><span class="eyebrow">從一支開始</span><h2>下一支影片，讓 AI 先剪。</h2><p>剪完記得到影片留言告訴我，你最常用哪一句修改。</p></div><a class="btn btn-hi" href="/edit/heiniu-video-editor.zip" download>免費下載技能 ↓</a></div></section>
 </main>
 
-<footer class="site-foot"><div class="wrap"><div><div class="who">黑牛 <b>／ AI 實作</b></div><p class="desc">把 AI 用在生活裡，從看得懂到做得出來。</p></div><div class="links"><a href="../">全部工具</a><a href="https://github.com/FATTY-BAMBA/heiniu-tools" target="_blank" rel="noopener">GitHub</a><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a></div></div></footer>
+<footer class="site-foot"><div class="wrap"><div><div class="who">黑牛 <b>／ AI 實作</b></div><p class="desc">把 AI 用在生活裡，從看得懂到做得出來。</p></div><div class="links"><a href="/">全部工具</a><a href="https://github.com/FATTY-BAMBA/heiniu-tools" target="_blank" rel="noopener">GitHub</a><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a></div></div></footer>
 <div id="copy-status" class="copy-status" role="status" aria-live="polite" aria-atomic="true"></div>
 <script>
 (function(){
