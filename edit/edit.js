@@ -47,3 +47,20 @@
     });
   });
 })();
+
+(() => {
+  const tabs = [...document.querySelectorAll('.ctab')];
+  if (!tabs.length) return;
+  const show = t => tabs.forEach(b => {
+    const on = b === t; b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1;
+    const g = document.getElementById(b.getAttribute('aria-controls')); if (g) g.hidden = !on;
+  });
+  tabs.forEach((b, i) => {
+    b.addEventListener('click', () => show(b));
+    b.addEventListener('keydown', e => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (d) { e.preventDefault(); const n = tabs[(i + d + tabs.length) % tabs.length]; show(n); n.focus(); }
+    });
+  });
+  show(tabs[0]);
+})();
