@@ -110,7 +110,7 @@ if a.delivered:
                         "-preset", "medium", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", dl], check=True)
         note = f"下載版 {vbr / 1e6:.1f} Mbps（IG 上傳後的畫質相同）；{mb:.0f} MB 的最高畫質原檔在對話裡"
     dmb = os.path.getsize(dl) / 1048576
-    data["delivered"] = dict(file=os.path.basename(dl), url=os.path.basename(dl), size=f"{dmb:.1f} MB", spec="1080×1920 · 30fps · H.264 / AAC", note=note)
+    data["delivered"] = dict(file=os.path.basename(dl), url=os.path.basename(dl), size=f"{dmb:.1f} MB", master=f"{mb:.1f} MB", spec="1080×1920 · 30fps · H.264 / AAC", note=note)
     print(f"   publish with files: {{\"{os.path.basename(dl)}\": \"{dl}\"}}")
     cov = os.path.join(D, "_render", "cover.jpg"); os.makedirs(os.path.dirname(cov), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "0.6", "-i", fp, "-frames:v", "1", "-q:v", "3", cov], check=True)
