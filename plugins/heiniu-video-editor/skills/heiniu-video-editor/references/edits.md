@@ -5,6 +5,8 @@ People talk in outcomes. Translate the sentence, change the spec, re-render, and
 | They say | Change |
 |---|---|
 | 字幕再大一點 / bigger captions | `captions_style.size` +12 (max ~88). Check the longest caption still fits (≤ 9 chars at 80). |
+| 這拍字幕再大一點（one beat） | `size` on each caption of that beat only (global +12 → e.g. 80). |
+| 「幾千塊」換成紅色 | add the word to that caption's `keys` and set `color:"red"`. |
 | 字幕小一點 | size −8 (min 52). |
 | 字幕往上 / 往下 | `captions_style.y` ∓80; keep it out of the face and above the bottom UI zone (y ≤ 1500). |
 | 重點字換顏色 / 這個字要亮 | add the word to that caption's `keys`; `color:"red"` for a correction or punchline. |

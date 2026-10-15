@@ -22,7 +22,8 @@ Work in a project folder; keep `edit.json` there as the single source of truth (
 3. **Pick the takes and plan beats.** For every line of the script choose the cleanest take, cut on word edges, drop NG/repeats and long pauses. Plan the hook in the first 1.5 s (a `cover` cold open, or a giant word on the most surprising phrase). One idea per beat; ~1–3 s per beat at 1.2–1.3×.
 4. **Write `edit.json`.** Captions ≤ 9 characters per card with 1–2 key words lit. Effects sparingly: a big word or prompt box every 2–3 beats, `whip_in` on section changes, one `compare` at most, `cta` on the last beat.
 5. **Storyboard for approval** — `python3 scripts/storyboard.py edit.json --version 1` → `storyboard.html`. Publish it as an artifact (or send the file). It has a one-sentence comment box under every beat and a copy-all button. Ask them to write changes there or just reply in chat. Don't render the full video before they've seen the plan unless they said to go ahead.
-6. **Apply one-sentence edits** — translate each request using `references/edits.md`, update `edit.json`, bump the storyboard version if the structure changed.
+6. **Apply one-sentence edits** — first `python3 scripts/preview.py edit.json --snapshot` (saves the version they reviewed), then translate each request using `references/edits.md` and update `edit.json`.
+   **Show the change before the full render:** `python3 scripts/preview.py edit.json --note "第 02 拍：<their sentence>"` (one `--note` per request) → `<name>_preview_vN.mp4`: only the changed beats, 修改前 | 修改後 side by side, with their sentence on top (a few seconds, under a minute to make). Send it, and regenerate the storyboard with `--version N --prev _versions/edit.v<N-1>.json` so changed beats carry a 「已修改」 badge. Ask "這樣可以嗎？" — render the full video once they say OK (or straight away if they said to go ahead).
 7. **Render** — `python3 scripts/render.py edit.json` (add `--preview` for a fast half-resolution check). Output: `<name>.mp4` plus `_render/qa.json`.
 8. **QA before sending** — open `qa.json`: `av_gap_ms` < 40, `size_mb` ≤ the target. Extract and look at frames at: the first frame, every big word, the compare, the CTA reply, and the last second (`ffmpeg -ss T -i out.mp4 -frames:v 1 f.png`). Check text never covers eyes/mouth and nothing collides. Fix and re-render before delivering.
 9. **Deliver** the mp4 with one or two lines on what's in it, and suggest adding a trending sound in-app (or send a royalty-free track to mix in via `music`).
@@ -35,6 +36,7 @@ Read `references/lessons.md` before modifying any script — it records the bugs
 ## Files
 - `scripts/check_env.py` — FULL / LITE detection.
 - `scripts/transcribe.py` — word-timed transcript (SenseVoice via sherpa-onnx, downloaded once) or `--srt`.
-- `scripts/storyboard.py` — review page from `edit.json` (`assets/storyboard_template.html`).
+- `scripts/storyboard.py` — review page from `edit.json` (`assets/storyboard_template.html`); `--prev` badges changed beats.
+- `scripts/preview.py` — `--snapshot` before editing; then a before/after clip of only the changed beats.
 - `scripts/render.py` — the renderer; `scripts/cover.py` (cover + compare beats), `scripts/colormatch.py`, `scripts/hn_common.py` (fonts, palette, person matte).
 - `assets/sfx/` — whoosh, tick, pop, boom.
