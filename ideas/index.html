@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>文件靈感庫 · 搜內容，找回文件｜黑牛工具</title>
+<meta name="description" content="匯入 Word、文字型 PDF、Markdown 或 TXT，搜尋內容、打開原文。文件在你的瀏覽器處理與保存。">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css"><link rel="stylesheet" href="ideas.css">
+<link rel="icon" href="favicon.svg">
+</head><body>
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brandmark" href="../" aria-label="回黑牛工具首頁">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg>
+      <span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="../">← 全部工具</a>
+      <a class="cta" href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a>
+    </div>
+  </div>
+</nav>
+<main id="knowledge" class="wrap">
+  <header class="library-head">
+    <div><span class="eyebrow">工具 04 · 文件靈感庫</span><h1>檔名忘了？<span>從內容找回來。</span></h1><p>放入工作文件或筆記，搜關鍵內容，再打開原文核對。</p></div>
+    <div class="head-actions"><button class="btn btn-hi" id="import">匯入文件 ↗</button><button class="btn btn-ghost" id="add">＋ 寫筆記</button></div>
+    <input id="files" type="file" multiple accept=".md,.txt,.pdf,.docx,.json" hidden>
+  </header>
+  <p class="file-hint">Word · PDF（需有文字層）· Markdown · TXT · JSON 備份　<span>每檔 10 MB 內；PDF 最多 100 頁</span></p>
+  <div id="message" class="message" role="status" hidden></div>
+  <section class="search-panel card" aria-label="搜尋文件">
+    <form id="search-form" role="search"><label class="sr-only" for="query">搜尋文件內容</label><span class="search-symbol" aria-hidden="true">⌕</span><input id="query" type="search" placeholder="記得內容就能找，例如：首頁文案" autocomplete="off"><button class="btn btn-hi" type="submit">找原文 ↗</button></form>
+    <div class="search-bottom"><div id="examples"><span>試試看</span><button data-query="首頁文案">首頁文案</button><button data-query="信用卡帳單變圖表">信用卡 → 圖表</button><button data-query="文字辨識">文字辨識</button></div><span class="search-type">文字搜尋 · 本機處理</span></div>
+  </section>
+  <div class="collection-bar"><div><span class="collection-badge" id="mode-label">示範文件庫</span><span id="counts"></span></div><div class="collection-actions"><button id="toggle-library" hidden>看示範</button><button id="export">匯出／備份</button><button id="help">使用說明</button></div></div>
+  <div id="topics" class="topic-tabs" aria-label="依主題篩選"></div>
+  <div class="library-grid">
+    <section class="explore-column" aria-label="搜尋結果與連結">
+      <section class="card map-panel"><div class="panel-heading"><h2>內容連結</h2><button id="reset">查看全部</button></div><div id="graph" class="graph"></div><p class="map-caption" id="map-caption">線條連接摘錄與主題</p></section>
+      <section class="results-panel"><div class="panel-heading"><h2 id="results-title">從一份文件開始</h2><span id="result-count"></span></div><div id="results" aria-live="polite"></div><button id="more-results" class="btn btn-ghost" hidden>顯示更多結果</button></section>
+    </section>
+    <aside id="reader" class="card reader" aria-label="原文閱讀"><p>正在載入文件庫…</p></aside>
+  </div>
+  <p class="local-note">你的文件保存在這個瀏覽器，不會上傳，也不會自動同步到其他裝置。原始檔請另外保留。</p>
+</main>
+<footer class="site-foot"><div class="wrap"><div><div class="who">我是 <b>黑牛</b> — AI 產品實作者・公司創辦人</div><p class="desc">把生活與工作裡的問題，做成真的用得上的工具。</p></div><div class="links"><a href="../">全部工具</a><a href="../pdf/">PDF 選頁工具</a><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a></div></div><div class="fine">黑牛 @fatty_bamba · 文件靈感庫 · 文字搜尋與原文追溯</div></footer>
+<dialog id="note-dialog"><form id="note-form"><div class="dialog-head"><h2>寫下一個想法</h2><button type="button" data-close aria-label="關閉">×</button></div><label for="note-title">標題</label><input id="note-title" required maxlength="120"><label for="note-body">內容</label><textarea id="note-body" rows="7" required maxlength="30000"></textarea><p id="note-error" role="alert"></p><button type="submit" class="btn btn-hi">儲存並加入搜尋</button></form></dialog>
+<dialog id="help-dialog"><div class="dialog-head"><h2>從一份文件開始</h2><button data-close aria-label="關閉">×</button></div><ol><li>匯入自己的 Word、文字型 PDF、Markdown 或 TXT。也可以匯入舊版靈感庫的 collection.json 或本工具匯出的 JSON。</li><li>搜尋你記得的內容關鍵字，點結果，再按「打開完整原文」。</li><li>匯入時有保留原始檔的文件，可以下載原檔；JSON 備份只包含文字、摘錄與出處。</li></ol><p>PDF 會保留頁碼標示。掃描圖片與照片需要先辨識文字；此工具目前沒有 OCR。Word 讀取正文與表格文字，不包含圖片或批註。</p><p>這裡使用文字匹配，尚未連接 AI 問答。圖譜呈現分類與來源連結，不代表模型理解或記憶。</p><p>文件只存在此瀏覽器。清除網站資料或使用無痕視窗，可能讓已存內容消失。需要留存時，請先匯出備份並保留原始檔。</p><a class="btn btn-ghost" href="guide.md" download>下載整理方法與提示詞</a></dialog>
+<dialog id="export-dialog"><div class="dialog-head"><h2>保存這份文件庫</h2><button data-close aria-label="關閉">×</button></div><p>JSON 備份可重新匯入，保存文字、摘錄與出處。Markdown ZIP 可以用 Obsidian 開啟。兩者都不包含原始 Word 或 PDF 檔，請另行保留。</p><div class="export-actions"><button class="btn btn-hi" id="export-json">下載 JSON 備份</button><button class="btn btn-ghost" id="export-vault">下載 Markdown 筆記庫</button></div></dialog>
+<div id="toast" role="status"></div>
+<script src="../assets/pdf.min.js"></script><script type="module" src="app.mjs"></script>
+</body></html>
