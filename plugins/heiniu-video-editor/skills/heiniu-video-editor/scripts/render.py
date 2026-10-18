@@ -19,11 +19,12 @@ import cover as COVER
 
 ap = argparse.ArgumentParser(); ap.add_argument("spec"); ap.add_argument("--out"); ap.add_argument("--work"); ap.add_argument("--preview", action="store_true")
 args = ap.parse_args()
-SPEC_DIR = os.path.dirname(os.path.abspath(args.spec)); spec = json.load(open(args.spec))
+SPEC_DIR = os.path.dirname(os.path.abspath(args.spec)); spec = resolve_words(json.load(open(args.spec)), os.path.dirname(os.path.abspath(args.spec)))
 O = dict(w=1080, h=1920, fps=30, max_mb=30, lufs=-14); O.update(spec.get("output", {}))
 if args.preview: O.update(w=540, h=960, max_mb=min(float(O["max_mb"]), 6))
 W, H, FPS = int(O["w"]), int(O["h"]), int(O["fps"]); SR = 48000; SC = W / 1080.0
-P = palette(spec.get("style")); INK, IV, EM = P["ink"], P["ivory"], P["accent"]
+P = palette(spec.get("style")); INK, IV, EM = P["ink"], P["ivory"], P["accent"]; RED = P["seal"]
+spec["timeline"] = expand_timeline(spec["timeline"], float(spec.get("speed", 1.0)))   # speed ramps → clip pieces
 WORK = os.path.abspath(args.work or os.path.join(SPEC_DIR, "_render")); os.makedirs(WORK, exist_ok=True)
 OUT = os.path.abspath(args.out or os.path.join(SPEC_DIR, spec.get("name", "final") + ".mp4"))
 def src_path(p): return p if os.path.isabs(p) else os.path.join(SPEC_DIR, p)
@@ -42,6 +43,10 @@ segs = []                                                            # dicts: ki
 events = []                                                          # (t, name, gain) SFX in output seconds
 t_cursor = 0.0
 def frame_chain(c):
+    if c.get("fit"):                                                  # screen recording: whole frame visible on a blurred, dimmed copy of itself
+        fw = int(W * float(c.get("fit_width", 0.94)) // 2 * 2)
+        return [f"split=2[fa][fb];[fa]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=28:2,eq=brightness=-0.22:saturation=0.8[fbg];"
+                f"[fb]scale={fw}:-2:flags=lanczos[ffg];[fbg][ffg]overlay=(W-w)/2:(H-h)/2*{float(c.get('fit_y', 0.86)):.3f}"]
     z = float(c.get("crop", 1.0)); ch = [f"scale={W}:{H}:force_original_aspect_ratio=increase:flags=lanczos", f"crop={W}:{H}"]
     if z > 1.0001: ch.append(f"crop=iw/{z}:ih/{z}:(iw-ow)/2:(ih-oh)*0.4,scale={W}:{H}:flags=lanczos")
     g = GRADES.get(c.get("grade", spec.get("grade", "soft")), c.get("grade", ""))
@@ -56,6 +61,7 @@ for i, it in enumerate(spec["timeline"]):
         vf = ",".join([f"trim=0:{b - a:.6f}", "setpts=PTS-STARTPTS"] + frame_chain(it) +
                       [f"setpts=PTS/{keff:.8f}", f"fps={FPS}", "tpad=stop_mode=clone:stop=8", f"trim=end_frame={N}", "setsar=1", "format=yuv420p"])
         lufs = "loudnorm=I=-18:TP=-2:LRA=7,aresample=48000," if it.get("normalize", True) else ""
+        if it.get("_mute"): lufs = "volume=0,"
         af = (f"atrim=0:{b - a:.6f},asetpts=N/SR/TB,aformat=sample_rates=48000:channel_layouts=stereo,{lufs}asetpts=N/SR/TB,"
               f"atempo={keff:.8f},asetpts=N/SR/TB,afade=t=in:d=0.012,apad,atrim=end_sample={NS},afade=t=out:st={N / FPS - 0.015:.4f}:d=0.015")
         cmd = ["ffmpeg", "-v", "error", "-y", "-ss", f"{a:.4f}", "-i", src]
@@ -69,7 +75,15 @@ for i, it in enumerate(spec["timeline"]):
                             src_path(ref["src"]), str(float(ref.get("in", 0)) + 0.5), out + ".m.mov"], check=True)
             os.replace(out + ".m.mov", out)
         segs.append(dict(kind="clip", start=t_cursor, N=N, keff=keff, item=it, a=a))
-        if it.get("whip_in") and i > 0: events.append((t_cursor - 0.45, "whoosh", 0.7))
+        if it.get("whip_in") and i > 0: events.append((t_cursor, "whoosh", 0.7))          # peak lands on the cut
+    elif kind == "freeze":                                           # held frame: 「等一下」 stamp, optional self-drawing red circle, record scratch
+        src = src_path(it["src"]); N = max(1, round(float(it.get("dur", 1.0)) * FPS)); NS = round(N * SR / FPS)
+        vf = ",".join(["trim=end_frame=1"] + frame_chain(it) + [f"loop=loop={N}:size=1:start=0", f"setpts=N/({FPS}*TB)", f"fps={FPS}", f"trim=end_frame={N}", "setsar=1", "format=yuv420p"])
+        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{float(it['at']):.4f}", "-i", src, "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo",
+             "-filter_complex", f"[0:v]{vf}[v];[1:a]atrim=end_sample={NS}[a]", "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-crf", "14", "-preset", "fast", "-c:a", "pcm_s16le", out])
+        segs.append(dict(kind="freeze", start=t_cursor, N=N, keff=1.0, item=it, a=0.0))
+        events += [(t_cursor, "scratch", 0.9), (t_cursor + 0.05, "boom", 0.3)]
+        if it.get("circle"): events.append((t_cursor + 0.18, "swish", 0.5))
     elif kind in ("compare", "cover"):
         fn = COVER.build_compare if kind == "compare" else COVER.build_cover
         N, ev = fn(it, out, dict(W=W, H=H, FPS=FPS, SR=SR, P=P, chain=frame_chain, grades=GRADES, bars=BARS, src_path=src_path,
@@ -227,6 +241,281 @@ def cta_comp(comp, t, C, s):
             d.ellipse([cx - rc, cy - rc, cx + rc, cy + rc], fill=EM + (A(ck),)); d.line([(cx - S(8), cy), (cx - S(2), cy + S(6)), (cx + S(9), cy - S(7))], fill=(22, 22, 24, A(ck)), width=max(1, S(4)))
     return over(comp, to_np(im))
 
+# ---- batch-1 effects: chat bubbles, checklist, phone mockup, freeze stamp, speed badge ----
+def bubble_img(text, who):
+    def mk():
+        f = F("sans", S(40)); pad, av = S(30), S(64); tw = int(ImageDraw.Draw(Image.new("RGBA", (1, 1))).textlength(text, font=f))
+        ai = who != "me"; w = tw + pad * 2 + (av + S(18) if ai else 0); h = S(104)
+        im = Image.new("RGBA", (w + S(40), h + S(40)), (0, 0, 0, 0)); d = ImageDraw.Draw(im); x0, y0 = S(20), S(14)
+        fill = (246, 241, 230, 250) if ai else INK + (236,); col = INK if ai else IV
+        d.rounded_rectangle([x0, y0, x0 + w, y0 + h], S(34), fill=fill, outline=(255, 255, 255, 40 if not ai else 0), width=max(1, S(2)))
+        tx = x0 + pad
+        if ai:
+            d.ellipse([tx, y0 + (h - av) // 2, tx + av, y0 + (h + av) // 2], fill=EM)
+            d.text((tx + av / 2, y0 + h / 2), "AI", font=F("mono", S(24)), fill=(255, 255, 255), anchor="mm"); tx += av + S(18)
+        d.text((tx, y0 + h / 2 - S(2)), text, font=f, fill=col, anchor="lm")
+        return shadow(im, (0, S(8)), S(14), 0.38)
+    return cached(("bub", text, who), mk)
+def bubbles_comp(comp, t, items, s, seg_end):
+    vis = [(to_out(s, b["start"]), b) for b in items if to_out(s, b["start"]) <= t]
+    if not vis: return comp
+    ends = [to_out(s, b["end"]) for b in items if "end" in b]; gend = min(ends or [seg_end])
+    fade = (1 - eq((t - (gend - 0.18)) / 0.18) if t > gend - 0.18 else 1) if ends else 1
+    if fade <= 0: return comp
+    lay = Image.new("RGBA", (W, H), (0, 0, 0, 0)); base = S(1480); step = S(118); n = len(vis)
+    for k, (t0, b) in enumerate(vis[-3:]):
+        rank = len(vis[-3:]) - 1 - k                                     # 0 = newest (bottom)
+        newer = [tt for tt, _ in vis[-3:][k + 1:]]; shift = sum(eq((t - tt) / 0.22) for tt in newer)
+        im = bubble_img(b["text"], b.get("who", "ai")); u = eq((t - t0) / 0.16); sc = 0.78 + 0.22 * spring((t - t0) / 0.34)
+        im2 = im.resize((max(1, int(im.width * sc)), max(1, int(im.height * sc))), Image.LANCZOS)
+        a = u * (1 - 0.35 * max(0, rank - 1)) * fade
+        if a <= 0.01: continue
+        im2.putalpha(im2.getchannel("A").point(lambda v, a=a: int(v * a)))
+        y = int(base - im2.height - shift * step + (1 - u) * S(18))
+        x = S(50) if b.get("who", "ai") != "me" else W - S(50) - im2.width
+        lay.alpha_composite(im2, (x, max(0, y))); RECTS.append(("對話泡泡", x + S(20), max(0, y) + S(14), x + im2.width - S(20), max(0, y) + im2.height - S(26)))
+    return over(comp, to_np(lay))
+def checklist_comp(comp, t, ck, s, seg_end):
+    t0 = to_out(s, ck["start"]); t1 = to_out(s, ck["end"]) if "end" in ck else seg_end
+    if not (t0 <= t < t1): return comp
+    a = eq((t - t0) / 0.3) * ((1 - eq((t - (t1 - 0.18)) / 0.18) if t > t1 - 0.18 else 1) if "end" in ck else 1)
+    items = ck["items"]; title = ck.get("title", ""); rh = S(86); top_pad = S(84) if title else S(30)
+    hh = top_pad + rh * len(items) + S(24); side = ck.get("side", "left"); cw = S(ck.get("width", 360))
+    x0 = S(44) if side == "left" else (W - S(44) - cw if side == "right" else (W - cw) // 2); x1 = x0 + cw
+    y1 = S(ck.get("bottom", 1240)); y0 = y1 - hh + int((1 - a) * S(30))
+    comp = glass(comp, (x0, y0, x1, y0 + hh), S(30), a); RECTS.append(("清單", x0, y0, x1, y0 + hh))
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); A = lambda v: int(255 * max(0, min(1, v)) * a)
+    d.rounded_rectangle([x0, y0, x1, y0 + hh], S(30), outline=(255, 255, 255, A(0.14)), width=max(1, S(2)))
+    if title: d.text((x0 + S(34), y0 + S(26)), title, font=F("sans", S(30)), fill=(190, 184, 174, A(1)))
+    for k, row in enumerate(items):
+        ta = to_out(s, row["at"]); done = t >= ta; q = eq((t - ta) / 0.22) if done else 0
+        cy = y0 + top_pad + rh * k + rh // 2; cx = x0 + S(58); r = S(22) * (1 + 0.25 * math.sin(min(1, (t - ta) / 0.22) * math.pi) if done else 1)
+        if done:
+            d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=EM + (A(1),))
+            d.line([(cx - S(10), cy), (cx - S(3), cy + S(8)), (cx + S(11), cy - S(8))], fill=(22, 22, 24, A(1)), width=max(1, S(5)))
+        else: d.ellipse([cx - S(22), cy - S(22), cx + S(22), cy + S(22)], outline=(160, 155, 146, A(1)), width=max(1, S(3)))
+        d.text((cx + S(48), cy), row["text"], font=F("sans", S(42)), fill=(IV if done else (150, 146, 138)) + (A(1),), anchor="lm")
+    return over(comp, to_np(im))
+def phone_frames(ph, n_frames, sw, sh):
+    def mk():
+        src = src_path(ph["src"])
+        if os.path.splitext(src)[1].lower() in (".png", ".jpg", ".jpeg", ".webp"):
+            im = Image.open(src).convert("RGB"); im = im.resize((sw, max(sh, int(im.height * sw / im.width))), Image.LANCZOS); return ("img", np.asarray(im))
+        vf = f"scale={sw}:{sh}:force_original_aspect_ratio=decrease,pad={sw}:{sh}:(ow-iw)/2:(oh-ih)/2:color=0x101012,fps={FPS}"
+        b = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{float(ph.get('src_in', 0)):.3f}", "-i", src, "-frames:v", str(n_frames), "-vf", vf,
+                            "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
+        fr = np.frombuffer(b, np.uint8); k = len(fr) // (sw * sh * 3)
+        return ("vid", fr[:k * sw * sh * 3].reshape(k, sh, sw, 3) if k else np.zeros((1, sh, sw, 3), np.uint8))
+    return cached(("phone", id(ph)), mk)
+def phone_shell(pw, ph_, sw, sh, inset):
+    def mk():
+        im = Image.new("RGBA", (pw + S(80), ph_ + S(80)), (0, 0, 0, 0)); d = ImageDraw.Draw(im); o = S(40)
+        d.rounded_rectangle([o, o, o + pw, o + ph_], S(70), fill=(16, 16, 18, 255), outline=(90, 90, 96, 255), width=max(1, S(3)))
+        im = shadow(im, (0, S(24)), S(34), 0.55)
+        hole = Image.new("L", (sw, sh), 0); ImageDraw.Draw(hole).rounded_rectangle([0, 0, sw - 1, sh - 1], S(54), fill=255)
+        return im, np.asarray(hole, np.float32)[..., None] / 255
+    return cached(("shell", pw, ph_), mk)
+def phone_comp(comp, t, ph, s, seg_end):
+    t0 = to_out(s, ph["start"]); t1 = to_out(s, ph["end"]) if "end" in ph else seg_end
+    if not (t0 <= t < t1): return comp
+    pw = int(W * float(ph.get("width", 0.46))); ph_ = int(pw * 2.08); inset = S(18); sw, sh = pw - 2 * inset, ph_ - 2 * inset
+    kind, frames = phone_frames(ph, int((t1 - t0) * FPS) + 2, sw, sh)
+    u_in = eq((t - t0) / 0.38); u_out = (eq((t - (t1 - 0.3)) / 0.3) if t > t1 - 0.3 else 0) if "end" in ph and t1 < seg_end - 0.05 else 0
+    x = int(W * float(ph.get("x", 0.5)) - pw / 2); y_rest = max(S(ph.get("top", 1060)), H - S(140) - ph_); y = int(y_rest + (1 - u_in) * (H - y_rest) + u_out * (H - y_rest))
+    if kind == "img":
+        sc = float(ph.get("scroll", 1.0)); maxoff = max(0, frames.shape[0] - sh); off = int(maxoff * sc * smooth((t - t0) / max(0.1, t1 - t0)))
+        scr = frames[off:off + sh]
+    else: scr = frames[min(len(frames) - 1, int((t - t0) * FPS))]
+    shell, hole = phone_shell(pw, ph_, sw, sh, inset)
+    lay = to_np(shell); o = S(40); gx, gy = x - o, y - o
+    sx, sy = o + inset, o + inset; lay[sy:sy + sh, sx:sx + sw, :3] = lay[sy:sy + sh, sx:sx + sw, :3] * (1 - hole) + scr.astype(np.float32) / 255 * hole
+    pill_w, pill_h = int(sw * 0.3), S(30); px0 = sx + (sw - pill_w) // 2
+    lay[sy + S(18):sy + S(18) + pill_h, px0:px0 + pill_w, :3] = 0.04
+    ya, yb = max(0, gy), min(H, gy + lay.shape[0]); xa, xb = max(0, gx), min(W, gx + lay.shape[1])
+    if yb <= ya or xb <= xa: return comp
+    sub = lay[ya - gy:yb - gy, xa - gx:xb - gx]; reg = comp[ya:yb, xa:xb]; RECTS.append(("手機", x, y, x + pw, y + ph_))
+    comp = comp.copy(); comp[ya:yb, xa:xb] = reg * (1 - sub[..., 3:4]) + sub[..., :3] * sub[..., 3:4]; return comp
+def freeze_comp(comp, u, it):
+    g = comp.mean(axis=2, keepdims=True); comp = comp * 0.72 + g * 0.28                         # drained colour = "time stopped"
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    if it.get("circle"):
+        cx, cy, r = [S(v) for v in it["circle"]]; p = smooth((u - 0.15) / 0.35)
+        if p > 0:
+            for k in range(3): d.arc([cx - r - k * S(3), cy - r * 0.92 - k * S(3), cx + r + k * S(3), cy + r * 0.92 + k * S(3)], -100, -100 + 360 * p, fill=RED + (255,), width=S(9) - k * S(2))
+    text = it.get("text", "等一下"); q = eq(u / 0.18); sc = 1.5 - 0.5 * q
+    f = F("serif", int(S(118) * sc)); tw = d.textlength(text, font=f); ty = S(it.get("text_y", 230))
+    bx0, by0 = (W - tw) / 2 - S(40) * sc, ty - S(22) * sc; bx1, by1 = (W + tw) / 2 + S(40) * sc, ty + S(150) * sc
+    st = Image.new("RGBA", (W, H), (0, 0, 0, 0)); ds = ImageDraw.Draw(st)
+    ds.rounded_rectangle([bx0, by0, bx1, by1], S(16), fill=(246, 241, 230, int(238 * q)), outline=RED + (int(255 * q),), width=S(8))
+    ds.text(((W - tw) / 2, ty - S(6) * sc), text, font=f, fill=RED + (int(255 * q),))
+    st = st.rotate(-4, center=(W / 2, ty + S(40)), resample=Image.BICUBIC)
+    im.alpha_composite(st); return over(comp, to_np(shadow(im, (0, S(8)), S(12), 0.35)))
+def badge(text, y=240):
+    def mk():
+        im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); f = F("mono", S(30)); tw = d.textlength(text, font=f)
+        x1, y0 = W - S(60), S(y); d.rounded_rectangle([x1 - tw - S(44), y0, x1, y0 + S(60)], S(30), fill=INK + (220,))
+        d.text((x1 - tw - S(22), y0 + S(13)), text, font=f, fill=IV); return to_np(im)
+    return cached(("badge", text, y), mk)
+
+
+# ---- batch-2 effects (from the "17 effects" reference, in 墨牛 style) ----
+_mprev = {"seg": None, "m": None}
+def smooth_mask(rgb, seg_id):
+    """person matte with light temporal smoothing inside one segment, so cut-out edges don't flicker"""
+    m = person_mask(rgb)
+    if m is None: return None
+    if _mprev["seg"] == seg_id and _mprev["m"] is not None: m = 0.6 * m + 0.4 * _mprev["m"]
+    _mprev.update(seg=seg_id, m=m); return m
+def span(fx, s, seg_end):
+    return to_out(s, fx["start"]), (to_out(s, fx["end"]) if "end" in fx else seg_end)
+def hex_rgb01(h, default=(0.953, 0.933, 0.894)):
+    try: return np.array(hex2rgb(h), np.float32) / 255
+    except Exception: return np.array(default, np.float32)
+def media_frames(path, n, w, h):
+    """still image or video → list of float frames covering w×h (videos loop)"""
+    def mk():
+        src = src_path(path)
+        if os.path.splitext(src)[1].lower() in (".png", ".jpg", ".jpeg", ".webp"):
+            im = Image.open(src).convert("RGB"); sc = max(w / im.width, h / im.height); im = im.resize((int(im.width * sc) + 1, int(im.height * sc) + 1), Image.LANCZOS)
+            x0, y0 = (im.width - w) // 2, (im.height - h) // 2; return [np.asarray(im.crop((x0, y0, x0 + w, y0 + h)), np.float32) / 255]
+        b = subprocess.run(["ffmpeg", "-v", "error", "-i", src, "-frames:v", str(n), "-vf", f"scale={w}:{h}:force_original_aspect_ratio=increase,crop={w}:{h},fps={FPS}",
+                            "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
+        k = len(b) // (w * h * 3); a = np.frombuffer(b[:k * w * h * 3], np.uint8).reshape(k, h, w, 3)
+        return [x.astype(np.float32) / 255 for x in a] or [np.zeros((h, w, 3), np.float32)]
+    return cached(("media", path, n), mk)
+def bg_comp(fr, m, t, fx, s, seg_end):
+    t0, t1 = span(fx, s, seg_end); frames = media_frames(fx["src"], int((t1 - t0) * FPS) + 2, W, H)
+    bg = frames[int((t - t0) * FPS) % len(frames)]
+    if fx.get("blur"): bg = cv2.GaussianBlur(bg, (0, 0), S(fx["blur"]))
+    if fx.get("dim"): bg = bg * (1 - float(fx["dim"]))
+    a = eq((t - t0) / 0.2) * (1 - eq((t - (t1 - 0.2)) / 0.2) if t > t1 - 0.2 else 1)
+    return fr * (1 - (1 - m) * a) + bg * (1 - m) * a
+def sticker_comp(fr, m, t, fx, s, seg_end):
+    t0, t1 = span(fx, s, seg_end); u = eq((t - t0) / 0.28)
+    paper = hex_rgb01(fx.get("paper", "#F3EEE4")); ol = S(fx.get("outline", 16))
+    k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * ol + 1, 2 * ol + 1))
+    mb = (m[..., 0] > 0.5).astype(np.uint8); outl = cv2.dilate(mb, k).astype(np.float32)
+    outl = cv2.GaussianBlur(outl, (0, 0), 1.2)[..., None]
+    sc = float(fx.get("scale", 0.86)) * (0.7 + 0.3 * u); ang = float(fx.get("tilt", -3)) * u
+    M = cv2.getRotationMatrix2D((W / 2, H * 0.55), ang, sc)
+    warp = lambda img, bv=0: cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR, borderValue=bv)
+    pf = warp(fr); pm = warp(m[..., 0])[..., None]; po = warp(outl[..., 0])[..., None]
+    shp = cv2.GaussianBlur(np.roll(np.roll(po[..., 0], S(14), 0), S(6), 1), (0, 0), S(14))[..., None] * 0.35
+    out = np.ones_like(fr) * paper
+    grain = (np.random.default_rng(int(t * FPS) // 4).standard_normal((H // 4, W // 4)).astype(np.float32) * 0.012)
+    out = out + cv2.resize(grain, (W, H))[..., None]
+    out = out * (1 - shp); out = out * (1 - po) + po; out = out * (1 - pm) + pf * pm
+    a = min(1, (t - t0) / 0.12) * (1 - eq((t - (t1 - 0.15)) / 0.15) if t > t1 - 0.15 else 1)
+    return fr * (1 - a) + out * a
+def framebreak_comp(fr, m, t, fx, s, seg_end):
+    t0, t1 = span(fx, s, seg_end); u = eq((t - t0) / 0.3)
+    if "box" in fx: x0, y0, x1, y1 = [S(v) for v in fx["box"]]
+    else:
+        key = ("fbbox", id(fx))
+        if key not in cache: ht = head_top(m); y0_ = min(H - S(900), ht + S(200)); cache[key] = (S(110), y0_, W - S(110), min(H - S(300), y0_ + S(820)))
+        x0, y0, x1, y1 = cache[key]
+    paper = hex_rgb01(fx.get("paper", "#1A1A1C")); bw_ = S(fx.get("border", 22))
+    out = np.ones_like(fr) * paper
+    out[y0:y1, x0:x1] = fr[y0:y1, x0:x1]
+    sh = np.zeros((H, W), np.float32); sh[y0 + S(18):y1 + S(18), x0 + S(8):x1 + S(8)] = 1
+    sh = cv2.GaussianBlur(sh, (0, 0), S(18))[..., None] * 0.45
+    ring = np.zeros((H, W), np.float32); ring[y0 - bw_:y1 + bw_, x0 - bw_:x1 + bw_] = 1; ring[y0:y1, x0:x1] = 0; ring = ring[..., None]
+    out = out * (1 - sh * (1 - ring)) ; out = out * (1 - ring) + np.array([0.97, 0.955, 0.93], np.float32) * ring
+    out[y0:y1, x0:x1] = fr[y0:y1, x0:x1]
+    yy = np.arange(H)[:, None, None]; brk = m * (yy < y1 - S(40))           # only the head/shoulders break out (never below the frame)
+    out = out * (1 - brk) + fr * brk
+    a = u * (1 - eq((t - (t1 - 0.2)) / 0.2) if t > t1 - 0.2 else 1)
+    return fr * (1 - a) + out * a
+HEAD_SLOTS = [(0.05, 0.12, -4), (0.53, 0.09, 3), (0.03, 0.29, 2), (0.57, 0.27, -3), (0.28, 0.04, -1), (0.06, 0.45, -2)]
+def clip_card(text, source):
+    def mk():
+        cw = S(440); f = F("serif", S(40)); fs = F("mono", S(18))
+        lines, cur = [], ""
+        for ch in text:
+            if ImageDraw.Draw(Image.new("RGBA", (1, 1))).textlength(cur + ch, font=f) > cw - S(56): lines.append(cur); cur = ch
+            else: cur += ch
+        lines.append(cur); lines = lines[:3]; ch_ = S(64) + S(52) * len(lines) + S(20)
+        im = Image.new("RGBA", (cw + S(40), ch_ + S(40)), (0, 0, 0, 0)); d = ImageDraw.Draw(im); o = S(20)
+        d.rectangle([o, o, o + cw, o + ch_], fill=(246, 241, 230, 255))
+        d.rectangle([o, o, o + cw, o + S(8)], fill=EM + (255,))
+        d.text((o + S(28), o + S(26)), (source or "NEWS").upper(), font=fs, fill=(140, 130, 112))
+        for i, ln in enumerate(lines): d.text((o + S(28), o + S(58) + i * S(52)), ln, font=f, fill=INK)
+        return shadow(im, (0, S(10)), S(14), 0.45)
+    return cached(("card", text, source), mk)
+def headlines_comp(comp, fr, m, t, fx, s, seg_end):
+    t0, t1 = span(fx, s, seg_end); fade = (1 - eq((t - (t1 - 0.18)) / 0.18) if t > t1 - 0.18 else 1) if "end" in fx else 1
+    lay = Image.new("RGBA", (W, H), (0, 0, 0, 0)); any_ = False
+    for k, c in enumerate(fx.get("cards", [])):
+        ta = to_out(s, c.get("at", fx["start"]))
+        if t < ta: continue
+        u = eq((t - ta) / 0.16); sc = 1.30 - 0.30 * spring((t - ta) / 0.3); any_ = True
+        x, y, rot = c.get("slot") or HEAD_SLOTS[k % len(HEAD_SLOTS)]
+        im = clip_card(c["text"], c.get("src", "")).rotate(rot, expand=True, resample=Image.BICUBIC)
+        im = im.resize((max(1, int(im.width * sc)), max(1, int(im.height * sc))), Image.LANCZOS)
+        im.putalpha(im.getchannel("A").point(lambda v, a=min(1, u * 1.6) * fade: int(v * a)))
+        lay.alpha_composite(im, (int(W * x - (im.width - im.width / sc) / 2), max(0, int(H * y - (im.height - im.height / sc) / 2))))
+    if not any_: return comp
+    out = over(comp, to_np(lay))
+    if m is not None and fx.get("behind", True): out = out * (1 - m) + fr * m          # the wall sits behind the person
+    return out
+def chart_comp(comp, t, fx, s, seg_end):
+    t0, t1 = span(fx, s, seg_end)
+    a = eq((t - t0) / 0.3) * ((1 - eq((t - (t1 - 0.18)) / 0.18) if t > t1 - 0.18 else 1) if "end" in fx else 1)
+    bars = fx["bars"]; cw = S(fx.get("width", 820)); chh = S(fx.get("height", 330)); x0 = (W - cw) // 2; y1 = S(fx.get("bottom", 1510)); y0 = y1 - chh + int((1 - a) * S(30))
+    comp = glass(comp, (x0, y0, x0 + cw, y0 + chh), S(30), a); RECTS.append(("圖表", x0, y0, x0 + cw, y0 + chh))
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); A = lambda v: int(255 * max(0, min(1, v)) * a)
+    d.rounded_rectangle([x0, y0, x0 + cw, y0 + chh], S(30), outline=(255, 255, 255, A(0.14)), width=max(1, S(2)))
+    if fx.get("title"): d.text((x0 + S(34), y0 + S(22)), fx["title"], font=F("sans", S(34)), fill=(225, 219, 208, A(1)))
+    vmax = max(float(b["value"]) for b in bars) or 1; n = len(bars); gx0, gx1 = x0 + S(40), x0 + cw - S(40); base = y0 + chh - S(60); top = y0 + S(118)
+    bw_ = (gx1 - gx0) / n * 0.56; hi = max(range(n), key=lambda i: float(bars[i]["value"]))
+    for i, b in enumerate(bars):
+        g = smooth((t - t0 - 0.15 - i * 0.12) / 0.6); v = float(b["value"]) * g; hpx = (base - top) * v / vmax
+        cx = gx0 + (gx1 - gx0) * (i + 0.5) / n; col = EM if i == hi else (243, 238, 228)
+        d.rounded_rectangle([cx - bw_ / 2, base - hpx, cx + bw_ / 2, base], S(8), fill=col + (A(0.92 if i == hi else 0.55),))
+        lab = f"{v:,.0f}{fx.get('unit', '')}"; d.text((cx, base - hpx - S(10)), lab, font=F("mono", S(26)), fill=(IV if i == hi else (200, 195, 186)) + (A(g),), anchor="mb")
+        d.text((cx, base + S(14)), b["label"], font=F("sans", S(28)), fill=(220, 214, 204, A(1)), anchor="mt")
+    return over(comp, to_np(im))
+def doodle_comp(comp, m, t, fx, s, seg_end):
+    t0, t1 = span(fx, s, seg_end)
+    if m is None: return comp
+    a = min(1, (t - t0) / 0.15) * (1 - eq((t - (t1 - 0.2)) / 0.2) if t > t1 - 0.2 else 1)
+    q = 4; mm = (cv2.resize(m[..., 0], (W // q, H // q)) > 0.5).astype(np.uint8)
+    mm = cv2.dilate(mm, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (2 * S(fx.get("gap", 22)) // q + 1,) * 2))
+    cs, _ = cv2.findContours(mm, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if not cs: return comp
+    c = max(cs, key=cv2.contourArea)[:, 0, :].astype(np.float32) * q
+    c = c[c[:, 1] < H - S(16)]
+    if len(c) < 8: return comp
+    rng_ = np.random.default_rng(int(t * FPS) // 3)                       # "boil": the line re-draws every 3 frames
+    step = max(1, len(c) // 160); c = c[::step] + rng_.normal(0, S(3.2), (len(c[::step]), 2))
+    col = hex2rgb(fx.get("color", "#FFFFFF")); im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    pts = [tuple(p) for p in c]
+    for k in range(len(pts) - 1):
+        if abs(pts[k][0] - pts[k + 1][0]) + abs(pts[k][1] - pts[k + 1][1]) < S(140): d.line([pts[k], pts[k + 1]], fill=col + (int(255 * a),), width=S(7))
+    if fx.get("doodles", True):
+        ht = head_top(m); xs = c[:, 0]; L, R = float(xs.min()), float(xs.max())
+        j = lambda: rng_.normal(0, S(3))
+        hx, hy, r = L + S(30), max(S(220), ht - S(40)), S(46)               # heart, top-left of the head
+        hp = [(hx + 16 * math.sin(th) ** 3 * r / 16 + j(), hy - (13 * math.cos(th) - 5 * math.cos(2 * th) - 2 * math.cos(3 * th) - math.cos(4 * th)) * r / 16 + j()) for th in np.linspace(0, 2 * math.pi, 28)]
+        d.line(hp + [hp[0]], fill=col + (int(255 * a),), width=S(6))
+        sx, sy, R_ = R - S(40), max(S(230), ht - S(10)), S(52)               # star, top-right (ember)
+        sp = [(sx + (R_ if k % 2 == 0 else R_ * 0.42) * math.cos(-math.pi / 2 + k * math.pi / 5) + j(), sy + (R_ if k % 2 == 0 else R_ * 0.42) * math.sin(-math.pi / 2 + k * math.pi / 5) + j()) for k in range(10)]
+        d.polygon(sp, fill=EM + (int(255 * a),))
+    return over(comp, to_np(im))
+def glass_word(comp, fr, word, n, size, top):
+    def mk():
+        im = Image.new("L", (W, H), 0); d = ImageDraw.Draw(im)
+        fnt = lambda ch: F("lat_serif" if ch.isascii() and ch.strip() else "black", size * (0.92 if ch.isascii() else 1))
+        ws = [d.textlength(ch, font=fnt(ch)) for ch in word]; x = (W - sum(ws)) / 2
+        for j, ch in enumerate(word[:n]): d.text((x, top), ch, font=fnt(ch), fill=255); x += ws[j]
+        Lm = np.asarray(im, np.float32) / 255; er = cv2.erode(Lm, np.ones((S(7), S(7)), np.uint8)); rim = np.clip(Lm - er, 0, 1)
+        sh = cv2.GaussianBlur(np.roll(Lm, S(14), 0), (0, 0), S(16)) * 0.55
+        return Lm[..., None], rim[..., None], sh[..., None]
+    Lm, rim, sh = cached(("glass", word, n, size, top), mk)
+    out = comp * (1 - sh * (1 - Lm))                                            # soft shadow lifts the glass off the background
+    g = cv2.GaussianBlur(comp, (0, 0), S(22)) * 0.55 + 0.42                  # frosted: heavily blurred background, lifted toward white
+    out = out * (1 - Lm) + g * Lm; return out * (1 - rim * 0.95) + rim * 0.95
+
 # ---- schedule overlay SFX from the spec ----
 for s in segs:
     if s["kind"] != "clip": continue
@@ -237,6 +526,21 @@ for s in segs:
         tsend = to_out(s, pr["send"]) if "send" in pr else t0 + n * 0.08 + 0.1
         events += [(tsend, "tick", 0.9), (tsend + 0.07, "pop", 0.8)]
     for bw in it.get("bigwords", []): events.append((to_out(s, bw["start"]), "boom", 0.35))
+    for bu in it.get("bubbles", []): events.append((to_out(s, bu["start"]), "pop", 0.75))
+    if it.get("checklist"):
+        events.append((to_out(s, it["checklist"]["start"]), "swish", 0.5))
+        for row in it["checklist"].get("items", []): events.append((to_out(s, row["at"]), "tick", 0.9))
+    if it.get("phone"):
+        events.append((to_out(s, it["phone"]["start"]), "swish", 0.75))
+    for c in (it.get("headlines") or {}).get("cards", []): events.append((to_out(s, c.get("at", it["headlines"]["start"])), "boom", 0.3))
+    if it.get("chart"):
+        events.append((to_out(s, it["chart"]["start"]), "swish", 0.5))
+        for i in range(len(it["chart"]["bars"])): events.append((to_out(s, it["chart"]["start"]) + 0.15 + i * 0.12, "tick", 0.6))
+    for key_ in ("sticker", "framebreak"):
+        if it.get(key_): events.append((to_out(s, it[key_]["start"]), "pop", 0.85))
+    if it.get("bg"): events.append((to_out(s, it["bg"]["start"]), "swish", 0.6))
+    if it.get("zoom_in") and s["start"] > 0: events.append((s["start"], "whoosh", 0.75))
+    if it.get("_fast") is None and s["start"] > 0 and segs[segs.index(s) - 1]["item"].get("_fast"): events.append((s["start"], "swish", 0.6))
     C = it.get("cta")
     if C:
         events.append((to_out(s, C["show"]) - 0.04, "swish", 0.8))
@@ -251,16 +555,44 @@ dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", MASTER, "-f", "rawvideo",
 enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
                         "-c:v", "libx264", "-crf", "14", "-preset", "medium", "-pix_fmt", "yuv420p", VID], stdin=subprocess.PIPE)
 whips = [s["start"] for s in segs if s["item"].get("whip_in") and s["start"] > 0]
-bigpos = {}
+zthru = [s["start"] for s in segs if s["item"].get("zoom_in") and s["start"] > 0]
+impacts = sorted(set(round(t0, 3) for t0, name, g in events if name in ("boom", "scratch") or (name == "pop" and g >= 0.85)))
+bigpos = {}; RECTS = []; COLL = []
+def face_box(m):
+    if m is None: return None
+    ht = head_top(m); band = m[ht:ht + S(430), :, 0] > 0.5
+    cols = np.where(band.mean(axis=0) > 0.25)[0]
+    return (int(cols.min()), ht, int(cols.max()), ht + S(430)) if len(cols) else None
 for n in range(TOTAL_N):
     buf = dec.stdout.read(W * H * 3)
     if len(buf) < W * H * 3: break
-    t = n / FPS; rgb = np.frombuffer(buf, np.uint8).reshape(H, W, 3).copy(); s = seg_at(t); it = s["item"]
+    t = n / FPS; rgb = np.frombuffer(buf, np.uint8).reshape(H, W, 3).copy(); s = seg_at(t); it = s["item"]; RECTS.clear()
     if s["kind"] == "clip":
         push = float(it.get("push", 0)); d0 = s["N"] / FPS
         if push: rgb = zoom(rgb, 1 + push * (0.5 - 0.5 * math.cos(math.pi * (t - s["start"]) / d0)), 0.4)
+        for pz in it.get("punch", []):                                 # hard punch-in on a word (60 ms snap), held until `until` or the end of the clip
+            p0 = to_out(s, pz["at"]); p1 = to_out(s, pz["until"]) if "until" in pz else s["start"] + d0 + 1
+            if p0 <= t < p1:
+                zz = 1 + (float(pz.get("scale", 1.18)) - 1) * eq((t - p0) / 0.07); yy_ = float(pz.get("y", 0.38))
+                rgb = zoom(rgb, zz, yy_) if t - p0 > 0.07 else (sum(zoom(rgb, zz * f_, yy_).astype(np.float32) for f_ in (0.975, 1.0, 1.025)) / 3).astype(np.uint8)
+        pb = it.get("pullback")
+        if pb:                                                           # start tight on the face, then release to the wide shot
+            q0 = to_out(s, pb.get("at", it["in"])); z0 = float(pb.get("from", 1.6)); u = smooth((t - q0) / float(pb.get("dur", 0.8)))
+            rgb = zoom(rgb, 1 + (z0 - 1) * (1 - u), float(pb.get("y", 0.32)))
+        if (push or it.get("punch") or pb) and it.get("bars", spec.get("bars", False)):   # zooming must not eat the letterbox bars
+            bb = S(spec.get("bars_px", 200)); rgb[:bb] = 0; rgb[H - bb:] = 0
         fr = rgb.astype(np.float32) / 255; comp = fr.copy(); low = False
         C = it.get("cta"); cta_on = C is not None and t >= to_out(s, C["show"])
+        seg_end = s["start"] + d0; MK = {}
+        def getm():
+            if "m" not in MK: MK["m"] = smooth_mask(rgb, id(s))
+            return MK["m"]
+        on = lambda key_: it.get(key_) and span(it[key_], s, seg_end)[0] <= t < span(it[key_], s, seg_end)[1]
+        if on("bg") and getm() is not None: comp = bg_comp(comp, getm(), t, it["bg"], s, seg_end)
+        if on("sticker") and getm() is not None: comp = sticker_comp(comp, getm(), t, it["sticker"], s, seg_end)
+        if on("framebreak") and getm() is not None: comp = framebreak_comp(comp, getm(), t, it["framebreak"], s, seg_end)
+        base_person = comp.copy()
+        if on("headlines"): comp = headlines_comp(comp, base_person, getm(), t, it["headlines"], s, seg_end)
         for bw in it.get("bigwords", []):
             t0, t1 = to_out(s, bw["start"]), to_out(s, bw["end"])
             if not (t0 <= t < t1): continue
@@ -274,9 +606,11 @@ for n in range(TOTAL_N):
                 if m is None or size <= S(170) or place == "low": bigpos[key] = ("low", int(min(S(bw.get("size", 300)), W * 0.9 / max(1, nch))), S(1150))
                 else: bigpos[key] = ("top", size, max(S(120), int(ht + ov * size - size * 1.18)))
             mode, size, top = bigpos[key]
-            if k > 1: comp = over(comp, bigword(word, k - 1, size, top))
-            comp = over(comp, bigword(word, k, size, top), frac)
-            if mode == "top": comp = comp * (1 - m) + fr * m
+            if bw.get("style") == "glass": comp = glass_word(comp, fr, word, k, size, top)
+            else:
+                if k > 1: comp = over(comp, bigword(word, k - 1, size, top))
+                comp = over(comp, bigword(word, k, size, top), frac)
+            if mode == "top": comp = comp * (1 - m) + base_person * m
             else: low = True
         for pr in it.get("prompts", []):
             t0 = to_out(s, pr["start"]); n_ = len(pr["text"]); tsend = to_out(s, pr["send"]) if "send" in pr else t0 + n_ * 0.08 + 0.1
@@ -288,8 +622,19 @@ for n in range(TOTAL_N):
             elif t < tsend + 0.07: st = (pr["text"], "pressed")
             else: st = (pr["text"], "done")
             comp = over(comp, prompt_box(st[0], st[1], pr.get("label", "對 AI 說")), a)
+        if on("doodle"): comp = doodle_comp(comp, getm(), t, it["doodle"], s, seg_end)
+        chart_on = bool(on("chart"))
+        if chart_on: comp = chart_comp(comp, t, it["chart"], s, seg_end)
+        if it.get("checklist"): comp = checklist_comp(comp, t, it["checklist"], s, seg_end)
+        if it.get("bubbles"): comp = bubbles_comp(comp, t, it["bubbles"], s, seg_end)
+        ph_on = False
+        if it.get("phone"):
+            comp = phone_comp(comp, t, it["phone"], s, seg_end)
+            ph_on = to_out(s, it["phone"]["start"]) <= t < (to_out(s, it["phone"]["end"]) if "end" in it["phone"] else seg_end)
+        if it.get("_fast"): comp = over(comp, badge(f"▶▶ {it['_fast']:g}×", int(it.get("badge_y", 240))))
         if C is not None: comp = cta_comp(comp, t, C, s)
-        if not low and not cta_on and it.get("captions_on", True):
+        bub_on = bool(it.get("bubbles")) and to_out(s, min(b_["start"] for b_ in it["bubbles"])) <= t and not it.get("captions_over")
+        if not low and not cta_on and not bub_on and not (chart_on and not it["chart"].get("captions_over")) and not (ph_on and not it["phone"].get("captions_over")) and it.get("captions_on", True):
             for c in it.get("captions", []):
                 t0, t1 = to_out(s, c["start"]), to_out(s, c["end"])
                 if t0 <= t < t1:
@@ -297,14 +642,36 @@ for n in range(TOTAL_N):
                     pop = round(1.0 + (0.08 * (1 - ease((t - t0) / 0.12)) if t - t0 < 0.12 else 0), 2)
                     kc = P.get(c.get("color", "accent"), EM) if isinstance(c.get("color", "accent"), str) else EM
                     comp = over(comp, caption(text, c.get("keys", []), lit, kc, pop, c.get("size", CAP["size"]), c.get("y", CAP["y"]))); break
+    elif s["kind"] == "freeze":
+        u = t - s["start"]; z = 1 + 0.035 * eq(u / 0.5)
+        comp = freeze_comp(zoom(rgb, z, 0.4).astype(np.float32) / 255, u, it)
     else:
         comp = rgb.astype(np.float32) / 255
+    for b in impacts:
+        dt = t - b
+        if 0 <= dt < 0.17:
+            amp = S(spec.get("shake_px", 9)) * (1 - dt / 0.17) ** 2; ox, oy = amp * math.sin(dt * 95), amp * 0.6 * math.cos(dt * 120)
+            Mt = np.float32([[1.012, 0, ox - W * 0.006], [0, 1.012, oy - H * 0.006]])        # tiny overscan so edges never show
+            comp = cv2.warpAffine(comp.astype(np.float32), Mt, (W, H), borderMode=cv2.BORDER_REPLICATE); break
+    for b in zthru:
+        dt = t - b
+        if -0.22 < dt < 0.22:
+            z = 1 + 1.6 * ((dt + 0.22) / 0.22) ** 2 if dt < 0 else 1 + 0.9 * (1 - eq(dt / 0.22))
+            img = (np.clip(comp, 0, 1) * 255).astype(np.uint8)
+            comp = sum(zoom(img, z * f_, 0.42).astype(np.float32) for f_ in (1.0, 1.035, 1.07)) / (3 * 255)
     for b in whips:
         dt = t - b
         if abs(dt) < 0.12:
             w = 1 - abs(dt) / 0.12; img = zoom((np.clip(comp, 0, 1) * 255).astype(np.uint8), 1 + 0.10 * w)
             L = max(3, int(S(90) * w)); ker = np.zeros((L, L), np.float32); ker[:, L // 2] = 1.0 / L
             comp = cv2.filter2D(img, -1, ker).astype(np.float32) / 255
+    if RECTS and n % 10 == 0 and s["kind"] == "clip":
+        fb = face_box(MK.get("m") if "m" in MK else person_mask(rgb))
+        if fb:
+            fx0, fy0, fx1, fy1 = fb; fa = max(1, (fx1 - fx0) * (fy1 - fy0))
+            for nm, x0, y0, x1, y1 in RECTS:
+                ov = max(0, min(x1, fx1) - max(x0, fx0)) * max(0, min(y1, fy1) - max(y0, fy0)) / fa
+                if ov > 0.06: COLL.append(dict(t=round(t, 2), what=nm, face_cover=round(ov, 2)))
     enc.stdin.write((np.clip(comp, 0, 1) * 255).astype(np.uint8).tobytes())
     if n % (FPS * 5) == 0: print(f"[overlay] {t:6.1f}/{DUR:.1f}s", flush=True)
 enc.stdin.close(); enc.wait(); dec.kill()
@@ -320,13 +687,21 @@ def gen(name):
     if name == "shutter":
         k = int(0.03 * SR); x = rng.standard_normal(k) * np.exp(-np.arange(k) / SR * 160) * 0.5; return np.stack([x, x], 1).astype(np.float32)
     if name == "whoosh_rev": return sfx("whoosh")[::-1][-int(0.3 * SR):].copy()
+    if name == "scratch":                                             # record scratch: noise burst + falling pitch
+        k = int(0.22 * SR); tt = np.arange(k) / SR; f0 = 1400 * np.exp(-tt * 9) + 180
+        x = (0.35 * np.sign(np.sin(2 * np.pi * np.cumsum(f0) / SR)) + 0.5 * rng.standard_normal(k)) * np.exp(-tt * 14)
+        x = np.convolve(x, np.ones(5) / 5, "same") * 0.45; return np.stack([x, x * 0.9], 1).astype(np.float32)
     if name.startswith("shimmer"):
         d = float(name.split(":")[1]); k = int(d * SR); tt = np.arange(k) / SR
         x = np.convolve(rng.standard_normal(k), np.ones(3) / 3, "same") * 0.022 + 0.018 * np.sin(2 * np.pi * (900 + 500 * tt / d) * tt) * np.sin(2 * np.pi * 2.5 * tt) ** 2
         x *= np.minimum(1, tt / 0.4) * np.minimum(1, (d - tt) / 0.25); return np.stack([x, x], 1).astype(np.float32)
     return sfx(name)
+PEAKS = {}
 for t0, name, g in events:
-    x = gen(name); i0 = max(0, int(t0 * SR)); j = min(len(fx), i0 + len(x)); fx[i0:j] += x[:j - i0] * g
+    x = gen(name)
+    if name not in PEAKS:                                             # where this sound is loudest → line that up with the impact
+        e = np.convolve(np.abs(x).mean(axis=1), np.ones(240) / 240, "same"); PEAKS[name] = int(e.argmax()) if name in ("whoosh", "swish", "whoosh_rev", "scratch") else 0
+    i0 = max(0, int(t0 * SR) - PEAKS[name]); j = min(len(fx), i0 + len(x)); fx[i0:j] += x[:j - i0] * g
 FXW = os.path.join(WORK, "sfx.wav"); sf.write(FXW, fx[:NS], SR)
 AUD = os.path.join(WORK, "audio.wav")
 mus = spec.get("music"); inputs = ["-i", MASTER, "-i", FXW]
@@ -349,4 +724,8 @@ run(["ffmpeg", "-v", "error", "-y", "-i", VID, "-i", AUD, "-map", "0:v", "-map",
 pr = probe(OUT); durs = {s["codec_type"]: float(s.get("duration", 0)) for s in pr["streams"]}
 qa = dict(output=OUT, seconds=round(DUR, 3), size_mb=round(os.path.getsize(OUT) / 1048576, 2), video_s=durs.get("video"), audio_s=durs.get("audio"),
           av_gap_ms=round(abs(durs.get("video", 0) - durs.get("audio", 0)) * 1000, 1), segments=[dict(kind=s["kind"], start=round(s["start"], 3), frames=s["N"]) for s in segs])
+qa["face_collisions"] = COLL[:40]
+try:
+    import pacing as PACE; qa["dead_spots"] = PACE.analyze(resolve_words(json.load(open(args.spec)), SPEC_DIR))["dead_spots"]
+except Exception as e: qa["dead_spots_error"] = str(e)
 json.dump(qa, open(os.path.join(WORK, "qa.json"), "w"), indent=1, ensure_ascii=False); print(json.dumps(qa, ensure_ascii=False))

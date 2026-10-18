@@ -43,3 +43,38 @@ Pick `at` on a frame where the person is smiling, eyes open, centred. The masthe
 ### `compare` — before/after reveal on a freeze (≈2.6 s)
 `{type:"compare", src, at, crop?, dur:2.625, sweep:1.9, grade_to:"soft", bars_after:true, label_after:"AI 調色", label_before:"原始"}`
 Starts on the untouched frame; a slanted line slides slowly left→right revealing the graded frame. Place it **after** the sentence that announces the change, never mid-sentence. Use `at` = the clip's `out`, so the freeze matches the last frame.
+
+
+## Movement effects (keep the picture changing every ≤ 3 s)
+Times are source seconds, like captions. Budget per reel: one big moment + 3–5 light effects; `python3 scripts/pacing.py edit.json` lists dead spots.
+
+| Field | Shape | What it does |
+|---|---|---|
+| `punch` | `[{at, scale?: 1.18, until?, y?: 0.38}]` | Hard punch-in (60 ms snap) on a word, held until `until` or the clip end. Use on the punchline / key number. |
+| `bubbles` | `[{who: "me"|"ai", text, start, end?}]` | Chat bubbles stack up from just above the bottom UI zone (below the chin); newest at the bottom, max 3. Captions step aside while they show (`captions_over: true` keeps them). `pop` SFX. |
+| `checklist` | `{start, end?, title?, side?: "left"|"right"|"center", width?: 360, bottom?: 1240, items: [{text, at}]}` | Glass card; each item ticks at `at` with a `tick`. Side card keeps the face clear. |
+| `phone` | `{src, start, end?, width?: 0.46, x?: 0.5, top?: 1060, scroll?: 1.0, src_in?: 0}` | Phone slides up from the bottom edge and stops below the chin. `src` = a phone screenshot (scrolls by `scroll`) or a video. Captions hide under it. |
+| `ramp` | `[{from, to, speed?: 3, mute?: true}]` | Speed ramp inside one clip (e.g. typing at 3× then real speed for the result). Fast part shows a 「▶▶ 3×」 badge — never hide a speed-up. |
+| `fit` | `true` (+ `fit_width?`, `fit_y?`) | Landscape screen recording shown whole on a blurred, dimmed copy of itself (instead of cropping to 9:16). |
+| timeline `freeze` | `{type: "freeze", src, at, dur?: 1.0, text?: "等一下", circle?: [cx, cy, r], text_y?}` | Held frame with drained colour, a red 「等一下」 stamp and an optional self-drawing red circle (1080×1920 coords); record scratch. Put the next clip's `in` at `at`. |
+
+### Cut-out & depth effects (need the person matte — FULL mode)
+| Field | Shape | What it does |
+|---|---|---|
+| `pullback` | `{at?, from?: 1.6, dur?: 0.8, y?: 0.32}` | Pull-back reveal: starts tight on the face and releases to the full shot. Best on the first beat. |
+| `zoom_in` | `true` | Zoom-through transition into this clip (the cut zooms through the frame). Use instead of `whip_in` once or twice per reel. |
+| `chart` | `{start, end?, title?, unit?, bars: [{label, value}], width?: 820, height?: 330, bottom?: 1510}` | Bar chart grows with counting numbers (highest bar in ember). The `title` replaces the caption while it shows — write the spoken line there. Mark made-up numbers as 示意. |
+| `headlines` | `{start, end?, behind?: true, cards: [{text, src?, at, slot?: [x, y, rot]}]}` | Headline wall: paper clippings slam in around the head — behind the person. Up to 6 slots. Never imitate a real news brand; `src` is a short label like 「帳單 · 03/01」. |
+| `bg` | `{src, start, end?, blur?, dim?}` | Green screen without a green screen: replaces the background behind the person with an image or video. |
+| `sticker` | `{start, end?, paper?: "#F3EEE4", outline?: 16, tilt?: -3, scale?: 0.86}` | The person as a die-cut sticker (white outline, shadow, paper grain), tilted. |
+| `framebreak` | `{start, end?, box?: [x0, y0, x1, y1], paper?: "#1A1A1C", border?: 22}` | The shot sits in a framed photo and the head breaks out over the top edge. Without `box` the frame is placed from the head automatically. |
+| `doodle` | `{start, end?, color?: "#FFFFFF", gap?: 22, doodles?: true}` | Hand-drawn outline around the person that "boils" (re-draws every 3 frames), plus a heart and an ember star by the head. |
+| `bigwords[].style` | `"glass"` | Frosted-glass letters (blurred background, white rim, soft shadow) instead of solid ivory. |
+Not built on purpose: vertigo (dolly zoom) and orbit — they need a moving camera when filming; faking them from a locked-off shot looks cheap.
+
+## Word-locked timing (how effects land on the right spot)
+Set `"words": "words.json"` (the transcribe.py output) at the top of edit.json. Then any time field can name the word instead of a number:
+`"at": "@幾千塊"` · `"start": "@工具"` · `"@知道#2"` (the 2nd time it's said in that clip) · `{"word": "6萬", "offset": -0.1}`.
+Start-type fields (`at`, `start`, `send`, `show`, `from`…) land 2 frames **before** the word starts — editors cut on anticipation;
+end-type fields (`end`, `until`, `to`) land just **after** the word ends. The search stays inside the clip's `in`–`out`.
+Rules the engine also enforces: whoosh/swish peaks land exactly on the cut or impact; effects that run to the end of their shot leave with the cut (no fade mid-word); impacts (big words, stamps, slams) get a 5-frame decaying shake; pops overshoot ~6%; punch snaps are motion-blurred. `qa.json` lists `face_collisions` (any card, bubble, chart or phone covering > 6 % of the face) — fix every one before delivering.
