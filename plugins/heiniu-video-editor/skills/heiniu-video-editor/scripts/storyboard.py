@@ -17,14 +17,15 @@ version is republished to the SAME URL so the open page reloads itself (see SKIL
 """
 import sys, os, json, base64, html, argparse, io, subprocess, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from hn_common import grab, ASSETS
+from hn_common import grab, ASSETS, expand_timeline, resolve_words
+import pacing as PACE
 from PIL import Image
 
 ap = argparse.ArgumentParser(); ap.add_argument("spec"); ap.add_argument("--out"); ap.add_argument("--version", type=int, default=1)
 ap.add_argument("--video"); ap.add_argument("--prev"); ap.add_argument("--change", action="append", default=[]); ap.add_argument("--delivered")
 ap.add_argument("--max-mb", type=float, default=8.0, help="cap for the embedded review copy")
 a = ap.parse_args()
-D = os.path.dirname(os.path.abspath(a.spec)); spec = json.load(open(a.spec)); P = lambda p: p if os.path.isabs(p) else os.path.join(D, p)
+D = os.path.dirname(os.path.abspath(a.spec)); spec = resolve_words(json.load(open(a.spec)), os.path.dirname(os.path.abspath(a.spec))); P = lambda p: p if os.path.isabs(p) else os.path.join(D, p)
 FPS = int(spec.get("output", {}).get("fps", 30))
 PREV = json.load(open(a.prev))["timeline"] if a.prev else None
 canon = lambda x: json.dumps(x, sort_keys=True, ensure_ascii=False)
@@ -48,41 +49,76 @@ if a.video:
 changes = {}
 for c in a.change:
     k, _, v = c.partition("="); changes[int(k)] = v.strip()
-beats, srt, t = [], [], 0.0
+# output-time span of every beat (speed-ramped beats are several clip pieces) + SRT from the pieces
+spans, srt, t = {}, [], 0.0
+for pc in expand_timeline(spec["timeline"], float(spec.get("speed", 1.0))):
+    kind = pc.get("type", "clip"); bi = pc["_beat"]
+    if kind == "clip":
+        a0, b0, k = float(pc["in"]), float(pc["out"]), float(pc.get("speed", spec.get("speed", 1.0)))
+        N = max(1, round((b0 - a0) / k * FPS)); dur = N / FPS; keff = (b0 - a0) / dur
+        for c in pc.get("captions", []):
+            c0, c1 = max(a0, float(c["start"])), min(b0, float(c["end"]))
+            if c1 > c0: srt.append((t + (c0 - a0) / keff, t + (c1 - a0) / keff, c["text"]))
+    else:
+        dur = round(float(pc.get("dur", 1.4 if kind == "cover" else 1.0 if kind == "freeze" else 2.625)) * FPS) / FPS
+    sp = spans.setdefault(bi, [t, t]); sp[1] = t + dur; t += dur
+TOTAL = t
+srt.sort()
+pace = PACE.analyze(spec)
+warn = {}
+for g in pace["dead_spots"]:
+    warn.setdefault(g["beat"], g)
+beats = []
 for i, it in enumerate(spec["timeline"]):
-    kind = it.get("type", "clip"); n = f"{i + 1:02d}"
+    kind = it.get("type", "clip"); n = f"{i + 1:02d}"; st, en = spans[i]
     if kind == "clip":
         a0, b0, k = float(it["in"]), float(it["out"]), float(it.get("speed", spec.get("speed", 1.0)))
-        N = max(1, round((b0 - a0) / k * FPS)); dur = N / FPS; keff = (b0 - a0) / dur
         line = " ".join(c["text"] for c in it.get("captions", [])) or "（無口白）"
         acts = []
         for bw in it.get("bigwords", []): acts.append(f"巨字「{bw['word']}」逐字打出" + ("，放在頭頂上方、頭部壓在字前" if bw.get("place", "auto") != "low" else "，放畫面下方"))
         for pr in it.get("prompts", []): acts.append(f"指令框打出「{pr['text']}」，按下送出 ✓")
+        for pz in it.get("punch", []): acts.append(f"推近 {float(pz.get('scale', 1.18)) * 100 - 100:.0f}%（punch-in）")
+        if it.get("bubbles"): acts.append("對話泡泡：" + " → ".join(("我：" if b_.get("who") == "me" else "AI：") + b_["text"] for b_ in it["bubbles"]))
+        if it.get("checklist"): acts.append("清單逐項打勾：" + "、".join(r["text"] for r in it["checklist"].get("items", [])))
+        if it.get("phone"): acts.append("手機畫面從下方滑上來（" + os.path.basename(it["phone"]["src"]) + "）")
+        for r in it.get("ramp", []): acts.append(f"{float(r['from']):.1f}–{float(r['to']):.1f}s 加速 {float(r.get('speed', 3)):g}×（畫面標示「▶▶」）")
+        if it.get("fit"): acts.append("螢幕錄影完整呈現，背景模糊")
+        if it.get("headlines"): acts.append("新聞標題牆（在頭後面）：" + "、".join(c["text"] for c in it["headlines"].get("cards", [])))
+        if it.get("chart"): acts.append("長條圖長出來：" + "、".join(f"{b['label']} {b['value']}" for b in it["chart"]["bars"]))
+        if it.get("bg"): acts.append("換背景（綠幕效果）：" + os.path.basename(it["bg"]["src"]))
+        if it.get("sticker"): acts.append("人物剪成貼紙（白邊＋紙張背景）")
+        if it.get("framebreak"): acts.append("相框效果：頭從相框裡衝出來")
+        if it.get("doodle"): acts.append("手繪描邊＋小塗鴉（會抖動）")
+        if it.get("pullback"): acts.append(f"從臉部特寫拉開到全景（{float(it['pullback'].get('from', 1.6)):g}× → 1×）")
+        if it.get("zoom_in"): acts.append("穿越式放大轉場進來")
+        for bw in it.get("bigwords", []):
+            if bw.get("style") == "glass": acts.append(f"「{bw['word']}」是毛玻璃字")
         if it.get("cta"): acts.append(f"留言卡片滑入，逐字打出 {it['cta'].get('keyword', 'EDIT')}，愛心＋作者回覆「{it['cta'].get('reply', '')}」")
         if it.get("push"): acts.append(f"畫面緩慢推近 {float(it['push']) * 100:.1f}%")
-        if k != 1: acts.append(f"語速 {k:g}×")
+        if k != 1 and not it.get("ramp"): acts.append(f"語速 {k:g}×")
         if it.get("captions"): acts.append("卡拉 OK 字幕逐字亮起（墨色字卡、橘色重點字）")
         if it.get("whip_in"): acts.append("甩鏡模糊轉場進來")
         shot = it.get("shot", "特寫")
-        for c in it.get("captions", []):
-            s0, s1 = t + (float(c["start"]) - a0) / keff, t + (float(c["end"]) - a0) / keff
-            if s1 > s0: srt.append((max(t, s0), min(t + dur, s1), c["text"]))
         key = next((k_ for c in it.get("captions", []) for k_ in c.get("keys", [])), "")
         frame_src, frame_t = it["src"], a0 + (b0 - a0) * 0.5
     elif kind == "cover":
-        dur = round(float(it.get("dur", 1.4)) * FPS) / FPS; line = "（封面開場）"; key = ""
+        line = "（封面開場）"; key = ""
         acts = [f"雜誌封面：刊頭「{it.get('masthead', '黑牛')}」藏在頭後", "封面標題：" + "".join(it.get("headline", [])), "最後快速甩鏡進入開場句"]
         shot = "封面・冷開場"; frame_src, frame_t = it["src"], float(it.get("at", 0))
+    elif kind == "freeze":
+        line = "（定格）"; key = ""
+        acts = [f"畫面定格 {float(it.get('dur', 1.0)):.1f} 秒，蓋上紅色「{it.get('text', '等一下')}」印章" + ("，紅圈畫出重點" if it.get("circle") else ""), "刮唱片音效"]
+        shot = "定格・暫停"; frame_src, frame_t = it["src"], float(it.get("at", 0))
     else:
-        dur = round(float(it.get("dur", 2.625)) * FPS) / FPS; line = "（前後對比）"; key = ""
+        line = "（前後對比）"; key = ""
         acts = [f"斜線由左往右慢慢掃過：左「{it.get('label_after', 'AI 調色')}」右「{it.get('label_before', '原始')}」"]
         shot = "定格・前後對比"; frame_src, frame_t = it["src"], float(it.get("at", 0))
     acts += it.get("notes", [])
     changed = PREV is not None and (i >= len(PREV) or canon(PREV[i]) != canon(it))
-    beats.append(dict(n=n, start=round(t, 3), end=round(t + dur, 3), shot=shot, line=line, acts=acts, key=key,
-                      changed=bool(changed or (i + 1) in changes), applied=changes.get(i + 1, ""), _src=frame_src, _t=frame_t))
-    t += dur
-TOTAL = t
+    w = warn.get(i + 1)
+    beats.append(dict(n=n, start=round(st, 3), end=round(en, 3), shot=shot, line=line, acts=acts, key=key,
+                      changed=bool(changed or (i + 1) in changes), applied=changes.get(i + 1, ""), _src=frame_src, _t=frame_t,
+                      warn=(dict(text=f"畫面 {w['length']:.1f} 秒沒變化（{w['start']:.1f}–{w['end']:.1f}s）", fixes=w["fixes"]) if w else None)))
 
 # ---- thumbnails: from the draft when we have it (shows captions/effects), else from the source ----
 for b in beats:
@@ -95,7 +131,7 @@ for b in beats:
     b["thumb"] = uri or jpeg_uri(grab(P(b["_src"]), b["_t"], 216, 384))
     del b["_src"], b["_t"]
 
-data = dict(name=spec.get("name", "edit"), version=a.version, duration=round(TOTAL, 3), beats=beats,
+data = dict(name=spec.get("name", "edit"), version=a.version, duration=round(TOTAL, 3), beats=beats, pace=dict(max_gap=pace["max_gap"], count=len(pace["dead_spots"])),
             changes=[dict(beat=f"{k:02d}", note=v) for k, v in sorted(changes.items())],
             srt="\n".join(f"{i + 1}\n{fmt_srt(s0)} --> {fmt_srt(s1)}\n{txt}\n" for i, (s0, s1, txt) in enumerate(srt)))
 if a.delivered:

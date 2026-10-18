@@ -9,15 +9,15 @@
    Ink / ivory / ember. Light by default, dark when the viewer prefers it. */
 :root {
   --bg: #f3eee4; --panel: #fbf8f2; --panel2: #f6f1e7; --line: #ddd5c6; --fg: #1a1a1b; --muted: #6b665d; --ember: #c84a0c; --ember-soft: #f6e2d4;
-  --ok: #2f7d4f; --ok-soft: #dcefe2; --ink: #151516; --input: #ffffff; --shadow: 0 10px 30px rgba(30, 20, 10, .10);
+  --ok: #2f7d4f; --ok-soft: #dcefe2; --warn: #9a6200; --warn-soft: #fbedc9; --ink: #151516; --input: #ffffff; --shadow: 0 10px 30px rgba(30, 20, 10, .10);
   --display: "Noto Serif TC", "Songti TC", serif; --body: "Noto Sans TC", "PingFang TC", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #141415; --panel: #1c1c1e; --panel2: #222225; --line: #303034; --fg: #f3eee4; --muted: #9b968c; --ember: #ff7a2e; --ember-soft: #3a2418;
-  --ok: #5fc48a; --ok-soft: #1d3326; --ink: #0d0d0e; --input: #121213; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark } }
+  --ok: #5fc48a; --ok-soft: #1d3326; --warn: #f0b74a; --warn-soft: #3a2e14; --ink: #0d0d0e; --input: #121213; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark } }
 :root[data-theme="dark"] { --bg: #141415; --panel: #1c1c1e; --panel2: #222225; --line: #303034; --fg: #f3eee4; --muted: #9b968c; --ember: #ff7a2e; --ember-soft: #3a2418;
-  --ok: #5fc48a; --ok-soft: #1d3326; --ink: #0d0d0e; --input: #121213; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark }
+  --ok: #5fc48a; --ok-soft: #1d3326; --warn: #f0b74a; --warn-soft: #3a2e14; --ink: #0d0d0e; --input: #121213; --shadow: 0 10px 30px rgba(0, 0, 0, .45); color-scheme: dark }
 * { box-sizing: border-box }
 [hidden] { display: none !important }
 html, body { margin: 0 }
@@ -97,6 +97,11 @@ details.plan summary::-webkit-details-marker { display: none }
 details.plan summary::before { content: "＋ "; }
 details.plan[open] summary::before { content: "－ "; }
 details.plan ul { margin: 6px 0 0; padding-left: 1.1em; font-size: 14px; display: grid; gap: 2px }
+.warnbox { font-size: 13.5px; background: var(--warn-soft); color: var(--fg); border-radius: 8px; padding: 7px 10px; display: grid; gap: 6px }
+.warnbox b { color: var(--warn) }
+.warnbox .fx { display: flex; flex-wrap: wrap; gap: 6px }
+.warnbox .fx button { border: 1px solid var(--warn); background: transparent; color: var(--warn); border-radius: 999px; padding: 3px 10px; font-size: 12.5px; font-weight: 700 }
+.pace { margin-top: 10px; font-size: 13.5px; color: var(--muted) } .pace b { color: var(--warn) } .pace.ok b { color: var(--ok) }
 .applied { font-size: 13.5px; background: var(--ember-soft); border-radius: 8px; padding: 6px 10px }
 .applied b { color: var(--ember) }
 .verdict { display: flex; flex-wrap: wrap; gap: 8px }
@@ -179,6 +184,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     <h1>先看<em>粗剪</em>，每一拍給個判斷</h1>
     <p>左邊是這一版的預覽。每一拍按「▶ 播這拍」看清楚，再選 <b>這拍 OK</b> 或 <b>要改</b>，要改就寫一句話。全部看完，按下面的按鈕交給 Claude。</p>
     <ol class="flow" id="flow" aria-label="剪輯進度"><li class="now"><span>1</span>審片・逐拍修改</li><li><span>2</span>全部 OK，輸出完整版</li><li><span>3</span>下載影片</li></ol>
+    <p class="pace" id="pace"></p>
     <ul class="how"><li><b>空白鍵</b> 播放／暫停</li><li><b>← →</b> 上一拍／下一拍</li><li>預覽是低解析度，成品是 1080×1920</li></ul>
   </section>
 
@@ -256,6 +262,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
         '<div class="meta"><span class="n">' + b.n + '</span><span>' + fmt(b.start) + '–' + fmt(b.end) + '</span><span>' + (b.end - b.start).toFixed(1) + 's</span><span class="shot">' + esc(b.shot) + '</span>' + (b.changed ? '<span class="tag">v' + VER + ' 已修改</span>' : '') + '</div>' +
         '<blockquote>「' + esc(b.line) + '」</blockquote>' +
         (b.applied ? '<div class="applied"><b>這次改了：</b>' + esc(b.applied) + '</div>' : '') +
+        (b.warn ? '<div class="warnbox"><span><b>⚠ 節奏：</b>' + esc(b.warn.text) + '，觀眾容易滑走。點一個建議：</span><div class="fx">' + b.warn.fixes.map(function (f) { return '<button type="button" data-q="' + esc(f) + '">＋ ' + esc(f) + '</button>'; }).join("") + '</div></div>' : '') +
         '<details class="plan"><summary>這拍怎麼剪</summary><ul>' + b.acts.map(function (a) { return "<li>" + esc(a) + "</li>"; }).join("") + '</ul></details>' +
         '<div class="verdict"><button class="play" type="button" data-act="play">▶ 播這拍</button>' +
           '<button class="okb" type="button" data-act="ok" aria-pressed="false">✓ 這拍 OK</button>' +
@@ -420,6 +427,11 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     $("mt").value = t; veil.classList.add("show"); $("mt").focus(); $("mt").select(); $("mclose").onclick = close;
   }
 
+  if (D.pace) {
+    var pc = $("pace");
+    if (D.pace.count) pc.innerHTML = "<b>⚠ 節奏檢查：" + D.pace.count + " 個地方超過 " + D.pace.max_gap + " 秒畫面沒變化</b>，那幾拍有標示和建議。";
+    else { pc.className = "pace ok"; pc.innerHTML = "<b>✓ 節奏檢查通過</b>：每 " + D.pace.max_gap + " 秒內畫面都有變化。"; }
+  }
   /* ---------- version banner / delivered ---------- */
   if (D.changes && D.changes.length) {
     var c = $("changes"); c.hidden = false;

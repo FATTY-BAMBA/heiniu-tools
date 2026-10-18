@@ -11,6 +11,23 @@ People talk in outcomes. Translate the sentence, change the spec, re-render, and
 | 字幕往上 / 往下 | `captions_style.y` ∓80; keep it out of the face and above the bottom UI zone (y ≤ 1500). |
 | 重點字換顏色 / 這個字要亮 | add the word to that caption's `keys`; `color:"red"` for a correction or punchline. |
 | 放成頭後面的大字 / 字要在頭後面 | `bigwords` entry with `overlap: 0.45` (head covers the lower part of the letters) and a large `size` (400+); 1–3 chars reads best. |
+| 這裡太無聊 / 畫面都沒變 / 太平了 | run `scripts/pacing.py`; fix each dead spot with the cheapest effect that fits the line: `punch` on the key word, `bubbles` if it quotes someone/AI, `checklist` for lists or numbers, a `freeze` + 「等一下」 for a twist. |
+| 在「X」推近 / 這個字放大畫面 | `punch` at the time of X (scale 1.15–1.2). |
+| 做成對話 / 對話泡泡 | `bubbles` with the exchange in short lines (≤ 14 chars each). |
+| 做成清單 / 一項一項打勾 | `checklist` with 2–4 items timed to when each is said. |
+| 加手機畫面 / 給大家看工具 | `phone` with a phone screenshot or screen recording of the thing named. |
+| 打字太慢 / 快轉 | `ramp` on the slow part at 3–4× (muted), real speed for the result. |
+| 暫停一下 / 等一下 / 圈起來 | timeline `freeze` (+ `circle` on what to look at). |
+| 螢幕錄影被切掉了 | `fit: true` on that clip. |
+| 開場從臉拉開 / 拉遠 | `pullback` on the first beat. |
+| 穿越轉場 / 衝進去 | `zoom_in: true` on the next clip. |
+| 做成圖表 / 數字長出來 | `chart` (2–4 bars; title = the spoken line; 示意 when illustrative). |
+| 新聞標題 / 很多標題飛出來 | `headlines` with 2–4 short cards. |
+| 換背景 / 綠幕 / 背景放 X | `bg` with the image or clip of X. |
+| 剪成貼紙 / 拼貼風 | `sticker` on that beat. |
+| 從相框衝出來 | `framebreak`. |
+| 加塗鴉 / 手繪框 | `doodle`. |
+| 玻璃字 / 毛玻璃 | `style: "glass"` on the big word. |
 | 加大字 / 這句要很大 | add a `bigwords` entry on the key word (1–4 chars). |
 | 太慢了 / 節奏快一點 | `speed` 1.2→1.3 on talking clips; trim pauses by moving `in`/`out` to word edges. |
 | 太快聽不懂 | speed 1.0–1.15 on that clip. |

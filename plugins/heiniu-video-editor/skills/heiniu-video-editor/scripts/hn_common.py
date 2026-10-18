@@ -102,3 +102,70 @@ def sfx(name):
     import soundfile as sf
     x, sr = sf.read(os.path.join(ASSETS, "sfx", name + ".wav"), dtype="float32")
     return x if x.ndim == 2 else np.stack([x, x], 1)
+
+# ---------------- timeline expansion (speed ramps) ----------------
+def expand_timeline(timeline, default_speed=1.0):
+    """A clip with "ramp": [{from, to, speed, mute?}] becomes several clip pieces (frame-exact cuts at the ramp edges).
+    Every piece keeps the item's captions/overlays (each only draws inside its own time range) and remembers its beat
+    index in "_beat"; later pieces drop whip_in/push so the beat still reads as one shot."""
+    out = []
+    for bi, it in enumerate(timeline):
+        if it.get("type", "clip") != "clip" or not it.get("ramp"):
+            d = dict(it); d["_beat"] = bi; out.append(d); continue
+        a, b = float(it["in"]), float(it["out"]); base = float(it.get("speed", default_speed)); cur = a; pieces = []
+        for r in sorted(it["ramp"], key=lambda r: float(r["from"])):
+            r0, r1 = max(a, float(r["from"])), min(b, float(r["to"]))
+            if r1 <= r0: continue
+            if r0 > cur + 1e-3: pieces.append((cur, r0, base, False))
+            pieces.append((r0, r1, float(r.get("speed", 3.0)), bool(r.get("mute", True)))); cur = r1
+        if cur < b - 1e-3: pieces.append((cur, b, base, False))
+        for k, (x, y, sp, mu) in enumerate(pieces):
+            d = dict(it); d.pop("ramp", None); d.update({"in": x, "out": y, "speed": sp, "_beat": bi})
+            if k > 0: d["whip_in"] = False; d["push"] = 0
+            if mu: d["_mute"] = True; d["normalize"] = False
+            if sp >= 1.5: d["_fast"] = sp
+            out.append(d)
+    return out
+
+# ---------------- word-locked timing ----------------
+TIME_START_KEYS = {"at", "start", "send", "show", "type_at", "heart_at", "reply_at", "from"}
+TIME_END_KEYS = {"end", "until", "to"}
+def load_chars(words_path):
+    """words.json (transcribe.py) → {file basename: [(char, t), …]} in source seconds"""
+    import json
+    out = {}
+    for f in json.load(open(words_path)):
+        cs = []
+        for ph in f.get("phrases", []): cs += [(c, float(t)) for c, t in ph.get("chars", [])]
+        out[os.path.basename(f["file"])] = cs
+    return out
+def resolve_words(spec, spec_dir, lead=0.067):
+    """Any time field may name a word instead of a number: "@6萬", "@6萬#2" (2nd time it is said), or
+    {"word": "6萬", "n": 1, "offset": -0.067}. Start-type fields land `lead` (2 frames) before the word starts —
+    editors cut on anticipation; end-type fields land just after the word ends. Search is limited to the clip."""
+    wp = spec.get("words")
+    if not wp: return spec
+    chars = load_chars(wp if os.path.isabs(wp) else os.path.join(spec_dir, wp))
+    def find(src, a, b, word, n):
+        cs = chars.get(os.path.basename(src)) or chars.get(os.path.basename(os.path.realpath(os.path.join(spec_dir, src))), [])
+        w = word.replace(" ", ""); seq = [(c, t) for c, t in cs if c.strip() and a - 0.3 <= t <= b + 0.3]; s_ = "".join(c for c, _ in seq); k, pos = 0, -1
+        while k < n:
+            pos = s_.find(w, pos + 1)
+            if pos < 0: raise ValueError(f"word 「{word}」 (#{n}) not found in {src} {a:.2f}–{b:.2f}s")
+            k += 1
+        t0 = seq[pos][1]; j = pos + len(w); t1 = seq[j][1] if j < len(seq) else seq[pos + len(w) - 1][1] + 0.28
+        return t0, t1
+    def walk(x, it, key=None):
+        if isinstance(x, dict) and "word" in x and set(x) <= {"word", "n", "offset"}:
+            t0, t1 = find(it["src"], float(it.get("in", 0)), float(it.get("out", 1e9)), x["word"], int(x.get("n", 1)))
+            return (t1 + float(x.get("offset", 0.03))) if key in TIME_END_KEYS else (t0 + float(x.get("offset", -lead)))
+        if isinstance(x, str) and x.startswith("@") and key in TIME_START_KEYS | TIME_END_KEYS:
+            w, _, n = x[1:].partition("#"); return walk({"word": w, "n": int(n or 1)}, it, key)
+        if isinstance(x, dict): return {k: walk(v, it, k) for k, v in x.items()}
+        if isinstance(x, list): return [walk(v, it, key) for v in x]
+        return x
+    spec = dict(spec); spec["timeline"] = [walk(it, it) if it.get("src") and it.get("type", "clip") in ("clip", "freeze") else it for it in spec["timeline"]]
+    return spec
+def spring(p):
+    """ease-out with ~6% overshoot — for pops (bubbles, cards, ticks)"""
+    p = min(max(p, 0.0), 1.0); return 1 - math.exp(-7 * p) * math.cos(8.5 * p) if p < 1 else 1.0
