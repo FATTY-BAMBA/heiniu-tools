@@ -39,7 +39,6 @@ function boot(){
  const isGuideEn=/\/claude-zerotohero\/en\/$/.test(location.pathname);
  const isGuideZh=/\/claude-zerotohero\/$/.test(location.pathname);
  if(isGuideZh&&current==='en'){location.replace(location.pathname+'en/'+location.hash);return;}
- if(isGuideEn&&current==='zh'){location.replace(location.pathname.replace(/en\/$/,'')+location.hash);return;}
  if(isGuideEn)current='en';
  else if(isGuideZh)current='zh';
  const nav=document.querySelector('.site-nav .wrap');
