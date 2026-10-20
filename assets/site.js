@@ -88,16 +88,36 @@ const HEINIU_ITEMS = [
   const nexts  = HEINIU_ITEMS.filter(i => i.next);
   const newestDate = Math.max(...[...tools, ...guides, ...radars].map(i => Date.parse(i.date || 0)));
 
-  const card = (i, kindLabel, pillClass) => `
-    <a class="shelf-card rise" href="${i.href}">
-      <div class="sc-top">
-        <span class="sc-idx num">${i.num}</span>
-        ${Date.parse(i.date || 0) === newestDate ? '<span class="tagpill y">NEW</span>' : `<span class="tagpill ${pillClass}">${kindLabel}</span>`}
+  const previews = {
+    '薪水實拿計算機': { tone: 'violet', label: '每月實領 · 估算', value: 'NT$ 57,924' },
+    '錢去哪了 · AI 花費健檢': { tone: 'mint', label: '每月花費 · 分類圖', bars: true },
+    'PDF 只取需要的頁': { tone: 'blue', label: 'PDF → 文字', value: '01 — 05' },
+    '黑牛 AI 剪輯 · 跟 AI 聊天剪影片': { tone: 'violet', label: '剪輯工作流', value: '▶ 00:38' },
+    '黑牛茶鋪 · ASTRA 實作': { tone: 'peach', label: 'AI 實作練習', value: 'ASTRA / 04' },
+    '省 token 三招': { tone: 'blue', label: 'AI 效率筆記', value: '− 45%' },
+    '值得搞懂的 3 個 AI 專案': { tone: 'mint', label: 'AI RADAR · 精選', value: '03 PICKS' }
+  };
+  const card = (i, kindLabel, pillClass) => {
+    const preview = previews[i.title] || {tone: 'violet',label:kindLabel,value:'HEINIU LAB'};
+    const visual = preview.bars
+      ? '<div class="preview-track"><i></i><i></i><i></i><i></i><i></i></div>'
+      : `<div class="preview-value">${preview.value}</div>`;
+    return `
+    <a class="shelf-card" href="${i.href}">
+      <div class="sc-art" data-tone="${preview.tone}" aria-hidden="true">
+        <div class="sc-preview"><div class="preview-caption">${preview.label}</div>${visual}</div>
       </div>
-      <h3>${i.title}</h3>
-      <p>${i.desc}</p>
-      <span class="sc-go">打開<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <div class="sc-content">
+        <div class="sc-top">
+          <span class="sc-idx num">${i.num} / ${i.kind.toUpperCase()}</span>
+          ${Date.parse(i.date || 0) === newestDate ? '<span class="tagpill y">NEW</span>' : `<span class="tagpill ${pillClass}">${kindLabel}</span>`}
+        </div>
+        <h3>${i.title}</h3>
+        <p>${i.desc}</p>
+        <span class="sc-go">開啟${i.kind === 'tool' ? '工具' : '內容'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
     </a>`;
+  };
 
   const toolGrid = document.getElementById('toolGrid');
   if (toolGrid) toolGrid.innerHTML = tools.map(i => card(i, '可用', '')).join('');
