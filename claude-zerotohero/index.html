@@ -177,8 +177,36 @@
   .src{margin-top:28px;font-size:12.5px;color:var(--muted);}
   .src a{color:var(--ink2);}
 </style>
+<link rel="stylesheet" href="../assets/experience.css">
+<style>
+/* Learning experience refinements */
+.heiniu-experience .hero{padding-top:58px;padding-bottom:38px}
+.heiniu-experience .hero h1{letter-spacing:-.045em;max-width:20ch}
+.heiniu-experience .hero .lede{max-width:70ch;line-height:1.95}
+.heiniu-experience .learn-start{margin:30px 0 26px;padding:25px 27px;background:#fff;border:1px solid #E2E3E4;border-radius:12px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px}
+.heiniu-experience .learn-start .learn-kicker{font:700 11px var(--mono);letter-spacing:.12em;color:var(--hi)}
+.heiniu-experience .learn-start h2{font-size:20px;line-height:1.4;letter-spacing:-.03em;margin-top:8px}
+.heiniu-experience .learn-start p{margin-top:7px;color:var(--ink2);font-size:13.5px;line-height:1.85}
+.heiniu-experience .learn-start .btn{white-space:nowrap}
+.heiniu-experience .ladder{margin-top:35px}
+.heiniu-experience .rung{box-shadow:none;border-radius:9px}
+.heiniu-experience .layout{gap:clamp(27px,4vw,55px)}
+.heiniu-experience .toc{top:101px}
+.heiniu-experience .ch{scroll-margin-top:100px}
+.heiniu-experience .ch h2{letter-spacing:-.04em}
+.heiniu-experience .ch .tldr{background:#EFEDFF;padding:14px 18px;border-left:3px solid var(--hi);border-radius:0 8px 8px 0;font-size:15px;line-height:1.8}
+.heiniu-experience .steps li{line-height:1.85;padding-top:16px;padding-bottom:16px}
+.heiniu-experience .steps li::before{top:16px}
+.heiniu-experience .prompt{border-radius:10px;overflow:hidden}
+.heiniu-experience .week label,.heiniu-experience .plan,.heiniu-experience .tile{box-shadow:none;border-radius:9px}
+.heiniu-experience .chapter-help{margin:0 0 33px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.heiniu-experience .chapter-help span{font-size:12px;color:#737784;border:1px solid #E0E1E2;background:#fff;padding:7px 11px;border-radius:6px}
+.heiniu-experience .outro{border-radius:11px}
+@media(max-width:900px){.heiniu-experience .toc{top:64px}.heiniu-experience .ch{scroll-margin-top:125px}}
+@media(max-width:640px){.heiniu-experience .learn-start{display:block;padding:21px}.heiniu-experience .learn-start .btn{margin-top:19px}.heiniu-experience .hero{padding-top:42px}.heiniu-experience .hero h1{font-size:clamp(2.25rem,8vw,3.2rem)}}
+</style>
 </head>
-<body>
+<body class="heiniu-experience">
 <nav class="site-nav">
   <div class="wrap">
     <a class="brandmark" href="../" aria-label="回黑牛工具首頁">
@@ -191,6 +219,7 @@
     </div>
   </div>
 </nav>
+<div class="experience-crumb" aria-label="所在位置"><div class="wrap"><a href="../">黑牛工具</a><span class="crumb-sep">/</span><a href="../#methods">完整做法</a><span class="crumb-sep">/</span><span class="crumb-current">Claude 從零到高手</span></div></div>
 
 <header class="wrap hero">
   <span class="eyebrow rise">Claude · Zero to Hero</span>
@@ -200,6 +229,10 @@
     <span><b>11</b> 章</span><span>約 <b>15</b> 分鐘讀完</span><span>更新於 2026-10-20</span>
   </div>
 
+  <div class="learn-start rise">
+    <div><span class="learn-kicker">YOUR LEARNING PATH / 開始之前</span><h2>第一次學 Claude？從第 00 章開始。</h2><p>每章先看「重點」，再跟著步驟操作，遇到範例指令就直接複製到 Claude 試試看。已經會的章節可以從下方目錄直接跳過；最後用七天計畫把學到的技巧用進生活。</p></div>
+    <a class="btn btn-hi" href="#why">從第 00 章開始 →</a>
+  </div>
   <nav class="ladder rise" style="animation-delay:.18s" aria-label="五個等級">
     <a class="rung" href="#prompting"><span class="lv">LV 1</span><b>會問問題</b><i>第 0、1、3 章</i></a>
     <a class="rung" href="#projects"><span class="lv">LV 2</span><b>它記得你</b><i>第 2、4 章</i></a>
@@ -226,7 +259,7 @@
       <li><a href="#schedule"><span>09</span>排程任務</a></li>
       <li><a href="#week"><span>10</span>一週導入</a></li>
     </ol>
-    <div class="prog"><i id="prog"></i></div>
+    <div class="prog"><i id="prog"></i></div><p class="mono-note" style="margin-top:12px;font-size:11px">依自己的速度學習，隨時回來繼續。</p>
   </aside>
 
   <main>
