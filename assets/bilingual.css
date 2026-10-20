@@ -20,3 +20,21 @@
 [data-lang-en]{display:none!important}
 .lang-en [data-lang-zh]{display:none!important}
 .lang-en [data-lang-en]{display:contents!important}
+
+/* Editorial polish: controlled rhythm and cohesive surfaces */
+:root{--hi:#4734C9;--hi-strong:#3726A9;--bg:#F7F7F5;--line:#E3E4E3;--r-lg:12px}
+body.heiniu-experience{background:#F7F7F5}
+.site-nav{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.hero:not(.tool-head){position:relative}
+.shelf .section-rule{font-size:10px;letter-spacing:.15em}
+.shelf-hd .eyebrow{font-family:var(--mono);font-size:11px}
+.shelf-card .sc-art{border-bottom-color:rgba(28,27,55,.06)}
+.shelf-card .sc-content{min-height:210px}
+.shelf-card .sc-top{margin-bottom:22px}
+.shelf-card h3{font-weight:900}
+.shelf-card p{line-height:1.75}
+.shelf-card .sc-go{margin-top:auto;padding-top:20px}
+.shelf.alt .shelf-card .sc-go{border-color:rgba(255,255,255,.1)}
+.creator-band .creator-inner{max-width:1200px}
+.promo .card{box-shadow:0 10px 40px rgba(25,27,40,.025)}
+@media(max-width:720px){.shelf-card .sc-content{min-height:0}.shelf-card .sc-go{margin-top:26px}.site-nav .nav-links .cta{white-space:nowrap}}
