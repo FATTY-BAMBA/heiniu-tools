@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="./assets/base.css">
 <style>
-  /* ---------- Hero（PrimeStride 式雙欄 + 3D 浮動視覺） ---------- */
+  /* ---------- Legacy styling; updated editorial layouts below ---------- */
   .hero{padding:72px 0 58px;}
   .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center;}
   .hero .eyebrow{margin-bottom:26px;}
@@ -173,6 +173,95 @@
     .shelf{padding:56px 0 4px;}
     .shelf.alt{margin-top:64px;padding:60px 0;}
   }
+
+/* HEINIU LAB — editorial product directory refinement */
+:root{--bg:#F8F8F6;--bg-soft:#F7F7F4;--hi:#4A36D4;--hi-strong:#3725A9;--hi-soft:#EFEDFF;--wrap:1160px;--r-lg:18px}
+body{background:var(--bg)}
+.site-nav{background:rgba(248,248,246,.91)}
+.site-nav .wrap{height:72px}
+.nav-links a.cta{box-shadow:none}
+.hero{padding:96px 0 102px;background:radial-gradient(ellipse 45% 72% at 89% 38%,rgba(100,81,235,.08),transparent 78%)}
+.hero-grid{grid-template-columns:1.05fr .95fr;gap:7%;align-items:center}
+.hero .eyebrow{margin-bottom:25px}
+.hero .eyebrow-sub{font-family:var(--cjk);color:var(--muted);letter-spacing:.02em;font-weight:600}
+.hero h1{max-width:none;font-size:clamp(2.7rem,4.35vw,4.05rem);line-height:1.2;letter-spacing:-.045em}
+.hero .lede{max-width:35rem;font-size:17px;line-height:1.95;margin-top:26px}
+.hero .lede .emphasis{font-weight:800;color:var(--ink)}
+.hero .acts{margin-top:30px}
+.hero-trust{font-size:12.5px;color:var(--ink2);display:flex;align-items:center;gap:9px;margin-top:25px;font-weight:600}
+.trust-dot,.feature-pulse{width:7px;height:7px;border-radius:50%;background:#16A578;display:inline-block;flex-shrink:0}
+.trust-sep{color:#B6B8BE}
+.hero-feature{display:block;text-decoration:none;color:inherit;background:#F0EEFA;border:1px solid #E3E0F6;padding:18px;border-radius:24px;transition:transform .24s,box-shadow .24s;box-shadow:0 24px 70px rgba(52,43,116,.08)}
+.hero-feature:hover{transform:translateY(-5px);box-shadow:0 30px 65px rgba(52,43,116,.14)}
+.feature-top,.feature-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.feature-top{padding:3px 4px 18px}
+.feature-kicker,.feature-open,.feature-bottom{font-size:11px;font-family:var(--mono);font-weight:600;letter-spacing:.05em}
+.feature-kicker{display:flex;align-items:center;gap:9px;color:#564C90}
+.feature-open{color:var(--hi)}
+.feature-window{border:1px solid #E1E1E8;background:#fff;border-radius:15px;overflow:hidden;box-shadow:0 10px 30px rgba(28,26,55,.07)}
+.window-top{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 17px;border-bottom:1px solid #EEEEF1;color:#9295A0;font:600 11px var(--mono)}
+.window-dots{display:flex;gap:5px}
+.window-dots i{width:7px;height:7px;background:#D9D9E1;border-radius:50%}
+.window-dots i:first-child{background:#AFA7ED}
+.feature-body{padding:32px 30px 27px}
+.feature-label{font-size:13px;color:#777D8E;font-weight:700}
+.feature-number{color:#1C1933;font:500 22px var(--num);margin:5px 0 22px}
+.feature-number strong{font-size:clamp(35px,4vw,49px);font-weight:800;letter-spacing:-.04em}
+.feature-divider{height:1px;background:#EDEDF0;margin-bottom:13px}
+.feature-line{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:12px 0;font-size:13px;color:#727784}
+.feature-line b{color:#24233C;font-weight:700;font-family:var(--num)}
+.feature-meter{background:#ECEAF8;border-radius:12px;overflow:hidden;height:9px;margin:25px 0 20px}
+.feature-meter span{display:block;background:linear-gradient(90deg,#4A36D4,#8F83EC);height:100%;width:96.54%;border-radius:12px}
+.feature-note{display:flex;justify-content:space-between;align-items:center;color:#56516F;font-size:12px;font-weight:700}
+.feature-bottom{padding:19px 3px 3px;color:#817B9B}
+.feature-bottom strong{font:700 12px var(--cjk);color:#4B437D}
+.shelf{padding:74px 0 16px}
+.shelf-hd{margin-bottom:25px}
+.shelf-hd .eyebrow{margin-bottom:11px}
+.shelf-hd .note{font-size:12px;font-weight:500}
+.h-sec{font-size:clamp(1.85rem,3.15vw,2.7rem);letter-spacing:-.035em}
+.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.shelf-card{padding:0;box-shadow:none;border-radius:17px;transition:transform .2s,box-shadow .2s,border-color .2s}
+.shelf-card:hover{transform:translateY(-4px);box-shadow:0 16px 38px rgba(22,23,31,.09);border-color:#CCC7EE}
+.sc-art{height:150px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.sc-art:before{content:"";position:absolute;width:230px;height:230px;right:-100px;top:-140px;border-radius:50%;border:36px solid rgba(255,255,255,.25)}
+.sc-art[data-tone="violet"]{background:#EFEDFF}.sc-art[data-tone="mint"]{background:#EAF4EE}.sc-art[data-tone="blue"]{background:#E9F0FB}.sc-art[data-tone="peach"]{background:#FFF0E5}
+.sc-preview{position:relative;width:72%;height:94px;border-radius:11px;background:#fff;border:1px solid rgba(48,38,100,.09);box-shadow:0 13px 30px rgba(52,43,84,.1);padding:15px 18px;display:flex;flex-direction:column;gap:10px;transform:rotate(-2deg);transition:transform .22s}
+.shelf-card:hover .sc-preview{transform:rotate(0deg) translateY(-3px)}
+.sc-preview .preview-caption{font-size:10px;color:#9495A3;font-weight:700}
+.sc-preview .preview-value{font-family:var(--num);font-size:26px;line-height:1.1;font-weight:800;color:#342480;letter-spacing:-.04em}
+.sc-preview .preview-track{display:flex;gap:5px;align-items:end;height:30px}
+.sc-preview .preview-track i{display:block;width:16%;border-radius:3px 3px 0 0;background:#B1A7EC}
+.sc-preview .preview-track i:nth-child(2){height:80%;background:#6B5ADD}.sc-preview .preview-track i:first-child{height:50%}.sc-preview .preview-track i:nth-child(3){height:65%}.sc-preview .preview-track i:nth-child(4){height:95%}.sc-preview .preview-track i:nth-child(5){height:55%}
+.sc-art[data-tone="mint"] .preview-value{color:#267B63}.sc-art[data-tone="blue"] .preview-value{color:#386BA4}.sc-art[data-tone="peach"] .preview-value{color:#B36243}
+.sc-content{display:flex;flex-direction:column;flex:1;padding:23px 24px 23px}
+.shelf-card .sc-top{margin-bottom:20px}
+.sc-idx{font-family:var(--mono);font-size:11px}
+.shelf-card h3{font-size:18px;line-height:1.5;letter-spacing:-.02em}
+.shelf-card p{font-size:13px;line-height:1.75;margin-top:9px}
+.sc-go{margin-top:24px;font-size:12px}
+.shelf.alt{margin-top:82px;padding:88px 0}
+.shelf.alt .shelf-card{background:#1A1D29}
+.shelf.alt .sc-art{border-color:#333444;filter:saturate(.82)}
+.shelf.alt .sc-content{background:#1A1D29}
+.shelf.alt .shelf-card:hover{border-color:#7D70C7}
+.shelf.alt .sc-preview{background:#FFFFFF}
+.shelf.alt .sc-preview .preview-caption{color:#888B99}
+.shelf.alt .sc-preview .preview-value{color:#4A36D4}
+.shelf.alt .roadmap{margin-top:32px}
+.creator-band{margin-top:88px;padding:48px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#F0F0ED}
+.creator-inner{display:flex;justify-content:space-between;align-items:center;gap:40px}
+.creator-inner>div{max-width:630px}
+.creator-inner h2{font-size:29px;letter-spacing:-.03em;margin-top:9px}
+.creator-inner p{font-size:14px;line-height:1.9;color:var(--ink2);margin-top:13px}
+.creator-inner .btn{white-space:nowrap;background:#FFF}
+.promo{margin-top:80px}
+.promo .card{box-shadow:none;background:var(--surface);padding:30px 34px}
+.site-foot{margin-top:90px}
+@media(max-width:960px){.hero{padding:72px 0 80px}.hero-grid{gap:25px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.feature-body{padding:25px 20px}.hero h1{font-size:clamp(2.3rem,4.5vw,3.5rem)}}
+@media(max-width:720px){.hero-grid{grid-template-columns:1fr;gap:38px}.hero{padding:62px 0 70px}.hero .lede{font-size:15px}.hero-feature{max-width:490px;width:100%;margin:auto}.grid{grid-template-columns:1fr 1fr;gap:12px}.shelf-card h3{font-size:16px}.sc-art{height:130px}.sc-preview{width:80%;padding:13px}.sc-content{padding:18px}.creator-inner{align-items:flex-start;flex-direction:column;gap:22px}}
+@media(max-width:530px){.hero h1{font-size:clamp(2.15rem,9vw,3rem)}.grid{grid-template-columns:1fr}.sc-art{height:156px}.sc-preview{width:68%}.hero-feature{padding:13px}.feature-body{padding:24px 20px}.feature-number strong{font-size:39px}.shelf.alt{padding:66px 0}.creator-band{margin-top:60px}.site-nav .wrap{height:64px}.hero-trust{flex-wrap:wrap}}
+
 </style>
 </head>
 <body>
@@ -195,60 +284,43 @@
 
 <header class="hero">
   <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow rise">黑牛 · AI 創業家 · 工程師 · PhD</span>
-      <h1 class="h-display rise" style="animation-delay:.05s">我把 <span class="acc">AI</span><br>真的用在生活裡。</h1>
-      <p class="lede rise" style="animation-delay:.12s">每支影片教的東西，我做成兩種：可以<b>直接用</b>的小工具，和可以<b>直接照做</b>的完整做法。<b>免費</b>，而且每週再多一個。</p>
+    <div class="hero-copy">
+      <span class="eyebrow rise">HEINIU LAB <span class="eyebrow-sub">/ AI × 生活 × 實作</span></span>
+      <h1 class="h-display rise" style="animation-delay:.05s">把 <span class="acc">AI</span> 變成<br>真正用得上的工具。</h1>
+      <p class="lede rise" style="animation-delay:.12s">不只是教你用 AI。我把生活裡真正需要的解法，做成<span class="emphasis">免費、打開就能用</span>的小工具，還有一步一步跟著做的完整教學。</p>
       <div class="acts rise" style="animation-delay:.18s">
-        <a class="btn btn-hi" href="#tools">直接用工具
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        <a class="btn btn-ghost" href="#methods">看完整做法</a>
+        <a class="btn btn-hi" href="#tools">探索免費工具 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="#methods">觀看完整教學</a>
       </div>
-      <p class="mono-note safe rise" style="animation-delay:.24s">// 全部工具在你的瀏覽器本機運算 · <b>資料不會上傳</b></p>
+      <div class="hero-trust rise" style="animation-delay:.24s"><span class="trust-dot"></span>不用註冊 <span class="trust-sep">·</span> 免費使用 <span class="trust-sep">·</span> 隱私優先</div>
     </div>
-    <div class="hero-visual rise" style="animation-delay:.2s" aria-hidden="true">
-      <div class="hv-scene" id="hvScene">
-        <div class="hv-ring"></div>
-        <div class="hv-tilt" id="hvTilt">
-          <div class="hv-card hv-pay">
-            <div class="ph"><b>薪資明細表</b><span>2026</span></div>
-            <div class="pr"><span>應發月薪</span><i class="num">60,000</i></div>
-            <div class="pr min"><span>勞保自付</span><i class="num">−1,145</i></div>
-            <div class="pr min"><span>健保自付</span><i class="num">−931</i></div>
-            <div class="pt"><b>實領 / 月</b><span class="num">57,924</span></div>
-          </div>
-          <div class="hv-card hv-chart">
-            <div class="ch"><span>亂花 vs 房租 · 一年</span><b class="num">228k</b></div>
-            <div class="bars">
-              <i style="height:34%"></i><i style="height:52%"></i><i class="hot" style="height:100%"></i><i style="height:64%"></i><i style="height:42%"></i>
-            </div>
-            <div class="cap">亂花比房租多 <b>12,072</b></div>
-          </div>
-          <div class="hv-chip c1"><span class="dot"></span>需要才用</div>
-          <div class="hv-chip c2"><span class="dot"></span>每週 +1 工具</div>
+    <a class="hero-feature rise" style="animation-delay:.16s" href="./salary/" aria-label="試用薪水實拿計算機">
+      <div class="feature-top"><span class="feature-kicker"><span class="feature-pulse"></span> FEATURED TOOL</span><span class="feature-open">立即試用 ↗</span></div>
+      <div class="feature-window">
+        <div class="window-top"><span class="window-dots"><i></i><i></i><i></i></span><span>薪水實拿計算機</span><span>2026</span></div>
+        <div class="feature-body">
+          <div class="feature-label">預估每月實領薪水</div>
+          <div class="feature-number">NT$ <strong>57,924</strong></div>
+          <div class="feature-divider"></div>
+          <div class="feature-line"><span>應發月薪</span><b>NT$ 60,000</b></div>
+          <div class="feature-line"><span>勞保 / 健保自付</span><b>− NT$ 2,076</b></div>
+          <div class="feature-meter"><span></span></div>
+          <div class="feature-note"><span>薪水去哪了，一眼就知道。</span><span>↗</span></div>
         </div>
       </div>
-    </div>
+      <div class="feature-bottom"><span>01 / FINANCE</span><strong>真正能用，不只是展示。</strong></div>
+    </a>
   </div>
 </header>
-
-<div class="stats">
-  <div class="wrap">
-    <div class="stat"><div class="v num" id="statTools">2</div><div class="k">工具上線，打開就能用</div></div>
-    <div class="stat"><div class="v num" id="statGuides">1</div><div class="k">完整做法，照做就好</div></div>
-    <div class="stat"><div class="v num"><b>每週</b></div><div class="k">固定更新一個新東西</div></div>
-    <div class="stat"><div class="v num">NT$ 0</div><div class="k">全部免費，資料不上傳</div></div>
-  </div>
-</div>
 
 <section class="shelf" id="tools">
   <div class="wrap">
     <div class="shelf-hd">
       <div>
         <span class="eyebrow">Tools</span>
-        <h2 class="h-sec">打開就能用的小工具</h2>
+        <h2 class="h-sec">從這裡開始，解決一件小事。</h2>
       </div>
-      <span class="note">不用註冊、不用安裝，輸入就出結果</span>
+      <span class="note">真正實用的免費工具 · 開啟即用</span>
     </div>
     <div class="grid" id="toolGrid"></div>
   </div>
@@ -259,7 +331,7 @@
     <div class="shelf-hd">
       <div>
         <span class="eyebrow">Full Methods</span>
-        <h2 class="h-sec">完整做法，照做就好</h2>
+        <h2 class="h-sec">從看懂，到自己做出來。</h2>
       </div>
       <span class="note">影片留言領取的完整版，都收在這裡</span>
     </div>
@@ -278,7 +350,7 @@
     <div class="shelf-hd">
       <div>
         <span class="eyebrow">AI RADAR</span>
-        <h2 class="h-sec">值得搞懂的 AI 專案</h2>
+        <h2 class="h-sec">值得你花時間了解的 AI。</h2>
       </div>
       <span class="note">每支 RADAR 影片的懶人包＋連結，都收在這裡</span>
     </div>
@@ -286,6 +358,9 @@
   </div>
 </section>
 
+<section class="creator-band">
+  <div class="wrap creator-inner"><div><span class="eyebrow">BEHIND THE TOOLS</span><h2>嗨，我是黑牛。</h2><p>工程師、AI 博士，也是把想法做成產品的創業者。這裡的每個工具，都從一個日常問題開始。我的目標很簡單：讓 AI 真的幫到你。</p></div><a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener" class="btn btn-ghost">在 YouTube 認識我 ↗</a></div>
+</section>
 <section class="promo">
   <div class="wrap">
     <div class="card">
@@ -316,23 +391,6 @@
 </footer>
 
 <script src="./assets/site.js"></script>
-<script>
-/* Hero 3D pointer tilt（滑鼠視差）— 尊重減少動態設定，觸控裝置自動略過 */
-(function(){
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (!matchMedia('(pointer: fine)').matches) return;
-  var scene = document.getElementById('hvScene');
-  var tilt  = document.getElementById('hvTilt');
-  if (!scene || !tilt) return;
-  var hero = scene.closest('.hero');
-  hero.addEventListener('pointermove', function(e){
-    var r = scene.getBoundingClientRect();
-    var x = (e.clientX - r.left) / r.width  - .5;
-    var y = (e.clientY - r.top)  / r.height - .5;
-    tilt.style.transform = 'rotateY(' + (x * 10).toFixed(2) + 'deg) rotateX(' + (-y * 8).toFixed(2) + 'deg)';
-  });
-  hero.addEventListener('pointerleave', function(){ tilt.style.transform = ''; });
-})();
-</script>
+
 </body>
 </html>
