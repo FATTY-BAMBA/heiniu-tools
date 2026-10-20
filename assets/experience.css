@@ -1,0 +1,47 @@
+/* HEINIU Experience System — shared across landing, tools and guides.
+   Keep each utility's own interactive layout and scripts unchanged. */
+:root{--bg:#F6F6F4;--bg-soft:#FAFAF8;--surface:#FFFFFF;--surface2:#F2F1F8;--line:#E3E4E1;--line2:#D5D6D4;--ink:#17181D;--ink2:#60636D;--muted:#858995;--hi:#4937CC;--hi-strong:#3927AD;--hi-bright:#6B5CEA;--hi-soft:#EFEDFF;--r:8px;--r-sm:7px;--r-md:9px;--r-lg:12px;--shadow:0 8px 28px rgba(20,22,36,.045);--wrap:1200px}
+body.heiniu-experience{background:var(--bg);color:var(--ink)}
+.heiniu-experience .site-nav{background:rgba(246,246,244,.96);border-bottom:1px solid var(--line);box-shadow:none}
+.heiniu-experience .site-nav .wrap{max-width:1200px;height:72px;padding-inline:clamp(22px,4vw,48px)}
+.heiniu-experience .brandmark{gap:12px}
+.heiniu-experience .brandmark .bt .n{font-weight:900;letter-spacing:-.015em}
+.heiniu-experience .brandmark .bt .s{font-size:10px;letter-spacing:.14em}
+.heiniu-experience .nav-links{gap:8px}
+.heiniu-experience .nav-links a{font-size:12.5px;border-radius:7px}
+.heiniu-experience .nav-links a.cta{background:var(--hi);color:#fff;border-radius:7px;box-shadow:none}
+.heiniu-experience .nav-links a.cta:hover{background:var(--hi-strong)}
+.heiniu-experience .experience-crumb{border-bottom:1px solid var(--line);background:#EEEDEB}
+.heiniu-experience .experience-crumb .wrap{max-width:1200px;padding:13px clamp(22px,4vw,48px);display:flex;align-items:center;gap:11px;min-height:46px;font:600 11px var(--mono);letter-spacing:.06em;color:#81838D}
+.heiniu-experience .experience-crumb a{text-decoration:none;color:#5B5F6D}
+.heiniu-experience .experience-crumb a:hover{color:var(--hi)}
+.heiniu-experience .experience-crumb .crumb-current{color:#383A45;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.heiniu-experience .experience-crumb .crumb-sep{color:#B0B1B7}
+.heiniu-experience .wrap-narrow{max-width:760px;padding-inline:clamp(22px,4vw,40px)}
+.heiniu-experience .tool-head{padding-top:65px;padding-bottom:30px}
+.heiniu-experience .tool-head .eyebrow{font-size:11px;letter-spacing:.13em;margin-bottom:17px}
+.heiniu-experience .tool-head h1{font-family:var(--display);font-size:clamp(2.25rem,4.4vw,3.5rem);font-weight:900;line-height:1.2;letter-spacing:-.045em}
+.heiniu-experience .tool-head .lede{font-size:15px;line-height:1.9;color:var(--ink2);margin-top:18px}
+.heiniu-experience .radar-head{padding-top:64px}
+.heiniu-experience .radar-head h1{letter-spacing:-.045em}
+.heiniu-experience .eyebrow{font-size:11px;letter-spacing:.14em}
+.heiniu-experience .eyebrow::before{height:2px;width:18px}
+.heiniu-experience .btn,.heiniu-experience button.btn{border-radius:8px;font-weight:700;box-shadow:none}
+.heiniu-experience .btn-hi,.heiniu-experience .btn-fix{background:var(--hi);color:#fff}
+.heiniu-experience .btn-hi:hover,.heiniu-experience .btn-fix:hover{background:var(--hi-strong)}
+.heiniu-experience .btn-ghost{border-color:#D5D5D7}
+.heiniu-experience :is(.card,.ctrl){border-color:var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(27,29,43,.045)}
+.heiniu-experience input:not([type=range]):not([type=checkbox]):not([type=radio]),.heiniu-experience textarea,.heiniu-experience select{font-family:inherit}
+.heiniu-experience :is(button,input,textarea,select,a):focus-visible{outline:2px solid var(--hi);outline-offset:3px}
+.heiniu-experience .site-foot{background:#F0F0ED;border-top:1px solid #E0E0DD}
+.heiniu-experience .site-foot .wrap{max-width:1200px;padding-inline:clamp(22px,4vw,48px)}
+.heiniu-experience .site-foot .links a{border-radius:7px}
+.heiniu-experience .tagpill{border-radius:5px}
+.heiniu-experience .experience-related{border-top:1px solid var(--line);margin-top:76px;padding:30px 0 5px}
+.heiniu-experience .experience-related .experience-related-inner{max-width:1200px;margin:auto;padding:0 clamp(22px,4vw,48px);display:flex;align-items:center;justify-content:space-between;gap:20px}
+.heiniu-experience .experience-related .related-copy{font-size:13px;line-height:1.7;color:var(--ink2)}
+.heiniu-experience .experience-related .related-copy strong{display:block;font-size:16px;color:var(--ink)}
+.heiniu-experience .experience-related .related-link{text-decoration:none;font-size:13px;font-weight:800;color:var(--hi);white-space:nowrap}
+.heiniu-experience .experience-related .related-link:hover{text-decoration:underline}
+@media(max-width:640px){.heiniu-experience .site-nav .wrap{height:64px}.heiniu-experience .experience-crumb .wrap{font-size:10px;gap:8px}.heiniu-experience .tool-head{padding-top:44px}.heiniu-experience .tool-head h1{font-size:clamp(2rem,8vw,2.75rem)}.heiniu-experience .experience-related .experience-related-inner{align-items:flex-start;flex-direction:column;gap:12px}}
+@media(prefers-reduced-motion:reduce){.heiniu-experience *{scroll-behavior:auto!important}}
