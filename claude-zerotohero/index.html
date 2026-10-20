@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Claude 從零到高手 · 完整攻略｜黑牛</title>
+<meta name="description" content="99% 的人只把 Claude 當聊天機器人。黑牛把每天真的在用的方法整理成 11 章：方案與模型、記憶、下指令、專案、連接工具、Skills、交成品、Claude Code、排程任務，加一週導入計畫。">
+<meta property="og:title" content="Claude 從零到高手｜黑牛完整攻略">
+<meta property="og:description" content="11 章，照做就好：記憶、專案、Skills、排程任務⋯⋯每章都有可以直接複製的指令。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/base.css">
+<style>
+  /* ---------- Hero ---------- */
+  .hero{padding-top:64px;padding-bottom:44px;}
+  .hero .eyebrow{margin-bottom:22px;}
+  .hero h1{max-width:15ch;}
+  .hero .lede{margin-top:20px;font-size:17px;}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;}
+  .hero-meta span{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--ink2);
+    border:1px solid var(--line2);border-radius:999px;padding:5px 12px;background:var(--surface);}
+  .hero-meta span b{color:var(--hi);font-weight:600;}
+
+  /* 等級階梯 */
+  .ladder{margin-top:40px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:end;}
+  .rung{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);
+    border-radius:var(--r);padding:14px 14px 16px;box-shadow:var(--shadow);transition:border-color .15s,transform .15s;}
+  .rung:hover{border-color:var(--hi);transform:translateY(-2px);}
+  .rung .lv{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--hi);font-weight:600;}
+  .rung b{display:block;font-size:15px;font-weight:900;margin-top:6px;line-height:1.3;}
+  .rung i{display:block;font-style:normal;font-size:12px;color:var(--muted);margin-top:4px;}
+  .rung:nth-child(1){min-height:96px;} .rung:nth-child(2){min-height:118px;}
+  .rung:nth-child(3){min-height:140px;} .rung:nth-child(4){min-height:162px;}
+  .rung:nth-child(5){min-height:184px;background:var(--ink);border-color:var(--ink);color:#fff;}
+  .rung:nth-child(5) .lv{color:var(--dark-acc);} .rung:nth-child(5) i{color:#9AA1AF;}
+  .ladder-cap{margin-top:12px;}
+  @media (max-width:760px){
+    .ladder{grid-template-columns:1fr;gap:8px;}
+    .rung{min-height:0!important;display:flex;align-items:baseline;gap:12px;padding:12px 14px;}
+    .rung b{margin-top:0;font-size:14.5px;} .rung i{margin-top:0;margin-left:auto;}
+  }
+
+  /* ---------- 版面：側欄目錄 + 內文 ---------- */
+  .layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:48px;align-items:start;margin-top:24px;}
+  .toc{position:sticky;top:88px;}
+  .toc .t-h{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--muted);margin-bottom:10px;}
+  .toc ol{list-style:none;border-left:1px solid var(--line2);}
+  .toc a{display:flex;gap:10px;text-decoration:none;color:var(--ink2);font-size:13.5px;font-weight:600;
+    padding:6px 0 6px 14px;margin-left:-1px;border-left:2px solid transparent;transition:color .15s,border-color .15s;}
+  .toc a span{font-family:var(--mono);font-size:11px;color:var(--muted);padding-top:2px;min-width:16px;}
+  .toc a:hover{color:var(--ink);}
+  .toc a.on{color:var(--hi);border-left-color:var(--hi);}
+  .toc a.on span{color:var(--hi);}
+  .toc .prog{margin-top:18px;height:4px;background:var(--line);border-radius:4px;overflow:hidden;}
+  .toc .prog i{display:block;height:100%;width:0;background:var(--hi);transition:width .2s;}
+
+  @media (max-width:900px){
+    .layout{grid-template-columns:minmax(0,1fr);gap:0;}
+    .toc{min-width:0;}
+    .toc{top:64px;z-index:40;margin:0 -24px;padding:10px 0;background:rgba(243,244,246,.92);
+      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);}
+    .toc .t-h,.toc .prog{display:none;}
+    .toc ol{display:flex;gap:6px;overflow-x:auto;border-left:none;padding:0 24px;scrollbar-width:none;}
+    .toc ol::-webkit-scrollbar{display:none;}
+    .toc a{white-space:nowrap;border:1px solid var(--line2);border-radius:999px;padding:6px 12px;margin:0;
+      background:var(--surface);font-size:12.5px;}
+    .toc a.on{border-color:var(--hi);background:var(--hi);color:#fff;}
+    .toc a.on span{color:#fff;}
+  }
+
+  /* ---------- 章節 ---------- */
+  .ch{padding:56px 0 8px;scroll-margin-top:84px;}
+  @media (max-width:900px){.ch{scroll-margin-top:124px;}}
+  .ch + .ch{border-top:1px solid var(--line);}
+  .ch-num{font-family:var(--mono);font-size:12px;letter-spacing:.18em;color:var(--hi);font-weight:600;}
+  .ch h2{font-family:var(--display);font-size:clamp(1.7rem,3.4vw,2.35rem);font-weight:800;letter-spacing:-.02em;
+    line-height:1.2;margin-top:8px;}
+  .ch .tldr{margin-top:16px;font-size:17px;font-weight:700;line-height:1.6;color:var(--ink);
+    border-left:3px solid var(--hi);padding:2px 0 2px 16px;}
+  .ch h3{font-size:13px;font-family:var(--mono);letter-spacing:.16em;color:var(--muted);font-weight:600;
+    margin:34px 0 12px;text-transform:uppercase;}
+  .ch p{color:var(--ink2);font-size:15.5px;margin-top:10px;}
+  .ch p b,.ch li b{color:var(--ink);}
+  .ch a.in{color:var(--hi);font-weight:700;text-decoration:underline;text-underline-offset:3px;}
+
+  .steps{list-style:none;counter-reset:s;}
+  .steps li{counter-increment:s;position:relative;padding:12px 0 12px 44px;border-bottom:1px solid var(--line);
+    color:var(--ink2);font-size:15px;}
+  .steps li:last-child{border-bottom:none;}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:11px;width:28px;height:28px;border-radius:8px;
+    background:var(--hi-soft);color:var(--hi);font-family:var(--num);font-weight:800;font-size:14px;
+    display:flex;align-items:center;justify-content:center;}
+  .ui{font-family:var(--mono);font-size:12.5px;background:var(--surface2);color:var(--ink);border-radius:5px;padding:1px 6px;white-space:nowrap;}
+
+  /* 可複製指令 */
+  .prompt{margin-top:14px;background:var(--dark);color:var(--dark-ink);border-radius:var(--r-lg);overflow:hidden;}
+  .prompt .p-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px 10px 18px;
+    border-bottom:1px solid var(--dark-line);}
+  .prompt .p-hd span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dark-acc);}
+  .copy{appearance:none;border:1px solid var(--dark-line);background:transparent;color:var(--dark-ink);cursor:pointer;
+    font-family:inherit;font-size:12.5px;font-weight:700;border-radius:8px;padding:6px 12px;transition:background .15s,border-color .15s;}
+  .copy:hover{border-color:var(--dark-acc);}
+  .copy.done{background:var(--good);border-color:var(--good);}
+  .prompt pre{margin:0;padding:16px 18px 18px;white-space:pre-wrap;font-family:var(--cjk);font-size:14.5px;line-height:1.75;
+    color:var(--dark-ink);}
+  .prompt pre em{font-style:normal;color:#FFD86B;}
+
+  /* 前後對照 */
+  .vs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+  .vs > div{border-radius:var(--r);padding:16px 18px;font-size:14.5px;line-height:1.7;}
+  .vs .bad{background:#FFF1EC;border:1px solid #F6D2C5;color:#7A3A22;}
+  .vs .good{background:#ECF8F3;border:1px solid #C5E9DA;color:#0D5A42;}
+  .vs .lbl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.14em;font-weight:600;margin-bottom:6px;}
+  @media (max-width:640px){.vs{grid-template-columns:1fr;}}
+
+  /* 常見錯誤 */
+  .oops{list-style:none;margin-top:4px;}
+  .oops li{position:relative;padding:8px 0 8px 28px;color:var(--ink2);font-size:15px;}
+  .oops li::before{content:"✕";position:absolute;left:4px;top:8px;color:var(--danger);font-weight:900;font-size:13px;}
+
+  /* 方案表 */
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;}
+  .plan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 18px 20px;box-shadow:var(--shadow);}
+  .plan.pick{border-color:var(--hi);box-shadow:0 0 0 1px var(--hi),var(--shadow);}
+  .plan .pn{font-weight:900;font-size:16px;display:flex;justify-content:space-between;align-items:center;}
+  .plan .pp{font-family:var(--num);font-size:28px;font-weight:800;letter-spacing:-.02em;margin-top:8px;line-height:1.1;}
+  .plan .pp small{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0;}
+  .plan .pn2{font-size:12px;color:var(--muted);margin-top:2px;}
+  .plan ul{list-style:none;margin-top:12px;}
+  .plan li{font-size:13.5px;color:var(--ink2);padding:4px 0 4px 18px;position:relative;}
+  .plan li::before{content:"";position:absolute;left:2px;top:12px;width:6px;height:6px;background:var(--hi);transform:skewX(-14deg);border-radius:1px;}
+  .plan .who{margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;font-weight:700;color:var(--ink);}
+  @media (max-width:760px){.plans{grid-template-columns:1fr;}}
+
+  .models{margin-top:14px;border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);}
+  .models .row{display:grid;grid-template-columns:110px 1fr;gap:14px;padding:13px 18px;border-top:1px solid var(--line);font-size:14.5px;}
+  .models .row:first-child{border-top:none;}
+  .models .row b{font-family:var(--display);font-weight:800;}
+  .models .row span{color:var(--ink2);}
+
+  /* 一般卡片列 */
+  .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px;}
+  .tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;box-shadow:var(--shadow);}
+  .tile .tt{font-weight:900;font-size:15.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .tile p{font-size:14px!important;margin-top:6px!important;}
+  .tile a{color:var(--hi);font-weight:700;font-size:13.5px;}
+  @media (max-width:640px){.tiles{grid-template-columns:1fr;}}
+
+  .note-box{margin-top:16px;background:var(--hi-soft);border-radius:var(--r);padding:14px 18px;font-size:14.5px;color:var(--ink);}
+  .note-box b{color:var(--hi);}
+
+  /* 一週計畫 */
+  .week{list-style:none;margin-top:14px;display:grid;gap:8px;}
+  .week label{display:grid;grid-template-columns:28px 64px 1fr;gap:10px;align-items:start;cursor:pointer;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;transition:border-color .15s,background .15s;}
+  .week label:hover{border-color:var(--line2);}
+  .week input{width:20px;height:20px;accent-color:var(--hi);margin-top:2px;cursor:pointer;}
+  .week .d{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--hi);letter-spacing:.08em;padding-top:3px;}
+  .week .w b{display:block;font-size:15px;}
+  .week .w span{display:block;font-size:13.5px;color:var(--ink2);margin-top:2px;}
+  .week .w a{color:var(--hi);font-weight:700;}
+  .week input:checked ~ .w b{text-decoration:line-through;color:var(--muted);}
+  .week label:has(input:checked){background:var(--bg-soft);}
+  .week-done{margin-top:12px;font-family:var(--mono);font-size:12px;color:var(--muted);}
+  .week-done b{color:var(--hi);}
+
+  /* 結尾 CTA */
+  .outro{margin-top:64px;background:var(--dark);color:var(--dark-ink);border-radius:var(--r-lg);padding:36px 30px;}
+  .outro .eyebrow{color:var(--dark-acc);}
+  .outro .eyebrow::before{background:var(--dark-acc);}
+  .outro h2{font-family:var(--display);font-size:clamp(1.5rem,3vw,2rem);font-weight:800;margin-top:12px;line-height:1.25;}
+  .outro p{color:var(--dark-ink2);margin-top:10px;font-size:15px;max-width:52ch;}
+  .outro .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;}
+  .outro .btn-ghost{color:var(--dark-ink);border-color:var(--dark-line);}
+  .outro .btn-ghost:hover{border-color:var(--dark-acc);color:var(--dark-acc);}
+  .src{margin-top:28px;font-size:12.5px;color:var(--muted);}
+  .src a{color:var(--ink2);}
+</style>
+</head>
+<body>
+<nav class="site-nav">
+  <div class="wrap">
+    <a class="brandmark" href="../" aria-label="回黑牛工具首頁">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1.6" y="1.6" width="28.8" height="28.8" rx="8" fill="#11141C" stroke="#3AE3C6" stroke-width="1.7"/><path d="M8 11 q2 5 8 5 q6 0 8 -5" fill="none" stroke="#FFE24B" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="20.5" r="3.1" fill="#FFE24B"/></svg>
+      <span class="bt"><span class="n">黑牛<b>工具</b></span><br><span class="s">HEINIU TOOLS</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="../">← 全部工具</a>
+      <a class="cta" href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛</a>
+    </div>
+  </div>
+</nav>
+
+<header class="wrap hero">
+  <span class="eyebrow rise">Claude · Zero to Hero</span>
+  <h1 class="h-display rise" style="animation-delay:.05s">Claude 用得比 <span class="acc">99%</span> 的人好</h1>
+  <p class="lede rise" style="animation-delay:.1s">大部分人只把 Claude 當聊天機器人：問一句、複製一段、貼走。這份攻略是我<b>每天真的在用</b>的方法，從新手到高手共 11 章，每章都有<b>可以直接複製的指令</b>。</p>
+  <div class="hero-meta rise" style="animation-delay:.14s">
+    <span><b>11</b> 章</span><span>約 <b>15</b> 分鐘讀完</span><span>更新於 2026-10-20</span>
+  </div>
+
+  <nav class="ladder rise" style="animation-delay:.18s" aria-label="五個等級">
+    <a class="rung" href="#prompting"><span class="lv">LV 1</span><b>會問問題</b><i>第 0、1、3 章</i></a>
+    <a class="rung" href="#projects"><span class="lv">LV 2</span><b>它記得你</b><i>第 2、4 章</i></a>
+    <a class="rung" href="#connect"><span class="lv">LV 3</span><b>它用你的資料</b><i>第 5–6 章</i></a>
+    <a class="rung" href="#deliver"><span class="lv">LV 4</span><b>它交成品</b><i>第 7–8 章</i></a>
+    <a class="rung" href="#schedule"><span class="lv">LV 5</span><b>它自己做事</b><i>第 9 章</i></a>
+  </nav>
+  <p class="mono-note ladder-cap">// 99% 的人停在 <b>LV 1</b>。讀完這頁，你會走到 LV 5。</p>
+</header>
+
+<div class="wrap layout">
+  <aside class="toc" aria-label="章節目錄">
+    <div class="t-h">CHAPTERS</div>
+    <ol id="toc">
+      <li><a href="#why"><span>00</span>為什麼用錯</a></li>
+      <li><a href="#plans"><span>01</span>方案與模型</a></li>
+      <li><a href="#memory"><span>02</span>記憶</a></li>
+      <li><a href="#prompting"><span>03</span>下指令</a></li>
+      <li><a href="#projects"><span>04</span>專案</a></li>
+      <li><a href="#connect"><span>05</span>連接工具</a></li>
+      <li><a href="#skills"><span>06</span>Skills</a></li>
+      <li><a href="#deliver"><span>07</span>直接交成品</a></li>
+      <li><a href="#code"><span>08</span>Claude Code</a></li>
+      <li><a href="#schedule"><span>09</span>排程任務</a></li>
+      <li><a href="#week"><span>10</span>一週導入</a></li>
+    </ol>
+    <div class="prog"><i id="prog"></i></div>
+  </aside>
+
+  <main>
+
+  <!-- 00 -->
+  <section class="ch" id="why">
+    <div class="ch-num">CHAPTER 00</div>
+    <h2>為什麼 99% 的人都用錯</h2>
+    <p class="tldr">把 Claude 當 Google 用，你只用到它 10% 的能力。</p>
+    <p>大多數人的用法是：開一個新對話 → 丟一句問題 → 拿到一段文字 → 自己複製到 Word 或 LINE。每次都從零開始，每次都要重新解釋自己是誰。</p>
+    <p>高手的用法完全不同：<b>Claude 記得你是誰</b>、<b>每件工作有自己的專案</b>、<b>它可以直接讀你的信箱和雲端硬碟</b>、<b>它直接交出 Word 檔和簡報</b>，最後<b>它會在你睡覺的時候自己把事情做完</b>。</p>
+    <div class="vs">
+      <div class="bad"><span class="lbl">一般人</span>「幫我寫一封道歉信」<br>→ 拿到一封通用、沒溫度的信，再自己改半小時。</div>
+      <div class="good"><span class="lbl">高手</span>在「客服」專案裡說「回這封客訴」<br>→ Claude 已經知道你的店、語氣和退款規則，直接給可以寄的版本。</div>
+    </div>
+  </section>
+
+  <!-- 01 -->
+  <section class="ch" id="plans">
+    <div class="ch-num">CHAPTER 01</div>
+    <h2>方案與模型：要不要付錢？用哪個？</h2>
+    <p class="tldr">先用免費版一週。每天都卡額度、或需要排程任務和 Claude Code，再升 Pro。</p>
+
+    <h3>三個方案</h3>
+    <div class="plans">
+      <div class="plan">
+        <div class="pn">Free</div>
+        <div class="pp">US$0</div>
+        <ul>
+          <li>Sonnet、Haiku 模型</li>
+          <li>記憶、連接工具、網頁搜尋</li>
+          <li>最多 5 個專案</li>
+          <li>額度最少，每 5 小時重置</li>
+        </ul>
+        <div class="who">適合：先試試看的人</div>
+      </div>
+      <div class="plan pick">
+        <div class="pn">Pro <span class="tagpill">黑牛推薦</span></div>
+        <div class="pp">US$20<small> ／月</small></div>
+        <div class="pn2">年繳約 US$17／月</div>
+        <ul>
+          <li>加上 Opus 模型</li>
+          <li>額度至少是免費版的 5 倍</li>
+          <li>排程任務、Claude Code</li>
+          <li>專案數量不限</li>
+        </ul>
+        <div class="who">適合：每天工作都會用的人</div>
+      </div>
+      <div class="plan">
+        <div class="pn">Max</div>
+        <div class="pp">US$100<small> 起／月</small></div>
+        <ul>
+          <li>Pro 的 5 倍或 20 倍額度</li>
+          <li>尖峰時段優先使用</li>
+          <li>新功能搶先用</li>
+        </ul>
+        <div class="who">適合：Pro 每天都用到爆的人</div>
+      </div>
+    </div>
+    <p class="mono-note" style="margin-top:10px">// 價格以 <a href="https://claude.com/pricing" target="_blank" rel="noopener">官方方案頁</a> 為準（2026-10-20 查詢）。</p>
+
+    <h3>三個模型，怎麼選</h3>
+    <div class="models">
+      <div class="row"><b>Haiku</b><span>最快。分類、翻譯、整理格式這種簡單又大量的事。</span></div>
+      <div class="row"><b>Sonnet</b><span>日常主力。寫信、整理、分析，90% 的工作用它就夠。</span></div>
+      <div class="row"><b>Opus</b><span>最聰明。長文件、難題、寫程式、要想很久的事。額度消耗也最快。</span></div>
+    </div>
+    <div class="note-box"><b>黑牛的習慣：</b>先用 Sonnet。答案不夠好、或它開始鬼打牆，再切到 Opus 重問同一題。這樣最省額度。</div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>一開始就買 Max，結果一個月只用了幾次。</li>
+      <li>什麼事都用 Opus，下午就沒額度了。</li>
+      <li>同一個對話聊到超長，每次回覆都在重讀前面全部內容，額度掉超快 → 換題就開新對話（<a class="in" href="../token/">省 token 三招</a>）。</li>
+    </ul>
+  </section>
+
+  <!-- 02 -->
+  <section class="ch" id="memory">
+    <div class="ch-num">CHAPTER 02</div>
+    <h2>記憶：讓 Claude 記得你</h2>
+    <p class="tldr">講一次你是誰，之後每個對話都不用再講。</p>
+    <p>開啟記憶之後，Claude 會記住你的工作、你的專案、你喜歡的回答方式。它的記憶<b>以工作相關的內容為主</b>，你可以隨時到 <span class="ui">設定 → 記憶</span> 看它記了什麼、刪掉不想要的。</p>
+
+    <h3>從 ChatGPT 搬家（5 分鐘）</h3>
+    <ol class="steps">
+      <li>到 ChatGPT 貼上下面這段指令，讓它把記得你的事全部列出來。貼過去之前，先刪掉你不想帶走的敏感資料。</li>
+      <li>回到 Claude，打開 <span class="ui">設定 → 記憶</span>，按 <span class="ui">Start import</span>（開始匯入）。</li>
+      <li>把 ChatGPT 給你的內容貼進去，按 <span class="ui">Add to memory</span>。</li>
+      <li>問 Claude：「我更新了記憶，你學到了什麼？」檢查它有沒有記對。</li>
+    </ol>
+    <div class="prompt">
+      <div class="p-hd"><span>貼到 ChatGPT</span><button class="copy" type="button">複製</button></div>
+<pre>請把你記得關於我的所有記憶和背景資訊，完整列在一個程式碼區塊裡。包括：我的工作和職稱、正在進行的專案、我常用的工具、我喜歡的回答方式和語氣、還有任何你在對話中學到關於我的事。用條列式，每一點一行。</pre>
+    </div>
+
+    <h3>沒用過 ChatGPT？直接自我介紹</h3>
+    <div class="prompt">
+      <div class="p-hd"><span>貼到 Claude</span><button class="copy" type="button">複製</button></div>
+<pre>請記住以下關於我的事：
+我是 <em>[職業／職稱]</em>，在 <em>[公司或產業]</em> 工作。
+我最常請你幫忙的事是 <em>[例如：回客戶信、做報價單、寫 IG 文案]</em>。
+回答我的時候：用台灣繁體中文、直接講重點、<em>[其他偏好，例如：先給結論再解釋]</em>。</pre>
+    </div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>把身分證字號、帳號密碼這種資料丟進記憶。</li>
+      <li>以為它什麼都會記，其實它以工作內容為主，生活瑣事可能不會留。</li>
+      <li>從來不去 <span class="ui">設定 → 記憶</span> 檢查，舊的、錯的資訊一直影響回答。</li>
+    </ul>
+  </section>
+
+  <!-- 03 -->
+  <section class="ch" id="prompting">
+    <div class="ch-num">CHAPTER 03</div>
+    <h2>下指令：背景、任務、格式</h2>
+    <p class="tldr">AI 回答爛，九成是因為你沒給背景。三段式就能解決。</p>
+    <p>不用背什麼神奇咒語。把 Claude 當成一個<b>很聰明但第一天上班的新同事</b>：他不知道你的客戶是誰、不知道老闆喜歡什麼格式。你跟新同事交代事情要講什麼，就跟 Claude 講什麼。</p>
+
+    <div class="vs">
+      <div class="bad"><span class="lbl">太模糊</span>「幫我寫一封信給客戶說延遲出貨。」</div>
+      <div class="good"><span class="lbl">三段式</span><b>背景：</b>我開網路服飾店，這位是三年的老客人。<br><b>任務：</b>寫信告知她訂的外套延遲 5 天，補償免運券。<br><b>格式：</b>LINE 訊息，150 字內，親切不卑微。</div>
+    </div>
+
+    <h3>萬用模板</h3>
+    <div class="prompt">
+      <div class="p-hd"><span>三段式指令</span><button class="copy" type="button">複製</button></div>
+<pre>背景：<em>[你是誰、這件事的來龍去脈、對象是誰]</em>
+任務：<em>[你要它做什麼，一次一件事]</em>
+格式：<em>[長度、語氣、要用條列還是表格、要給幾個版本]</em>
+
+這是我之前寫過、覺得不錯的範例，請參考它的風格：
+<em>[貼一個範例]</em></pre>
+    </div>
+
+    <h3>兩個黑牛最常用的技巧</h3>
+    <div class="tiles">
+      <div class="tile"><div class="tt">先讓它問你</div><p>任務很複雜時，在最後加一句「開始之前，先問我 3 個你需要知道的問題」。它問的問題，常常就是你忘了講的背景。</p></div>
+      <div class="tile"><div class="tt">給範例勝過形容</div><p>「語氣要專業但親切」很模糊。貼一封你之前寫過的信，說「照這個語氣」，效果好十倍。</p></div>
+    </div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>一次塞十件事，結果每件都做一半。</li>
+      <li>只說「幫我優化一下」，它不知道你要更短、更正式還是更好笑。</li>
+      <li>不滿意就整個重問。直接說「第二段太硬，改口語一點」，比重來快很多。</li>
+    </ul>
+  </section>
+
+  <!-- 04 -->
+  <section class="ch" id="projects">
+    <div class="ch-num">CHAPTER 04</div>
+    <h2>專案：一件工作，一個大腦</h2>
+    <p class="tldr">把常做的工作做成專案，背景資料和規則只要設定一次。</p>
+    <p>專案就是一個資料夾，裡面放<b>這件工作專用的檔案</b>和<b>專案指令</b>（Claude 在這個專案裡永遠要遵守的規則）。在專案裡開的每個對話，Claude 都會自動讀這些東西。</p>
+
+    <h3>適合做成專案的工作</h3>
+    <div class="tiles">
+      <div class="tile"><div class="tt">報價單</div><p>放價目表、過去的報價單、公司資料。之後只要說「幫 ABC 公司報 3 台機器的價」。</p></div>
+      <div class="tile"><div class="tt">客服回覆</div><p>放退換貨規則、常見問題、你的回覆語氣範例。客人訊息貼進來就有回覆草稿。</p></div>
+      <div class="tile"><div class="tt">IG 文案</div><p>放你過去表現最好的貼文、品牌用語、不能說的字。</p></div>
+      <div class="tile"><div class="tt">找工作</div><p>放你的履歷和作品集。每次貼一個 104 職缺，讓它幫你改成對應的版本。</p></div>
+    </div>
+
+    <h3>照做：建立第一個專案</h3>
+    <ol class="steps">
+      <li>左側選單點 <span class="ui">專案</span> → <span class="ui">新增專案</span>，取一個清楚的名字，例如「客服回覆」。</li>
+      <li>上傳這件工作會用到的檔案：規則、範例、價目表。</li>
+      <li>在專案指令貼上下面的模板，改成你的內容。</li>
+      <li>開一個新對話測試，不滿意就回去改專案指令，不要每次在對話裡重講。</li>
+    </ol>
+    <div class="prompt">
+      <div class="p-hd"><span>專案指令範例：客服回覆</span><button class="copy" type="button">複製</button></div>
+<pre>你是 <em>[店名]</em> 的客服助理。
+我會貼上客人的 LINE 或 IG 訊息，請你寫回覆草稿。
+
+規則：
+1. 退換貨一律依照「退換貨規則」檔案，不要自己承諾例外。
+2. 語氣：親切、像朋友，用台灣口語，可以用一個表情符號。
+3. 每則回覆 100 字內。
+4. 如果客人很生氣，先道歉再解決，不要解釋原因。
+5. 遇到規則沒寫到的情況，不要回覆，直接告訴我「這題需要你決定」。</pre>
+    </div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>所有事情都丟在同一個專案，背景互相干擾。</li>
+      <li>價目表改了，專案裡的檔案沒換，Claude 一直報舊價格。</li>
+      <li>免費版最多 5 個專案，先挑最常做的 5 件事。</li>
+    </ul>
+  </section>
+
+  <!-- 05 -->
+  <section class="ch" id="connect">
+    <div class="ch-num">CHAPTER 05</div>
+    <h2>連接你的工具</h2>
+    <p class="tldr">不用再複製貼上。讓 Claude 直接讀你的信箱、行事曆和雲端硬碟。</p>
+    <p>在 <span class="ui">設定 → 連接工具（Connectors）</span> 可以連上 Gmail、Google 日曆、Google 雲端硬碟、Microsoft 365、Slack 等等。連上之後，你在對話裡提到它們，Claude 就會自己去查。</p>
+
+    <h3>連上之後可以這樣問</h3>
+    <div class="prompt">
+      <div class="p-hd"><span>Gmail ＋ 日曆</span><button class="copy" type="button">複製</button></div>
+<pre>看我這週的 Google 日曆，找出兩段可以專心工作 2 小時、中間沒有會議的時段。
+再從 Gmail 找出過去 7 天客戶寄來、我還沒回的信，列成表格：寄件人、主旨、要我做什麼、急不急。</pre>
+    </div>
+    <div class="prompt">
+      <div class="p-hd"><span>雲端硬碟</span><button class="copy" type="button">複製</button></div>
+<pre>在我的雲端硬碟找「<em>[檔名或關鍵字]</em>」的最新版本，幫我整理成 5 點重點，然後列出裡面跟上個版本比起來改了什麼。</pre>
+    </div>
+
+    <div class="note-box"><b>老實說：</b>LINE、蝦皮、104 目前沒有可以直接連的工具。替代做法是匯出 CSV、或截圖貼進對話，Claude 一樣讀得懂。</div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>一次把所有工具都連上，卻不知道它能看到什麼。只連你真的會用的。</li>
+      <li>連上了但沒有在指令裡說「去我的 Gmail 找」，它就不會去找。</li>
+      <li>讓它直接寄信、改行事曆之前，先確認它給的內容，再按同意。</li>
+    </ul>
+  </section>
+
+  <!-- 06 -->
+  <section class="ch" id="skills">
+    <div class="ch-num">CHAPTER 06</div>
+    <h2>Skills：把你的 SOP 教給 Claude</h2>
+    <p class="tldr">專案是「背景資料」，Skill 是「做事的方法」。教一次，之後每次都照你的標準做。</p>
+    <p>Skill 就是一份說明書：告訴 Claude 某件事<b>一步一步要怎麼做、做完要檢查什麼</b>。裝好之後，你只要提到那件事，Claude 會自己拿出說明書照做。它還可以附上程式和範本，做到一般對話做不到的事。</p>
+
+    <h3>黑牛推薦</h3>
+    <div class="tiles">
+      <div class="tile"><div class="tt">黑牛 AI 剪輯 <span class="tagpill">黑牛自製</span></div><p>丟原始素材 → 看分鏡 → 用一句話修改，拿到有字幕、封面和留言結尾的短影音。</p><a href="../edit/">免費下載＋三步安裝 →</a></div>
+      <div class="tile"><div class="tt">Word／Excel／PPT／PDF <span class="tagpill ghost">內建</span></div><p>報價單、報表、簡報、合約整理。直接說「做成 Excel」，它就會用這些 skill 交出真的檔案。</p></div>
+      <div class="tile"><div class="tt">做你自己的 skill <span class="tagpill ghost">內建</span></div><p>把你每週重複做的流程講給 Claude 聽，它會幫你寫成 skill。這是從「會用」變成「高手」的那一步。</p></div>
+      <div class="tile"><div class="tt">例子：104 履歷客製</div><p>貼一個職缺 → 照你的真實經歷改履歷 → 產生可以直接貼到 104 的段落。這就是一個適合做成 skill 的固定流程。</p></div>
+    </div>
+
+    <h3>照做：把你的流程變成 skill</h3>
+    <div class="prompt">
+      <div class="p-hd"><span>做一個自己的 skill</span><button class="copy" type="button">複製</button></div>
+<pre>我每週都要做 <em>[一件重複的工作，例如：把會議錄音整理成給老闆的週報]</em>。
+我的做法是：
+1. <em>[第一步]</em>
+2. <em>[第二步]</em>
+3. <em>[第三步]</em>
+做完之後我會檢查：<em>[你的品質標準]</em>
+
+請幫我把這個流程做成一個 skill。先問我你還需要知道的事，再寫。</pre>
+    </div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>流程還沒固定就急著做 skill。先手動做 3 次，確定步驟再做。</li>
+      <li>安裝來路不明的 skill。Skill 可以執行程式，只裝你信得過的來源。</li>
+    </ul>
+  </section>
+
+  <!-- 07 -->
+  <section class="ch" id="deliver">
+    <div class="ch-num">CHAPTER 07</div>
+    <h2>直接交成品：文件、簡報、表格、網頁</h2>
+    <p class="tldr">不要叫它「寫內容」再自己貼到 Word。直接要成品。</p>
+    <p>現在 Claude 在一般對話裡就能交出<b>可以編輯的文件、有公式的試算表、可以用 PowerPoint 開的簡報</b>，還有圖表和互動網頁。2026 年 9 月起，原本的 Cowork 功能已經合併進一般對話，不用再切換模式，Claude 會自己判斷要用哪個工具。</p>
+
+    <div class="prompt">
+      <div class="p-hd"><span>簡報</span><button class="copy" type="button">複製</button></div>
+<pre>把附件的會議記錄做成給老闆看的 5 頁簡報：第一頁結論，中間三頁各講一個決議和負責人，最後一頁是下週待辦。要可以下載成 PowerPoint。</pre>
+    </div>
+    <div class="prompt">
+      <div class="p-hd"><span>試算表</span><button class="copy" type="button">複製</button></div>
+<pre>做一個報價單試算表：欄位是品項、數量、單價、小計，下面自動算未稅總計、5% 營業稅和含稅總計。品項先放 3 筆範例資料。</pre>
+    </div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>要文字 → 自己貼到 Word → 自己排版。浪費最多時間的就是這一步。</li>
+      <li>沒說誰要看。「給老闆看」和「給客戶看」做出來的東西完全不一樣。</li>
+    </ul>
+  </section>
+
+  <!-- 08 -->
+  <section class="ch" id="code">
+    <div class="ch-num">CHAPTER 08</div>
+    <h2>Claude Code：不會寫程式也能做工具</h2>
+    <p class="tldr">你說要什麼工具，它寫程式、測試、修 bug。</p>
+    <p>Claude Code 是讓 Claude 直接在你的電腦或雲端寫程式的工具，Pro 方案以上可以用。你現在在看的這個網站，包括 <a class="in" href="../salary/">薪水實拿計算機</a>，都是我用講的叫 Claude 做出來的。</p>
+
+    <h3>從小工具開始</h3>
+    <div class="prompt">
+      <div class="p-hd"><span>做一個小工具</span><button class="copy" type="button">複製</button></div>
+<pre>幫我做一個單一網頁的小工具：<em>[例如：輸入月薪，算出扣掉勞健保後實拿多少]</em>。
+要求：
+- 只用一個 HTML 檔，打開瀏覽器就能用
+- 手機上也要好用
+- 用台灣繁體中文
+做完之後，用三組數字測試計算對不對，再告訴我結果。</pre>
+    </div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>第一次就要做「一整套 ERP 系統」。先做一個只做一件事的小工具。</li>
+      <li>沒有叫它測試。最後一句一定要加「做完自己測試」。</li>
+      <li>它要執行指令或刪檔案時，看都不看就按同意。</li>
+    </ul>
+  </section>
+
+  <!-- 09 -->
+  <section class="ch" id="schedule">
+    <div class="ch-num">CHAPTER 09</div>
+    <h2>排程任務：讓 Claude 自己定時做事</h2>
+    <p class="tldr">LV 5：你不用開口，它每天早上就把事情做好等你。</p>
+    <p>付費方案可以設定排程任務。直接在對話裡說「每天／每週幾點幫我做什麼」，Claude 會問你幾個問題，給你確認名稱、時間和指令，按 <span class="ui">Schedule</span> 就好。任務在雲端執行，<b>你的電腦關機也會照跑</b>（需要讀你電腦裡檔案的任務除外）。</p>
+
+    <h3>三個馬上能用的排程</h3>
+    <div class="prompt">
+      <div class="p-hd"><span>每天早上 8 點</span><button class="copy" type="button">複製</button></div>
+<pre>每個平日早上 8 點，幫我做一份晨報：
+1. 今天 Google 日曆上的會議，每個會議前我需要準備什麼
+2. Gmail 過去 24 小時客戶寄來、還沒回的信
+3. 今天最該先做的 3 件事
+用條列式，3 分鐘內看得完。</pre>
+    </div>
+    <div class="prompt">
+      <div class="p-hd"><span>每週一早上</span><button class="copy" type="button">複製</button></div>
+<pre>每週一早上 9 點，搜尋過去 7 天 <em>[你的產業]</em> 在台灣的重要新聞和競爭對手 <em>[A、B、C]</em> 的動態，整理成 5 點，每點附來源連結，最後告訴我哪一點可能影響我的生意。</pre>
+    </div>
+    <div class="prompt">
+      <div class="p-hd"><span>每週五下午</span><button class="copy" type="button">複製</button></div>
+<pre>每週五下午 4 點，讀我雲端硬碟「<em>[週報資料夾]</em>」裡這週更新的檔案，幫我寫好給主管的週報草稿：完成了什麼、卡在哪、下週計畫。</pre>
+    </div>
+
+    <h3>常見錯誤</h3>
+    <ul class="oops">
+      <li>還沒手動跑過一次就排程。先在對話裡做一次，結果滿意再排。</li>
+      <li>任務每一步都要你按同意，結果排程跑到一半就停住等你。設定時看清楚核准方式。</li>
+      <li>排太多，早上收到十份報告，一份都沒看。</li>
+    </ul>
+  </section>
+
+  <!-- 10 -->
+  <section class="ch" id="week">
+    <div class="ch-num">CHAPTER 10</div>
+    <h2>一週導入計畫</h2>
+    <p class="tldr">一天一步，一天不超過 20 分鐘。第七天，你就在 LV 5 了。</p>
+    <ul class="week" id="weekList">
+      <li><label><input type="checkbox" data-k="d1"><span class="d">DAY 1</span><span class="w"><b>開記憶、搬家或自我介紹</b><span>照 <a href="#memory">第 2 章</a> 做，然後問它「你知道我什麼？」</span></span></label></li>
+      <li><label><input type="checkbox" data-k="d2"><span class="d">DAY 2</span><span class="w"><b>用三段式做一件真的工作</b><span>挑今天本來就要做的事，用 <a href="#prompting">三段式模板</a>。</span></span></label></li>
+      <li><label><input type="checkbox" data-k="d3"><span class="d">DAY 3</span><span class="w"><b>建第一個專案</b><span>挑你最常重複的工作，放檔案、寫 <a href="#projects">專案指令</a>。</span></span></label></li>
+      <li><label><input type="checkbox" data-k="d4"><span class="d">DAY 4</span><span class="w"><b>連上 Gmail、日曆、雲端硬碟</b><span>試 <a href="#connect">第 5 章</a> 的兩段指令。</span></span></label></li>
+      <li><label><input type="checkbox" data-k="d5"><span class="d">DAY 5</span><span class="w"><b>要一份成品，不要文字</b><span>一份簡報或一張試算表，直接下載用。</span></span></label></li>
+      <li><label><input type="checkbox" data-k="d6"><span class="d">DAY 6</span><span class="w"><b>把一個流程做成 skill</b><span>用 <a href="#skills">第 6 章</a> 的指令。</span></span></label></li>
+      <li><label><input type="checkbox" data-k="d7"><span class="d">DAY 7</span><span class="w"><b>設第一個排程任務</b><span>從 <a href="#schedule">每天早上 8 點的晨報</a> 開始。</span></span></label></li>
+    </ul>
+    <p class="week-done" id="weekDone">// 已完成 <b>0</b> / 7</p>
+
+    <div class="outro">
+      <span class="eyebrow">Next</span>
+      <h2>每一章，我都會拍一支影片</h2>
+      <p>你最想先看哪一章？到 IG 影片留言告訴我，留言最多的先拍。</p>
+      <div class="row">
+        <a class="btn btn-hi" href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">追蹤黑牛 @fatty_bamba
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn-ghost" href="../">看全部工具</a>
+      </div>
+    </div>
+
+    <p class="src">資料來源（2026-10-20 查詢）：
+      <a href="https://claude.com/pricing" target="_blank" rel="noopener">Claude 方案與價格</a> ·
+      <a href="https://support.claude.com/en/articles/12123587-import-and-export-your-memory-from-claude" target="_blank" rel="noopener">匯入記憶</a> ·
+      <a href="https://support.claude.com/en/articles/16761823-claude-cowork-and-chat-are-one-claude" target="_blank" rel="noopener">Cowork 與對話合併</a> ·
+      <a href="https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork" target="_blank" rel="noopener">排程任務</a>
+    </p>
+  </section>
+
+  </main>
+</div>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div>
+      <div class="who">我是 <b>黑牛</b> — 工程師出身、AI 博士、AI 公司創辦人</div>
+      <p class="desc">每個東西都是我叫 AI 做的。想看下一個做什麼？到影片留言告訴我。</p>
+    </div>
+    <div class="links">
+      <a href="../">全部工具</a>
+      <a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a>
+      <a href="https://www.primestrideai.com/en" target="_blank" rel="noopener">公司導入 AI → PrimeStride</a>
+    </div>
+  </div>
+  <div class="fine">黑牛 @fatty_bamba · AI 創業家 · 工程師 · PhD</div>
+</footer>
+
+<script>
+(function () {
+  // 複製按鈕
+  document.querySelectorAll('.prompt').forEach(function (box) {
+    var btn = box.querySelector('.copy'), pre = box.querySelector('pre');
+    btn.addEventListener('click', function () {
+      var text = pre.innerText.trim();
+      var done = function () {
+        btn.textContent = '已複製 ✓'; btn.classList.add('done');
+        setTimeout(function () { btn.textContent = '複製'; btn.classList.remove('done'); }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  // 目錄跟著捲動亮起 + 閱讀進度
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  var prog = document.getElementById('prog');
+  function onScroll() {
+    var y = window.scrollY + 140, idx = 0;
+    secs.forEach(function (s, i) { if (s && s.offsetTop <= y) idx = i; });
+    links.forEach(function (a, i) {
+      var on = i === idx;
+      if (on !== a.classList.contains('on')) {
+        a.classList.toggle('on', on);
+        if (on && window.innerWidth <= 900) {
+          var ol = a.closest('ol');
+          ol.scrollTo({ left: a.parentNode.offsetLeft - 24, behavior: 'smooth' });
+        }
+      }
+    });
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    if (prog) prog.style.width = (h > 0 ? Math.min(100, window.scrollY / h * 100) : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  onScroll();
+
+  // 一週計畫：記在這台瀏覽器
+  var KEY = 'heiniu-claude-week';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+  var boxes = document.querySelectorAll('#weekList input');
+  var doneEl = document.querySelector('#weekDone b');
+  function count() {
+    var n = 0; boxes.forEach(function (b) { if (b.checked) n++; });
+    doneEl.textContent = n;
+  }
+  boxes.forEach(function (b) {
+    b.checked = !!state[b.dataset.k];
+    b.addEventListener('change', function () {
+      state[b.dataset.k] = b.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+      count();
+    });
+  });
+  count();
+})();
+</script>
+</body>
+</html>
