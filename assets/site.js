@@ -88,16 +88,31 @@ const HEINIU_ITEMS = [
   const nexts  = HEINIU_ITEMS.filter(i => i.next);
   const newestDate = Math.max(...[...tools, ...guides, ...radars].map(i => Date.parse(i.date || 0)));
 
-  const card = (i, kindLabel, pillClass) => `
+  const previews = {
+    '01': ['每月實領薪水', 'NT$ 57,924', '↗', 'lavender'],
+    '02': ['AI 支出分析', '支出一目了然', '▥', 'mint'],
+    '03': ['PDF 文字擷取', '選頁 → 複製', '▤', 'blue'],
+    'A': ['AI 工作流程', '省下更多 Token', '✳', 'peach'],
+    'B': ['AI 實作教學', '黑牛茶鋪', '◈', 'mint'],
+    'C': ['AI 影片剪輯', '聊天就能剪片', '▶', 'lavender'],
+    'R1': ['AI RADAR', '3 個值得關注的專案', '◎', 'slate'],
+  };
+  const card = (i, kindLabel, pillClass) => {
+    const [label, value, symbol, tone] = previews[i.num] || [kindLabel, i.title, '✦', 'slate'];
+    return `
     <a class="shelf-card rise" href="${i.href}">
-      <div class="sc-top">
-        <span class="sc-idx num">${i.num}</span>
-        ${Date.parse(i.date || 0) === newestDate ? '<span class="tagpill y">NEW</span>' : `<span class="tagpill ${pillClass}">${kindLabel}</span>`}
+      <div class="sc-preview" data-tone="${tone}" aria-hidden="true">
+        <div class="sc-mini"><div class="sc-mini-top"><span>${label}</span><span class="sc-mini-symbol">${symbol}</span></div>
+          <div class="sc-mini-value">${value}</div><div class="sc-mini-bar"></div></div>
       </div>
-      <h3>${i.title}</h3>
-      <p>${i.desc}</p>
-      <span class="sc-go">打開<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      <div class="sc-body">
+        <div class="sc-top"><span class="sc-idx num">${i.num}</span>
+          ${Date.parse(i.date || 0) === newestDate ? '<span class="tagpill y">NEW</span>' : `<span class="tagpill ${pillClass}">${kindLabel}</span>`}</div>
+        <h3>${i.title}</h3><p>${i.desc}</p>
+        <span class="sc-go">打開看看 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
     </a>`;
+  };
 
   const toolGrid = document.getElementById('toolGrid');
   if (toolGrid) toolGrid.innerHTML = tools.map(i => card(i, '可用', '')).join('');
