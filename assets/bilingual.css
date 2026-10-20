@@ -16,3 +16,7 @@
 .lang-en .hero .lede{max-width:54ch}
 .lang-en .shelf-card h3{overflow-wrap:anywhere}
 @media(max-width:720px){.lang-en .hero h1{font-size:clamp(2.45rem,8vw,3.8rem)}}
+
+[data-lang-en]{display:none!important}
+.lang-en [data-lang-zh]{display:none!important}
+.lang-en [data-lang-en]{display:contents!important}
