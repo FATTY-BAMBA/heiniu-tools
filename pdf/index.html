@@ -83,8 +83,9 @@
   .tieback a:hover{text-decoration:underline;}
 </style>
 <link rel="stylesheet" href="../assets/experience.css">
+<link rel="stylesheet" href="../assets/bilingual.css">
 </head>
-<body class="heiniu-experience">
+<body class="heiniu-experience" data-english-title="PDF Page Extractor | HEINIU">
 
 <nav class="site-nav">
   <div class="wrap">
@@ -104,7 +105,7 @@
 <div class="wrap-narrow">
   <header class="tool-head rise">
     <span class="eyebrow">工具 · PDF</span>
-    <h1>整份 PDF 太肥？<br>只<span class="acc">取你需要的頁</span>。</h1>
+    <h1><span data-lang-zh>整份 PDF 太肥？<br>只<span class="acc">取你需要的頁</span>。</span><span data-lang-en hidden>Only the PDF pages you need.</span></h1>
     <p class="lede">別把三百多頁的 PDF 整份丟給 AI——它每次都要重讀一遍，<b>token 一下就燒光</b>。拖進來、選你要的頁，直接抽出<b>純文字</b>複製給 AI：省額度、答更準。</p>
     <span class="rule"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6l-8-4Z"/></svg>100% 在你的瀏覽器裡跑 · 檔案不會上傳</span>
   </header>
@@ -274,5 +275,6 @@
   });
 })();
 </script>
+<script src="../assets/language.js" defer></script>
 </body>
 </html>

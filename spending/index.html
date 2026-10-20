@@ -105,8 +105,9 @@
   .page-body{padding-bottom:10px;}
 </style>
 <link rel="stylesheet" href="../assets/experience.css">
+<link rel="stylesheet" href="../assets/bilingual.css">
 </head>
-<body class="heiniu-experience">
+<body class="heiniu-experience" data-english-title="AI Spending Analyzer | HEINIU">
 
 <nav class="site-nav">
   <div class="wrap">
@@ -126,7 +127,7 @@
 <header class="tool-head">
   <div class="wrap-narrow">
     <span class="eyebrow">Tool 02 · 花費健檢</span>
-    <h1>錢去哪了？把帳單丟給 <span class="acc">AI</span>，它幫你算。</h1>
+    <h1><span data-lang-zh>錢去哪了？把帳單丟給 <span class="acc">AI</span>，它幫你算。</span><span data-lang-en hidden>Where does your money go?</span></h1>
     <p class="lede">貼上你的信用卡／銀行明細，自動分類、找出你的最大錢坑，看你「亂花」的有沒有比房租多。</p>
     <div class="note">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -419,5 +420,6 @@ document.getElementById('copyBtn').addEventListener('click',()=>{
 // preload sample so the page shows value immediately
 document.getElementById('stmt').value=SAMPLE; analyse(SAMPLE);
 </script>
+<script src="../assets/language.js" defer></script>
 </body>
 </html>

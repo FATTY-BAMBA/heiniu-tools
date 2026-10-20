@@ -1,0 +1,40 @@
+/* HEINIU brand refinement & bilingual navigation */
+.site-nav .wrap{max-width:1200px;gap:20px}
+.language-switch{display:inline-flex;align-items:center;flex:none;border:1px solid #DDDFE4;background:#FFFFFF;border-radius:9px;padding:3px;margin-left:auto;gap:2px}
+.language-switch button{font:700 11px var(--cjk);border:0;color:#777A85;border-radius:6px;background:transparent;cursor:pointer;min-height:32px;min-width:38px;padding:5px 9px}
+.language-switch button:hover{color:#28263F}
+.language-switch button.active{background:#282337;color:#fff}
+.site-nav .nav-links{margin-left:0}
+@media(max-width:900px){.site-nav .wrap{gap:10px}.language-switch{order:2;margin-left:auto}.site-nav .nav-links{order:3}.site-nav .nav-links a:not(.cta){display:none}.site-nav .nav-links a.cta{margin-left:0}}
+@media(max-width:390px){.site-nav .wrap{padding-inline:14px}.brandmark{gap:7px}.brandmark .bt .s{font-size:8px}.language-switch button{padding:5px 7px;min-width:33px}.site-nav .nav-links .cta{padding:8px 9px;font-size:11px}}
+/* More restrained product identity */
+.site-nav{border-bottom-color:#E3E3E6}
+.site-nav .brandmark .bt .s{letter-spacing:.15em}
+.shelf-card{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.shelf-card:focus-visible,.hero-feature:focus-visible{outline:3px solid var(--hi);outline-offset:3px}
+.lang-en .hero h1{max-width:15ch;letter-spacing:-.05em}
+.lang-en .hero .lede{max-width:54ch}
+.lang-en .shelf-card h3{overflow-wrap:anywhere}
+@media(max-width:720px){.lang-en .hero h1{font-size:clamp(2.45rem,8vw,3.8rem)}}
+
+[data-lang-en]{display:none!important}
+.lang-en [data-lang-zh]{display:none!important}
+.lang-en [data-lang-en]{display:contents!important}
+
+/* Editorial polish: controlled rhythm and cohesive surfaces */
+:root{--hi:#4734C9;--hi-strong:#3726A9;--bg:#F7F7F5;--line:#E3E4E3;--r-lg:12px}
+body.heiniu-experience{background:#F7F7F5}
+.site-nav{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.hero:not(.tool-head){position:relative}
+.shelf .section-rule{font-size:10px;letter-spacing:.15em}
+.shelf-hd .eyebrow{font-family:var(--mono);font-size:11px}
+.shelf-card .sc-art{border-bottom-color:rgba(28,27,55,.06)}
+.shelf-card .sc-content{min-height:210px}
+.shelf-card .sc-top{margin-bottom:22px}
+.shelf-card h3{font-weight:900}
+.shelf-card p{line-height:1.75}
+.shelf-card .sc-go{margin-top:auto;padding-top:20px}
+.shelf.alt .shelf-card .sc-go{border-color:rgba(255,255,255,.1)}
+.creator-band .creator-inner{max-width:1200px}
+.promo .card{box-shadow:0 10px 40px rgba(25,27,40,.025)}
+@media(max-width:720px){.shelf-card .sc-content{min-height:0}.shelf-card .sc-go{margin-top:26px}.site-nav .nav-links .cta{white-space:nowrap}}
