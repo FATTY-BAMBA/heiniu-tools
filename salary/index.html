@@ -109,6 +109,7 @@
   .page-body{padding-bottom:10px;}
 </style>
 <link rel="stylesheet" href="../assets/experience.css">
+<link rel="stylesheet" href="../assets/bilingual.css">
 </head>
 <body class="heiniu-experience">
 
@@ -292,5 +293,6 @@ $('cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeTe
 $('sh').addEventListener('click',async()=>{const d={title:'薪水實拿計算機',text:'月薪你真的拿得到嗎？',url:location.href};try{if(navigator.share)await navigator.share(d);else{await navigator.clipboard.writeText(location.href);toast('已複製連結 ✓');}}catch(e){}});
 calc();
 </script>
+<script src="../assets/language.js" defer></script>
 </body>
 </html>
