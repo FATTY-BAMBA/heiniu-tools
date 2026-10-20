@@ -34,8 +34,10 @@ function apply(lang){
  document.querySelectorAll('[data-lang-choice]').forEach(btn=>{const active=btn.dataset.langChoice===lang;btn.setAttribute('aria-pressed',String(active));btn.classList.toggle('active',active)});
 }
 let current='zh';try{const param=new URLSearchParams(location.search).get('lang');current=param==='en'||param==='zh'?param:(localStorage.getItem(KEY)==='en'?'en':'zh')}catch(_){}
-function choose(lang){if(!['en','zh'].includes(lang))return;current=lang;try{localStorage.setItem(KEY,lang)}catch(_){}apply(lang)}
+function choose(lang){if(!['en','zh'].includes(lang))return;current=lang;try{localStorage.setItem(KEY,lang)}catch(_){}const path=location.pathname;if(/\/claude-zerotohero\/(?:en\/)?$/.test(path)){const root=path.replace(/(?:en\/)?$/,'');const next=lang==='en'?root+'en/':root;if(next!==path){location.assign(next+location.hash);return;}}apply(lang)}
 function boot(){
+ if(/\/claude-zerotohero\/en\/$/.test(location.pathname)) current='en';
+ else if(/\/claude-zerotohero\/$/.test(location.pathname)) current='zh';
  const nav=document.querySelector('.site-nav .wrap');
  if(nav&&!nav.querySelector('.language-switch')){
  const s=document.createElement('div');s.className='language-switch';s.setAttribute('role','group');s.setAttribute('aria-label','Language / 語言');
