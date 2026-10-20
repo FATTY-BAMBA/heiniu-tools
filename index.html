@@ -262,6 +262,88 @@ body{background:var(--bg)}
 @media(max-width:720px){.hero-grid{grid-template-columns:1fr;gap:38px}.hero{padding:62px 0 70px}.hero .lede{font-size:15px}.hero-feature{max-width:490px;width:100%;margin:auto}.grid{grid-template-columns:1fr 1fr;gap:12px}.shelf-card h3{font-size:16px}.sc-art{height:130px}.sc-preview{width:80%;padding:13px}.sc-content{padding:18px}.creator-inner{align-items:flex-start;flex-direction:column;gap:22px}}
 @media(max-width:530px){.hero h1{font-size:clamp(2.15rem,9vw,3rem)}.grid{grid-template-columns:1fr}.sc-art{height:156px}.sc-preview{width:68%}.hero-feature{padding:13px}.feature-body{padding:24px 20px}.feature-number strong{font-size:39px}.shelf.alt{padding:66px 0}.creator-band{margin-top:60px}.site-nav .wrap{height:64px}.hero-trust{flex-wrap:wrap}}
 
+
+/* Premium layout system — editorial hierarchy, restrained product surfaces */
+:root{--wrap:1200px;--bg:#F6F6F4;--line:#E6E6E2;--ink:#17181C;--ink2:#5F626B;--muted:#858994;--hi:#4937CC;--hi-soft:#F0EEFF;--dark:#14151A;--dark-card:#1D1F27;--dark-line:#34353E;--r-lg:12px;--shadow:none}
+body{background:var(--bg);letter-spacing:-.005em}
+.wrap{padding-inline:clamp(22px,4vw,48px)}
+.site-nav{background:rgba(246,246,244,.95);border-color:var(--line)}
+.site-nav .wrap{height:76px}
+.brandmark svg{width:34px;height:34px}
+.nav-links{gap:12px}
+.nav-links a{border-radius:6px}
+.nav-links a.cta{border-radius:7px;padding:11px 17px}
+.hero{background:none;padding:110px 0 112px;border-bottom:1px solid var(--line)}
+.hero-grid{grid-template-columns:1.13fr .87fr;gap:8%}
+.hero .eyebrow{font-size:11px;letter-spacing:.17em}
+.hero h1{font-size:clamp(3.1rem,5.25vw,5.25rem);line-height:1.17;letter-spacing:-.065em;font-weight:900}
+.hero .lede{font-size:16.5px;line-height:1.95;max-width:33rem;color:#5E626B}
+.hero .acts{margin-top:36px}
+.btn{border-radius:7px;box-shadow:none;font-weight:700;padding:13px 20px}
+.btn-hi,.btn-fix{box-shadow:none}
+.btn-ghost{border-color:#D1D2D4}
+.hero-trust{margin-top:27px;color:#7F818B}
+.hero-feature{border:1px solid #DADAE7;border-radius:12px;background:#EAE9F3;padding:14px;box-shadow:0 24px 66px rgba(27,24,79,.06);max-width:500px}
+.hero-feature:hover{box-shadow:0 30px 70px rgba(27,24,79,.12)}
+.feature-top{padding:8px 11px 19px}
+.feature-kicker{letter-spacing:.1em}
+.feature-window{border-radius:8px;box-shadow:0 8px 30px rgba(26,24,53,.07)}
+.feature-body{padding:37px 34px 34px}
+.feature-number{margin-bottom:26px}
+.feature-number strong{font-size:clamp(43px,4vw,56px)}
+.feature-bottom{padding:19px 10px 7px}
+.section-rule{display:flex;justify-content:space-between;gap:20px;align-items:center;font:600 11px var(--mono);letter-spacing:.13em;color:#9B9CA3;border-top:1px solid #D8D8D6;padding-top:18px}
+.shelf{padding:92px 0 80px}
+.shelf-hd{margin-top:41px;margin-bottom:15px;align-items:center}
+.shelf-hd .eyebrow{font-size:11px;letter-spacing:.18em}
+.h-sec{font-size:clamp(2.1rem,3.2vw,3rem);letter-spacing:-.055em}
+.shelf-hd .note{color:#777983;font-size:12px;max-width:280px;text-align:right}
+.section-intro{font-size:14px;line-height:1.8;color:#858791;margin-bottom:36px;max-width:650px}
+.grid{gap:16px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.shelf-card{background:#fff;border-radius:10px;border:1px solid #E5E5E4;box-shadow:none;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
+.shelf-card:hover{transform:translateY(-3px);border-color:#CFCBE5;box-shadow:0 22px 55px rgba(22,24,42,.07)}
+.sc-art{height:186px;border-bottom:1px solid #E8E8E8}
+.sc-art::before{opacity:.33}
+.sc-art[data-tone="violet"]{background:#EDEBF7}
+.sc-art[data-tone="mint"]{background:#EAF1EC}
+.sc-art[data-tone="blue"]{background:#E9EEF4}
+.sc-art[data-tone="peach"]{background:#F4EDE8}
+.sc-preview{height:115px;width:75%;border-radius:6px;transform:none;box-shadow:0 13px 30px rgba(38,38,53,.06);gap:14px;padding:19px 20px}
+.shelf-card:hover .sc-preview{transform:translateY(-3px)}
+.sc-preview .preview-caption{font-size:10px;letter-spacing:.04em}
+.sc-preview .preview-value{font-size:28px;letter-spacing:-.05em}
+.sc-content{padding:25px 25px 27px}
+.shelf-card .sc-top{margin-bottom:26px}
+.sc-idx{letter-spacing:.1em;font-size:10px;color:#8C8F99}
+.tagpill{border-radius:4px;font-size:10px;padding:4px 9px}
+.shelf-card h3{font-size:19px;line-height:1.5;letter-spacing:-.035em}
+.shelf-card p{font-size:13.2px;line-height:1.85;color:#757982;margin-top:10px}
+.sc-go{border-top:1px solid #EFEFEE;padding-top:20px;margin-top:27px;display:flex;justify-content:space-between;align-items:center;color:#4A36D4;font-size:12px;letter-spacing:.02em}
+.shelf.alt{margin:0;padding:95px 0 104px;background:#15161C;color:#fff}
+.shelf.alt .section-rule{border-color:#383941;color:#82848F}
+.shelf.alt .section-intro{color:#9C9FAB}
+.shelf.alt .shelf-card{background:#20222A;border-color:#343640;border-radius:10px}
+.shelf.alt .sc-art{border-color:#343640;filter:none}
+.shelf.alt .sc-content{background:#20222A}
+.shelf.alt .shelf-card p{color:#A1A3AE}
+.shelf.alt .sc-go{border-color:#343640;color:#AC9FFF}
+.shelf.alt .sc-idx{color:#989BA8}
+.shelf.alt .roadmap{margin-top:25px;border-radius:9px;border-color:#454650}
+.radar-shelf{padding-bottom:80px}
+.creator-band{margin:0;background:#EBEBE8;padding:75px 0;border-color:#DFDFDB}
+.creator-inner h2{font-size:clamp(2rem,3vw,2.7rem);letter-spacing:-.05em}
+.creator-inner p{font-size:15px;line-height:1.9}
+.creator-inner .btn{background:transparent;border-color:#C6C7C6}
+.promo{margin:0;padding:84px 0}
+.promo .card{padding:38px 40px;border-radius:10px;background:#fff;border-color:#E5E5E2}
+.promo h3{font-size:25px}
+.site-foot{margin-top:0;background:#F0F0ED}
+.site-foot .wrap{padding-top:55px;padding-bottom:55px}
+.site-foot .links a{border-radius:6px}
+@media(max-width:960px){.hero-grid{grid-template-columns:1fr 1fr;gap:5%}.hero h1{font-size:clamp(2.5rem,5vw,4rem)}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sc-art{height:164px}}
+@media(max-width:720px){.hero{padding:75px 0 82px}.hero-grid{grid-template-columns:1fr;gap:46px}.hero h1{font-size:clamp(2.7rem,8.5vw,4rem)}.hero-feature{width:100%;max-width:500px}.shelf,.shelf.alt{padding:74px 0 82px}.shelf-hd{margin-top:32px}.shelf-hd .note{display:none}.section-intro{margin-bottom:26px}.creator-band{padding:62px 0}.creator-inner{flex-direction:column;align-items:flex-start}.promo{padding:64px 0}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.sc-art{height:188px}.sc-preview{width:74%}.section-rule{font-size:9px}.hero h1{font-size:clamp(2.6rem,10vw,3.3rem)}.hero .lede{font-size:15px}.shelf-card h3{font-size:18px}.promo .card{padding:25px}.feature-body{padding:27px 23px}.feature-number strong{font-size:42px}}
+
 </style>
 </head>
 <body>
@@ -285,9 +367,9 @@ body{background:var(--bg)}
 <header class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <span class="eyebrow rise">HEINIU LAB <span class="eyebrow-sub">/ AI × 生活 × 實作</span></span>
-      <h1 class="h-display rise" style="animation-delay:.05s">把 <span class="acc">AI</span> 變成<br>真正用得上的工具。</h1>
-      <p class="lede rise" style="animation-delay:.12s">不只是教你用 AI。我把生活裡真正需要的解法，做成<span class="emphasis">免費、打開就能用</span>的小工具，還有一步一步跟著做的完整教學。</p>
+      <span class="eyebrow rise">HEINIU STUDIO <span class="eyebrow-sub">/ BUILT FOR REAL LIFE</span></span>
+      <h1 class="h-display rise" style="animation-delay:.05s">讓 <span class="acc">AI</span> 真正<br>走進你的日常。</h1>
+      <p class="lede rise" style="animation-delay:.12s">把複雜的技術，變成簡單好用的日常工具。從薪水、花費到 AI 工作流，<span class="emphasis">每一個作品都能直接體驗。</span></p>
       <div class="acts rise" style="animation-delay:.18s">
         <a class="btn btn-hi" href="#tools">探索免費工具 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
         <a class="btn btn-ghost" href="#methods">觀看完整教學</a>
@@ -295,7 +377,7 @@ body{background:var(--bg)}
       <div class="hero-trust rise" style="animation-delay:.24s"><span class="trust-dot"></span>不用註冊 <span class="trust-sep">·</span> 免費使用 <span class="trust-sep">·</span> 隱私優先</div>
     </div>
     <a class="hero-feature rise" style="animation-delay:.16s" href="./salary/" aria-label="試用薪水實拿計算機">
-      <div class="feature-top"><span class="feature-kicker"><span class="feature-pulse"></span> FEATURED TOOL</span><span class="feature-open">立即試用 ↗</span></div>
+      <div class="feature-top"><span class="feature-kicker"><span class="feature-pulse"></span> THE FEATURED EXPERIENCE</span><span class="feature-open">立即試用 ↗</span></div>
       <div class="feature-window">
         <div class="window-top"><span class="window-dots"><i></i><i></i><i></i></span><span>薪水實拿計算機</span><span>2026</span></div>
         <div class="feature-body">
@@ -308,12 +390,12 @@ body{background:var(--bg)}
           <div class="feature-note"><span>薪水去哪了，一眼就知道。</span><span>↗</span></div>
         </div>
       </div>
-      <div class="feature-bottom"><span>01 / FINANCE</span><strong>真正能用，不只是展示。</strong></div>
+      <div class="feature-bottom"><span>01 / FINANCE TOOL</span><strong>互動工具 · 免費體驗 ↗</strong></div>
     </a>
   </div>
 </header>
 
-<section class="shelf" id="tools">
+<section class="shelf" id="tools"><div class="wrap section-rule"><span>01 — EXPLORE</span><span>UTILITY COLLECTION / 2026</span></div>
   <div class="wrap">
     <div class="shelf-hd">
       <div>
@@ -322,11 +404,11 @@ body{background:var(--bg)}
       </div>
       <span class="note">真正實用的免費工具 · 開啟即用</span>
     </div>
-    <div class="grid" id="toolGrid"></div>
+    <p class="section-intro">為真實問題打造的小工具。沒有繁瑣設定，選一個需要的，打開就能開始。</p><div class="grid" id="toolGrid"></div>
   </div>
 </section>
 
-<section class="shelf alt" id="methods">
+<section class="shelf alt" id="methods"><div class="wrap section-rule"><span>02 — LEARN</span><span>GUIDES & WORKFLOWS</span></div>
   <div class="wrap">
     <div class="shelf-hd">
       <div>
@@ -335,7 +417,7 @@ body{background:var(--bg)}
       </div>
       <span class="note">影片留言領取的完整版，都收在這裡</span>
     </div>
-    <div class="grid" id="guideGrid"></div>
+    <p class="section-intro">不只是看完影片。每一篇都整理成清楚的步驟，讓你真正學會、動手做。</p><div class="grid" id="guideGrid"></div>
 
     <div class="roadmap">
       <span class="rm-h">接下來 »</span>
@@ -345,7 +427,7 @@ body{background:var(--bg)}
   </div>
 </section>
 
-<section class="shelf" id="radar">
+<section class="shelf radar-shelf" id="radar"><div class="wrap section-rule"><span>03 — DISCOVER</span><span>RESEARCH NOTES</span></div>
   <div class="wrap">
     <div class="shelf-hd">
       <div>
@@ -354,7 +436,7 @@ body{background:var(--bg)}
       </div>
       <span class="note">每支 RADAR 影片的懶人包＋連結，都收在這裡</span>
     </div>
-    <div class="grid" id="radarGrid"></div>
+    <p class="section-intro">有觀點的 AI 專案筆記，幫你把注意力留給真正值得研究的事。</p><div class="grid" id="radarGrid"></div>
   </div>
 </section>
 
