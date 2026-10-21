@@ -19,6 +19,7 @@ import sys, os, json, base64, html, argparse, io, subprocess, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from hn_common import grab, ASSETS, expand_timeline, resolve_words
 import pacing as PACE
+import room_apply as RA
 from PIL import Image
 
 ap = argparse.ArgumentParser(); ap.add_argument("spec"); ap.add_argument("--out"); ap.add_argument("--version", type=int, default=1)
@@ -117,10 +118,18 @@ for i, it in enumerate(spec["timeline"]):
         acts = [f"斜線由左往右慢慢掃過：左「{it.get('label_after', 'AI 調色')}」右「{it.get('label_before', '原始')}」"]
         shot = "定格・前後對比"; frame_src, frame_t = it["src"], float(it.get("at", 0))
     acts += it.get("notes", [])
+    # what the room lets the person change directly: caption text, effects to switch off
+    caps = [dict(i=j, text=c["text"]) for j, c in enumerate(it.get("captions", []))] if kind == "clip" else []
+    fx = []
+    for fxk in RA.FX:
+        if it.get(fxk) and kind == "clip":
+            lab = RA.LABEL[fxk]
+            if fxk == "bigwords": lab += "「" + "、".join(b_["word"] for b_ in it["bigwords"]) + "」"
+            fx.append(dict(id=fxk, label=lab))
     changed = PREV is not None and (i >= len(PREV) or canon(PREV[i]) != canon(it))
     w = warn.get(i + 1)
     beats.append(dict(n=n, start=round(st, 3), end=round(en, 3), shot=shot, line=line, acts=acts, key=key,
-                      changed=bool(changed or (i + 1) in changes), applied=changes.get(i + 1, ""), _src=frame_src, _t=frame_t,
+                      changed=bool(changed or (i + 1) in changes), applied=changes.get(i + 1, ""), _src=frame_src, _t=frame_t, caps=caps, fx=fx,
                       warn=(dict(text=f"畫面 {w['length']:.1f} 秒沒變化（{w['start']:.1f}–{w['end']:.1f}s）", fixes=w["fixes"]) if w else None)))
 
 # ---- thumbnails: from the draft when we have it (shows captions/effects), else from the source ----
@@ -134,7 +143,8 @@ for b in beats:
     b["thumb"] = uri or jpeg_uri(grab(P(b["_src"]), b["_t"], 216, 384))
     del b["_src"], b["_t"]
 
-data = dict(name=spec.get("name", "edit"), version=a.version, duration=round(TOTAL, 3), beats=beats, pace=dict(max_gap=pace["max_gap"], count=len(pace["dead_spots"])),
+CS = spec.get("captions_style") or {}
+data = dict(name=spec.get("name", "edit"), version=a.version, cap=dict(scale=float(CS.get("scale", 1.0)), dy=int(CS.get("dy", 0))), duration=round(TOTAL, 3), beats=beats, pace=dict(max_gap=pace["max_gap"], count=len(pace["dead_spots"])),
             changes=[dict(beat=f"{k:02d}", note=v) for k, v in sorted(changes.items())],
             srt="\n".join(f"{i + 1}\n{fmt_srt(s0)} --> {fmt_srt(s1)}\n{txt}\n" for i, (s0, s1, txt) in enumerate(srt)))
 if a.delivered:

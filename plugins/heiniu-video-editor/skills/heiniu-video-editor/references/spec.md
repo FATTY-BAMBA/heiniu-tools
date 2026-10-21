@@ -15,6 +15,7 @@ All times inside a clip are **source seconds of that clip's file** (what `transc
   "topic": "月薪 6 萬，錢去哪了？",          // one-line topic: the header bar of the 知識乾貨 / 開箱 styles (else the first caption)
   "template": "knowledge",                  // written by scripts/template.py — never edit by hand (see Style templates below)
   "music": {"src": "track.mp3", "gain_db": -20, "start": 0, "fade_out": 2.0},   // optional; ducked under the voice
+  "voice": "auto",                          // voice clean-up: auto (sized to each take's noise) | strong | off — qa.json "voice" reports SNR per take
   "timeline": [ ...items, played in order... ]
 }
 ```
@@ -100,5 +101,5 @@ Switching is safe: the template keeps everything it removed in `_off`, marks wha
 | `product` | 開箱／業配 | each chunk on an ivory label sliding in (previous lifts away), key chunks on an accent label | `clean` | product label header (`badge`), comment CTA (LINK) on the last clip | 3 s |
 Light, outline-free looks get a soft dark scrim so they stay readable over a white shirt; big words switch to ink on bright backgrounds.
 Caption timing comes from the transcript (`words`): every character lights when it is spoken, even when the caption text was corrected.
-Per-caption overrides: `look`, `size`, `y`, `emoji` (`"🔥"` or `false`). Spec fields: `header: {kind: bar|label|stamp|masthead|news, text, badge?}`,
+`captions_style.scale` / `dy` (set by the room's 全片字幕 buttons) resize / move every caption in any look. Per-caption overrides: `look`, `size`, `y`, `emoji` (`"🔥"` or `false`). Spec fields: `header: {kind: bar|label|stamp|masthead|news, text, badge?}`,
 `sfx_gain`, `grain`, `pacing.max_gap`; grades `airy`, `crisp`, `punchy`, `cinema`, `clean`, `muted`, `film`.

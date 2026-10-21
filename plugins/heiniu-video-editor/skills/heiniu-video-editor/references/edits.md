@@ -51,3 +51,5 @@ People talk in outcomes. Translate the sentence, change the spec, re-render, and
 | 標題列改成… / 期數改成 03 | `topic`, `issue` (雜誌), `badge` (新聞快報 / 開箱), then re-apply the same style. |
 | 這裡加 emoji / 不要 emoji | caption `emoji: "🔥"` / `emoji: false` (衝擊字). |
 | 字幕一次少一點字 | `captions_style.max_chars` 3–4 (衝擊字 / 開箱). |
+| 聲音好吵 / 背景很多雜音 / 夜市太吵 | `"voice": "strong"` (default `auto` already cleans; strong removes more but can thin the voice). |
+| 聲音不要處理 / 保留原音 | `"voice": "off"`. |
