@@ -11,7 +11,9 @@ All times inside a clip are **source seconds of that clip's file** (what `transc
   "grade": "soft",                          // default for clips: soft | warm | none | any ffmpeg filter string
   "speed": 1.0,                             // default clip speed
   "bars": false, "bars_px": 200,            // cinematic black bars (default off)
-  "captions_style": {"size": 64, "y": 1330},// caption box size and vertical centre (1080x1920 units)
+  "captions_style": {"size": 64, "y": 1330, "look": "card"},// size, vertical centre (1080x1920 units), look: card | clean | bold | meme | label
+  "topic": "月薪 6 萬，錢去哪了？",          // one-line topic: the header bar of the 知識乾貨 / 開箱 styles (else the first caption)
+  "template": "knowledge",                  // written by scripts/template.py — never edit by hand (see Style templates below)
   "music": {"src": "track.mp3", "gain_db": -20, "start": 0, "fade_out": 2.0},   // optional; ducked under the voice
   "timeline": [ ...items, played in order... ]
 }
@@ -78,3 +80,25 @@ Set `"words": "words.json"` (the transcribe.py output) at the top of edit.json. 
 Start-type fields (`at`, `start`, `send`, `show`, `from`…) land 2 frames **before** the word starts — editors cut on anticipation;
 end-type fields (`end`, `until`, `to`) land just **after** the word ends. The search stays inside the clip's `in`–`out`.
 Rules the engine also enforces: whoosh/swish peaks land exactly on the cut or impact; effects that run to the end of their shot leave with the cut (no fade mid-word); impacts (big words, stamps, slams) get a 5-frame decaying shake; pops overshoot ~6%; punch snaps are motion-blurred. `qa.json` lists `face_collisions` (any card, bubble, chart or phone covering > 6 % of the face) — fix every one before delivering.
+
+## Style templates (風格) — `scripts/template.py`
+One cut, six looks, built on the style families top short-form editors and caption tools converge on (impact word-by-word,
+editorial serif, minimal, news strip, cinematic vlog, product labels) — in our own look, never a copy of one creator.
+Write the base `edit.json` as usual (takes, captions with `keys`, effects chosen by meaning, a one-line `topic`), then:
+`template.py edit.json --previews` renders ~3.5 s of the person's own opening in every style (≈ 3–4 min) into `_render/styles/` + `styles.json`;
+`storyboard.py edit.json --version 0 --styles _render/styles` is the 選風格 page; `template.py edit.json --apply <id>` rewrites edit.json in that style.
+Switching is safe: the template keeps everything it removed in `_off`, marks what it added (`_tpl_keys`, `_tpl` items, `_dropped`), and
+`--apply` restores the base before applying the new one. Make content edits on the templated file as normal.
+
+| id | name | captions (`captions_style.look`) | grade | also | picture changes at least every |
+|---|---|---|---|---|---|
+| `impact` | 衝擊字 | heavy white + thick black outline, 2–5 characters at a time synced to the voice, spoken character yellow, keys green, chunk pops, emoji on up to 3 key ideas (never over the mouth) | `punchy` | punch 1.25× held 0.5 s on keys, freeze 「蛤？」 after the first red-caption beat, shake ×1.5 | 2.5 s |
+| `editorial` | 雜誌 | serif line building as it is spoken (characters rise in), keys slanted in accent, accent rule grows under the line | `soft` | masthead (brand · `issue` · topic), glass big words behind the head | 3 s |
+| `minimal` | 極簡 | small clean sans, upcoming words faint, each character sharpens out of a blur | `muted` (desaturated, one accent) | strips big graphics, slow push, quiet SFX | 4.5 s |
+| `news` | 新聞快報 | white on a black strip that slides in (red edge), spoken character yellow | `crisp` | red 快報 tag + headline bar (`badge`, `topic`), numbers punch, big words in the lower third | 3 s |
+| `vlog` | 電影感 Vlog | small letter-spaced serif, whole line fades up from a blur | `film` (lifted blacks) | letterbox bars, film grain (`grain`), date stamp (`place`), slow push, almost no SFX | 5 s |
+| `product` | 開箱／業配 | each chunk on an ivory label sliding in (previous lifts away), key chunks on an accent label | `clean` | product label header (`badge`), comment CTA (LINK) on the last clip | 3 s |
+Light, outline-free looks get a soft dark scrim so they stay readable over a white shirt; big words switch to ink on bright backgrounds.
+Caption timing comes from the transcript (`words`): every character lights when it is spoken, even when the caption text was corrected.
+Per-caption overrides: `look`, `size`, `y`, `emoji` (`"🔥"` or `false`). Spec fields: `header: {kind: bar|label|stamp|masthead|news, text, badge?}`,
+`sfx_gain`, `grain`, `pacing.max_gap`; grades `airy`, `crisp`, `punchy`, `cinema`, `clean`, `muted`, `film`.

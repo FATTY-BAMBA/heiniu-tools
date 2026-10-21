@@ -51,6 +51,31 @@ button { font: inherit; cursor: pointer }
 .dlnote { background: var(--panel); border: 1px solid var(--ok); border-radius: 10px; padding: 10px 12px; font-size: 14px }
 .dlbig small { font: 500 12.5px var(--mono); opacity: .85 }
 
+/* style picker (選風格) */
+.styles { margin-top: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 16px; display: grid; gap: 12px }
+.styles h2 { margin: 0; font-family: var(--display); font-size: 22px }
+.styles h2 em { font-style: normal; color: var(--ember) }
+.styles > p { margin: 0; color: var(--muted); font-size: 14px }
+.sgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px }
+.scard { position: relative; border: 2px solid var(--line); border-radius: 14px; background: var(--bg); padding: 0; overflow: hidden; text-align: left; color: var(--fg); display: grid; transition: border-color .15s, transform .15s }
+.scard:hover { transform: translateY(-2px) }
+.scard[aria-pressed="true"] { border-color: var(--ember); box-shadow: 0 0 0 3px var(--ember-soft) }
+.scard video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; background: #000 }
+.scard .cap { padding: 9px 10px 11px; display: grid; gap: 2px }
+.scard .cap b { font-size: 15px; display: flex; align-items: center; gap: 6px }
+.scard .cap b i { width: 10px; height: 10px; border-radius: 50%; flex: none }
+.scard .cap span { font-size: 12.5px; color: var(--muted); line-height: 1.45 }
+.scard .tick { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--ember); color: #fff; display: none; place-items: center; font-weight: 700 }
+.scard[aria-pressed="true"] .tick { display: grid }
+.scard .cur { position: absolute; top: 8px; left: 8px; background: rgba(0, 0, 0, .65); color: #fff; border-radius: 6px; padding: 1px 7px; font-size: 11.5px; font-weight: 700 }
+.srow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
+.stylechip { margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 12px }
+.stylechip button { border: 0; background: var(--fg); color: var(--bg); border-radius: 999px; padding: 3px 11px; font-size: 13px; font-weight: 700 }
+@media (max-width: 760px) {
+  .sgrid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 42%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px }
+  .scard { scroll-snap-align: start }
+}
+
 /* version banner */
 .changes { margin-top: 16px; border: 1px solid var(--ember); background: var(--ember-soft); border-radius: 12px; padding: 12px 14px; display: grid; gap: 4px }
 .changes strong { color: var(--ember) }
@@ -183,11 +208,13 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
   <section class="intro">
     <h1>先看<em>粗剪</em>，每一拍給個判斷</h1>
     <p>左邊是這一版的預覽。每一拍按「▶ 播這拍」看清楚，再選 <b>這拍 OK</b> 或 <b>要改</b>，要改就寫一句話。全部看完，按下面的按鈕交給 Claude。</p>
-    <ol class="flow" id="flow" aria-label="剪輯進度"><li class="now"><span>1</span>審片・逐拍修改</li><li><span>2</span>全部 OK，輸出完整版</li><li><span>3</span>下載影片</li></ol>
+    <ol class="flow" id="flow" aria-label="剪輯進度"></ol>
+    <div class="stylechip" id="stylechip" hidden></div>
     <p class="pace" id="pace"></p>
     <ul class="how"><li><b>空白鍵</b> 播放／暫停</li><li><b>← →</b> 上一拍／下一拍</li><li>預覽是低解析度，成品是 1080×1920</li></ul>
   </section>
 
+  <section id="styles" class="styles" hidden aria-labelledby="stylesTitle"></section>
   <section id="changes" class="changes" hidden></section>
   <section id="deliver" class="deliver" hidden></section>
 
@@ -250,6 +277,40 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     }
   } catch (e) {}
   var save = function () { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+
+  /* ---------- flow steps (選風格 first when the edit offers styles) ---------- */
+  var STY = D.styles || null, PICK = !!(STY && !D.style);
+  var FLOW = (STY ? ["選風格"] : []).concat(["審片・逐拍修改", "全部 OK，輸出完整版", "下載影片"]), OFF = STY ? 1 : 0;
+  function setFlow(now) { $("flow").innerHTML = FLOW.map(function (f, k) { return '<li class="' + (k < now ? "done" : k === now ? "now" : "") + '"><span>' + (k + 1) + '</span>' + esc(f) + '</li>'; }).join(""); }
+  setFlow(PICK ? 0 : OFF);
+  var styleName = function (id) { var m = (STY || []).filter(function (x) { return x.id === id; })[0]; return m ? m.name : id; };
+  function buildStyles(open) {
+    var box = $("styles"); box.hidden = !open; if (!open) return;
+    box.innerHTML = '<h2 id="stylesTitle">' + (PICK ? '六種風格・<em>你的影片</em>' : '換一個<em>風格</em>') + '</h2>' +
+      '<p>' + (PICK ? '每張卡片都是<b>你自己影片</b>的開頭，用不同風格剪出來的。點一個，按下面的按鈕，Claude 就用這個風格做粗剪。' : '換風格會用同一份剪接重出一版：字幕、調色、特效、音效都換成新風格。') + '</p>' +
+      '<div class="sgrid">' + STY.map(function (m) {
+        return '<button class="scard" type="button" data-sid="' + esc(m.id) + '" aria-pressed="' + (S.pickStyle === m.id) + '">' +
+          '<video muted loop playsinline autoplay preload="auto" src="' + m.video + '"' + (m.poster ? ' poster="' + m.poster + '"' : '') + '></video>' +
+          (D.style === m.id ? '<span class="cur">目前</span>' : '') + '<span class="tick">✓</span>' +
+          '<span class="cap"><b><i style="background:' + esc(m.accent || "#999") + '"></i>' + esc(m.name) + '</b><span>' + esc(m.line) + '</span></span></button>';
+      }).join("") + '</div>' + (PICK ? '' : '<div class="srow"><button class="btn" type="button" id="swap" disabled>選一個新風格</button><button class="btn ghost" type="button" id="swapX">取消</button></div>');
+    box.querySelectorAll("video").forEach(function (vv) { var p = vv.play(); if (p && p.catch) p.catch(function () {}); });
+    box.onclick = function (e) {
+      var c = e.target.closest(".scard"); if (c) { S.pickStyle = c.dataset.sid; save(); box.querySelectorAll(".scard").forEach(function (x) { x.setAttribute("aria-pressed", x === c); }); refresh(); return; }
+      if (e.target.id === "swapX") { S.pickStyle = null; save(); buildStyles(false); refresh(); }
+      if (e.target.id === "swap" && S.pickStyle && S.pickStyle !== D.style) deliver("style");
+    };
+  }
+  if (STY) {
+    buildStyles(PICK);
+    if (D.style) { var sc = $("stylechip"); sc.hidden = false; sc.innerHTML = '風格：<b>' + esc(styleName(D.style)) + '</b><button type="button" id="restyle">換風格</button>'; $("restyle").onclick = function () { buildStyles(true); $("styles").scrollIntoView({ behavior: "smooth", block: "start" }); }; }
+  }
+  if (PICK) {
+    document.querySelector(".room").hidden = true; $("pace").hidden = true; document.querySelector(".how").hidden = true;
+    document.querySelector(".intro h1").innerHTML = "先選<em>風格</em>，再開始剪";
+    document.querySelector(".intro p").textContent = "同一段影片，六種剪法。看看哪一個最像你要的感覺，選好之後 Claude 會用它做第一版粗剪，接下來每一拍都還可以再改。";
+    $("phase").textContent = "選風格";
+  }
 
   /* ---------- render beats ---------- */
   var list = $("beats");
@@ -353,6 +414,9 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     var N = notes().length, all = seen === B.length;
     $("prog").innerHTML = "已看 <b>" + seen + "</b>/" + B.length + " 拍" + (N ? " · <b>" + N + "</b> 條修改" : "") + '<span class="meter"><i style="width:' + (100 * seen / B.length) + '%"></i></span>';
     var send = $("send");
+    if (PICK) { send.textContent = S.pickStyle ? "用「" + styleName(S.pickStyle) + "」開始粗剪" : "先選一個風格"; send.className = "btn"; send.disabled = !S.pickStyle; $("copy").disabled = !S.pickStyle; $("copy").textContent = "複製文字";
+      $("prog").innerHTML = S.pickStyle ? "已選 <b>" + esc(styleName(S.pickStyle)) + "</b>" : "還沒選風格"; return; }
+    var sw = $("swap"); if (sw) { var ok_ = S.pickStyle && S.pickStyle !== D.style; sw.disabled = !ok_; sw.textContent = ok_ ? "換成「" + styleName(S.pickStyle) + "」重出一版" : "選一個新風格"; }
     if (D.delivered && !N) { send.textContent = D.delivered.url ? "⬇ 下載完整影片" : "完整影片在對話裡"; send.className = "btn ok"; send.disabled = !D.delivered.url; }
     else if (D.delivered) { send.textContent = "送出 " + N + " 條修改（再改一版）"; send.className = "btn"; send.disabled = false; }
     else if (N) { send.textContent = "送出 " + N + " 條修改給 Claude"; send.className = "btn"; send.disabled = false; }
@@ -364,6 +428,8 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
   function message(kind) {
     var head = "【黑牛剪輯室】" + D.name + " v" + VER;
     if (kind === "approve") return head + " 全部 OK，請輸出完整版（1080×1920）。";
+    if (kind === "style") return PICK ? head + " 選風格：" + styleName(S.pickStyle) + "（" + S.pickStyle + "）\n請用這個風格做第一版粗剪，並更新這個剪輯室頁面。"
+                                      : head + " 換風格：" + styleName(S.pickStyle) + "（" + S.pickStyle + "）\n剪接不變，請用新風格重出一版並更新這個剪輯室頁面。";
     var ok = B.filter(function (b) { return S.st[b.n] === "ok"; }).map(function (b) { return b.n; });
     return head + " 修改\n" + notes().map(function (x) { return "第 " + x.n + " 拍：" + x.text; }).join("\n") + (ok.length ? "\n（第 " + ok.join("、") + " 拍 OK，保持不變）" : "") + "\n改好請更新這個剪輯室頁面，並先給我看改過的那幾拍。";
   }
@@ -388,7 +454,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     try {
       var anchor = await comments.anchorFor($("dock"));
       await comments.sendToClaude({ anchor: anchor, text: text });
-      S.pending = { kind: kind, at: Date.now(), beats: notes().map(function (x) { return x.n; }) }; save();
+      S.pending = { kind: kind, at: Date.now(), beats: notes().map(function (x) { return x.n; }), style: S.pickStyle || null }; save();
       showWorking(); status("");
     } catch (err) {
       btn.disabled = false;
@@ -398,8 +464,8 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
       else copyText(text);
     }
   }
-  $("send").addEventListener("click", function () { if (D.delivered && !notes().length) { if (DL) DL(); return; } deliver(notes().length ? "fix" : "approve"); });
-  $("copy").addEventListener("click", function () { copyText(message(notes().length ? "fix" : "approve")); });
+  $("send").addEventListener("click", function () { if (PICK) { if (S.pickStyle) deliver("style"); return; } if (D.delivered && !notes().length) { if (DL) DL(); return; } deliver(notes().length ? "fix" : "approve"); });
+  $("copy").addEventListener("click", function () { copyText(message(PICK ? "style" : notes().length ? "fix" : "approve")); });
 
   /* ---------- overlay ---------- */
   var veil = $("veil"), sheet = $("sheet"), timer = null;
@@ -407,10 +473,12 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
   veil.addEventListener("click", function (e) { if (e.target === veil) close(); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
   function showWorking() {
-    var p = S.pending, approve = p.kind === "approve";
-    var steps = approve ? ["Claude 收到", "算 1080×1920 成品", "音量、嘴型、檔案大小檢查", "成品傳到對話"] : ["Claude 收到", "修改第 " + p.beats.join("、") + " 拍", "算新的預覽", "更新這個頁面（v" + (VER + 1) + "）"];
-    sheet.innerHTML = '<h2 id="veilTitle">' + (approve ? "正在輸出完整版…" : "Claude 正在修改…") + '</h2>' +
-      '<p>' + (approve ? "通常 1–4 分鐘。好了以後完整影片會出現在對話裡，可以直接下載。" : "通常 1–3 分鐘。改好這頁會自動更新，改過的拍會標「已修改」。") + '</p>' +
+    var p = S.pending, approve = p.kind === "approve", sty = p.kind === "style";
+    var steps = approve ? ["Claude 收到", "算 1080×1920 成品", "音量、嘴型、檔案大小檢查", "成品傳到對話"]
+              : sty ? ["Claude 收到", "套用「" + styleName(p.style) + "」風格", "算粗剪預覽", "更新這個頁面（v" + (PICK ? 1 : VER + 1) + "）"]
+              : ["Claude 收到", "修改第 " + p.beats.join("、") + " 拍", "算新的預覽", "更新這個頁面（v" + (VER + 1) + "）"];
+    sheet.innerHTML = '<h2 id="veilTitle">' + (approve ? "正在輸出完整版…" : sty ? "Claude 正在用「" + esc(styleName(p.style)) + "」剪…" : "Claude 正在修改…") + '</h2>' +
+      '<p>' + (approve ? "通常 1–4 分鐘。好了以後完整影片會出現在對話裡，可以直接下載。" : sty ? "通常 2–4 分鐘。好了這頁會自動換成粗剪，每一拍都可以再改。" : "通常 1–3 分鐘。改好這頁會自動更新，改過的拍會標「已修改」。") + '</p>' +
       '<ol class="steps">' + steps.map(function (s, k) { return '<li data-k="' + k + '">' + esc(s) + '</li>'; }).join("") + '</ol>' +
       '<div class="row"><span class="elapsed" id="el" style="margin-right:auto"></span><button class="btn ghost" type="button" id="hide">先關掉</button></div>';
     veil.classList.add("show"); $("hide").onclick = close;
@@ -448,7 +516,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
       '<dl><dt>規格</dt><dd>' + esc(f.spec || "1080×1920 · 30fps") + '</dd><dt>檔案</dt><dd>' + esc(f.file || "") + '</dd>' + (f.note ? '<dt>備註</dt><dd>' + esc(f.note) + '</dd>' : '') + '</dl>' +
       '<div class="row"><button class="btn ghost" type="button" id="dlCover">封面 JPG</button><button class="btn ghost" type="button" id="dlSrt">字幕 SRT</button></div><span id="dlmsg" class="mono" style="font-size:12.5px;color:var(--muted)"></span>' +
       '<div class="dlnote" id="dlnote" role="status" hidden><b>✓ 影片已存好，可以直接上傳 IG / TikTok。</b><br>最高畫質原檔' + (f.master ? '（' + esc(f.master) + '）' : '') + '一律也會傳在 Claude 對話裡，需要時回到對話點影片檔下載。</div>';
-    document.querySelectorAll("#flow li").forEach(function (li, k) { li.className = k < 2 ? "done" : "now"; });
+    setFlow(OFF + 2);
     document.querySelector(".intro h1").innerHTML = "影片<em>完成了</em>，可以下載";
     document.querySelector(".intro p").textContent = "按「下載完整影片」存到電腦或手機，就能直接上傳 IG / TikTok。還想改？在任何一拍按「要改」寫一句話，再送出就會出新的一版。";
     var downloads = null;
@@ -473,7 +541,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     if ($("dlVid")) $("dlVid").onclick = getVideo;
     DL = getVideo;
   }
-  if (S.pending && S.pending.at && Date.now() - S.pending.at < 15 * 60 * 1000 && !D.delivered) { showWorking(); $("phase").textContent = S.pending.kind === "approve" ? "輸出中" : "修改中"; if (S.pending.kind === "approve") document.querySelectorAll("#flow li").forEach(function (li, k) { li.className = k < 1 ? "done" : k === 1 ? "now" : ""; }); }
+  if (S.pending && S.pending.at && Date.now() - S.pending.at < 15 * 60 * 1000 && !D.delivered) { showWorking(); $("phase").textContent = S.pending.kind === "approve" ? "輸出中" : "修改中"; if (S.pending.kind === "approve") setFlow(OFF + 1); if (S.pending.kind === "style") $("phase").textContent = "套用風格中"; }
 
   setCur(0, false); refresh();
 })();
