@@ -34,3 +34,5 @@ These came from a long round of real feedback; each one cost a re-render to disc
 - White, outline-free captions vanish over a white shirt: light looks carry a soft dark scrim, and big words pick ink on bright backgrounds. Check the caption frame over the brightest part of the shot.
 - Caption sync must come from the transcript's character times, not from spreading the line over its duration — a 0.3 s drift reads as "wrong" to viewers.
 - Emoji go beside the words, never above them (above = over the mouth).
+- ffmpeg's `arnndn` delays audio by exactly 480 samples (10 ms at 48 kHz) and `afftdn` by ~25 ms: any denoiser must be followed by a trim of its latency (render.py does `atrim=start_sample=480`), or lip-sync drifts. Measured after the fix: 0.3 ms.
+- RNNoise cleans steady noise (fans, traffic, AC, hiss) by ~19 dB of SNR but crowd chatter only by ~4 dB — for night markets, still tell people to clip the mic on or hold the phone close.

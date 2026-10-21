@@ -141,6 +141,23 @@ details.plan ul { margin: 6px 0 0; padding-left: 1.1em; font-size: 14px; display
 .quick button:hover { color: var(--ember); border-color: var(--ember) }
 textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-size: 14.5px; color: var(--fg); background: var(--input); border: 1px solid var(--line); border-radius: 9px; padding: 9px 11px }
 
+/* direct edits (no waiting: type it, switch it off, it is applied exactly as written) */
+.direct { display: grid; gap: 8px; background: var(--panel2); border: 1px solid var(--line); border-radius: 10px; padding: 10px }
+.direct .dl { font: 600 12px var(--body); color: var(--muted) }
+.capin { width: 100%; font: 600 16px var(--display); color: var(--fg); background: var(--input); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px }
+.capin.edited { border-color: var(--ember); box-shadow: 0 0 0 2px var(--ember-soft) }
+.fxrow { display: flex; flex-wrap: wrap; gap: 6px }
+.fxrow button { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 999px; padding: 4px 11px; font-size: 13px; font-weight: 600 }
+.fxrow button[aria-pressed="true"] { text-decoration: line-through; color: var(--muted); background: transparent; border-style: dashed }
+.fxrow button.cutb[aria-pressed="true"] { text-decoration: none; background: var(--ember); border-color: var(--ember); border-style: solid; color: #fff }
+blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
+.beat.st-cut blockquote, .beat.st-cut .thumb { opacity: .4 }
+.globalset { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px }
+.globalset b { color: var(--fg); font-family: var(--mono); min-width: 44px; text-align: center }
+.globalset button { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 7px; height: 30px; min-width: 32px; font-weight: 700 }
+.globalset .gl { margin-right: 2px }
+.globalset.edited { border-color: var(--ember) }
+
 /* action dock */
 .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding-top: 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)) }
 .dock .in { max-width: 1120px; margin: 0 auto; display: flex; align-items: center; gap: 10px; flex-wrap: wrap }
@@ -211,6 +228,10 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     <ol class="flow" id="flow" aria-label="剪輯進度"></ol>
     <div class="stylechip" id="stylechip" hidden></div>
     <p class="pace" id="pace"></p>
+    <div class="globalset" id="glob" style="margin-top:10px;width:max-content;max-width:100%" aria-label="全片字幕">
+          <span class="gl">字幕</span><button type="button" data-g="s-" aria-label="字幕小一點">A−</button><b id="gs">100%</b><button type="button" data-g="s+" aria-label="字幕大一點">A＋</button>
+          <button type="button" data-g="up" aria-label="字幕往上">↑</button><button type="button" data-g="dn" aria-label="字幕往下">↓</button><b id="gy" style="min-width:36px">0</b><button type="button" data-g="reset" aria-label="還原字幕大小和位置">↺</button>
+        </div>
     <ul class="how"><li><b>空白鍵</b> 播放／暫停</li><li><b>← →</b> 上一拍／下一拍</li><li>預覽是低解析度，成品是 1080×1920</li></ul>
   </section>
 
@@ -235,6 +256,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
           <label><input type="checkbox" id="loop"> 重播這拍</label>
           <span class="tc" id="tc">0:00.0 / {{END}}</span>
         </div>
+
       </div>
     </aside>
     <section class="beats" id="beats" aria-label="各拍"></section>
@@ -267,7 +289,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
   var OKWORDS = /^(ok|okay|好|可以|沒問題|不用改|讚|👍)[。.!！\s]*$/i;
 
   /* ---------- per-viewer draft (survives reloads of the same version) ---------- */
-  var S = { v: VER, st: {}, note: {}, pending: null };
+  var S = { v: VER, st: {}, note: {}, dir: {}, glob: null, pending: null };
   try {
     var saved = JSON.parse(localStorage.getItem(KEY) || "null");
     if (saved && saved.v === VER) S = saved;
@@ -312,6 +334,23 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     $("phase").textContent = "選風格";
   }
 
+  /* ---------- direct edits ---------- */
+  function dirOf(b) { var d = (S.dir || {})[b.n]; if (!d) return null; var caps = d.caps || {}, n = Object.keys(caps).length + (d.off || []).length + (d.cut ? 1 : 0); return n ? d : null; }
+  function dirText(b) {
+    var d = dirOf(b); if (!d) return ""; var out = [];
+    Object.keys(d.caps || {}).forEach(function (j) { out.push("字幕「" + b.caps[+j].text + "」→「" + d.caps[j] + "」"); });
+    (d.off || []).forEach(function (k) { var f = (b.fx || []).filter(function (x) { return x.id === k; })[0]; out.push("拿掉" + (f ? f.label : k)); });
+    if (d.cut) out.push("整拍刪掉"); return out.join("；");
+  }
+  function paintDirect(b) {
+    var card = document.getElementById("b" + b.n); if (!card) return; var d = (S.dir || {})[b.n] || {};
+    card.querySelectorAll(".capin").forEach(function (inp) { inp.classList.toggle("edited", d.caps && d.caps[inp.dataset.j] != null); });
+    var q = card.querySelector("blockquote"), caps = d.caps || {};
+    if (Object.keys(caps).length) q.innerHTML = "「" + esc(b.caps.map(function (c) { return caps[c.i] != null ? caps[c.i] : c.text; }).join(" ")) + "」 <s>" + esc(b.line) + "</s>";
+    else q.textContent = "「" + b.line + "」";
+    card.classList.toggle("st-cut", !!d.cut);
+  }
+
   /* ---------- render beats ---------- */
   var list = $("beats");
   B.forEach(function (b, i) {
@@ -328,7 +367,13 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
         '<div class="verdict"><button class="play" type="button" data-act="play">▶ 播這拍</button>' +
           '<button class="okb" type="button" data-act="ok" aria-pressed="false">✓ 這拍 OK</button>' +
           '<button class="fixb" type="button" data-act="fix" aria-pressed="false">✎ 要改</button></div>' +
-        '<div class="fixbox"><label class="mono" for="t' + b.n + '" style="font-size:11.5px;color:var(--muted)">一句話說要怎麼改</label>' +
+        '<div class="fixbox">' +
+          ((b.caps && b.caps.length) || (b.fx && b.fx.length) ? '<div class="direct">' +
+            (b.caps && b.caps.length ? '<span class="dl">直接改字幕（打錯字就在這裡改，送出後照你打的字）</span>' + b.caps.map(function (c) { return '<input class="capin" type="text" maxlength="40" data-j="' + c.i + '" value="' + esc(c.text) + '" aria-label="第 ' + b.n + ' 拍字幕 ' + (c.i + 1) + '">'; }).join("") : '') +
+            '<span class="dl">不要的點一下拿掉</span><div class="fxrow">' + (b.fx || []).map(function (f) { return '<button type="button" data-fx="' + esc(f.id) + '" aria-pressed="false">' + esc(f.label) + '</button>'; }).join("") +
+            '<button type="button" class="cutb" data-cut="1" aria-pressed="false">✂ 整拍刪掉</button></div></div>'
+            : '<div class="direct"><div class="fxrow"><button type="button" class="cutb" data-cut="1" aria-pressed="false">✂ 整拍刪掉</button></div></div>') +
+          '<label class="mono" for="t' + b.n + '" style="font-size:11.5px;color:var(--muted)">其他的，一句話說要怎麼改</label>' +
           '<textarea id="t' + b.n + '" maxlength="300" placeholder="例如：這拍字幕再大一點，「' + esc(b.key || "重點字") + '」換成紅色"></textarea>' +
           '<div class="quick">' + QUICK.map(function (q) { return '<button type="button" data-q="' + esc(q) + '">＋ ' + esc(q) + '</button>'; }).join("") + '</div></div>' +
       '</div>';
@@ -336,6 +381,18 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     var ta = el.querySelector("textarea");
     if (S.note[b.n]) ta.value = S.note[b.n];
     ta.addEventListener("input", function () { S.note[b.n] = ta.value; save(); refresh(); });
+    S.dir = S.dir || {}; var dr = S.dir[b.n] || {};
+    el.querySelectorAll(".capin").forEach(function (inp) {
+      var j = inp.dataset.j; if (dr.caps && dr.caps[j] != null) inp.value = dr.caps[j];
+      inp.addEventListener("input", function () {
+        var d = S.dir[b.n] = S.dir[b.n] || {}; d.caps = d.caps || {};
+        if (inp.value.trim() && inp.value.trim() !== b.caps[+j].text) d.caps[j] = inp.value.trim(); else delete d.caps[j];
+        S.st[b.n] = "fix"; save(); paintDirect(b); refresh();
+      });
+    });
+    (dr.off || []).forEach(function (k) { var x = el.querySelector('[data-fx="' + k + '"]'); if (x) x.setAttribute("aria-pressed", "true"); });
+    if (dr.cut) el.querySelector(".cutb").setAttribute("aria-pressed", "true");
+    paintDirect(b);
   });
   list.addEventListener("click", function (e) {
     var t = e.target.closest("button"); if (!t) return;
@@ -343,6 +400,12 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     if (t.dataset.act === "play") return playBeat(i);
     if (t.dataset.act === "ok") { S.st[b.n] = S.st[b.n] === "ok" ? "" : "ok"; }
     if (t.dataset.act === "fix") { S.st[b.n] = S.st[b.n] === "fix" ? "" : "fix"; if (S.st[b.n] === "fix") setTimeout(function () { card.querySelector("textarea").focus(); }, 30); }
+    if (t.dataset.fx || t.dataset.cut) {
+      var d = S.dir[b.n] = S.dir[b.n] || {}; d.off = d.off || [];
+      if (t.dataset.cut) d.cut = !d.cut;
+      else { var k = d.off.indexOf(t.dataset.fx); if (k >= 0) d.off.splice(k, 1); else d.off.push(t.dataset.fx); }
+      t.setAttribute("aria-pressed", t.dataset.cut ? !!d.cut : d.off.indexOf(t.dataset.fx) >= 0); S.st[b.n] = "fix"; paintDirect(b);
+    }
     if (t.dataset.q) { var ta = card.querySelector("textarea"); ta.value = (ta.value.trim() ? ta.value.trim().replace(/[，。]$/, "") + "，" : "") + t.dataset.q; S.note[b.n] = ta.value; S.st[b.n] = "fix"; }
     save(); refresh();
   });
@@ -393,12 +456,28 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     if (e.key === "ArrowLeft") { e.preventDefault(); playBeat(Math.max(0, cur - 1)); }
   });
 
+  /* ---------- 全片字幕 size / position ---------- */
+  var G0 = D.cap || { scale: 1, dy: 0 };
+  if (!S.glob) S.glob = { scale: G0.scale, dy: G0.dy };
+  function globChanged() { return S.glob && (Math.abs(S.glob.scale - G0.scale) > 0.001 || S.glob.dy !== G0.dy); }
+  function paintGlob() { $("gs").textContent = Math.round(S.glob.scale * 100) + "%"; $("gy").textContent = (S.glob.dy > 0 ? "+" : "") + S.glob.dy; $("glob").classList.toggle("edited", globChanged()); }
+  $("glob").addEventListener("click", function (e) {
+    var t = e.target.closest("button"); if (!t) return; var g = t.dataset.g;
+    if (g === "s+") S.glob.scale = Math.min(1.5, +(S.glob.scale + 0.1).toFixed(2));
+    if (g === "s-") S.glob.scale = Math.max(0.7, +(S.glob.scale - 0.1).toFixed(2));
+    if (g === "up") S.glob.dy = Math.max(-300, S.glob.dy - 40);
+    if (g === "dn") S.glob.dy = Math.min(200, S.glob.dy + 40);
+    if (g === "reset") S.glob = { scale: G0.scale, dy: G0.dy };
+    save(); paintGlob(); refresh();
+  });
+  paintGlob();
+
   /* ---------- state → UI ---------- */
   function notes() {
     var out = [];
     B.forEach(function (b) {
-      var n = (S.note[b.n] || "").trim();
-      if (S.st[b.n] === "fix" && n && !OKWORDS.test(n)) out.push({ n: b.n, text: n });
+      var n = (S.note[b.n] || "").trim(), dt = dirText(b); if (OKWORDS.test(n)) n = "";
+      if (S.st[b.n] === "fix" && (n || dt)) out.push({ n: b.n, text: [dt, n].filter(Boolean).join("；") });
     });
     return out;
   }
@@ -411,7 +490,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
       segs[i].classList.toggle("ok", st === "ok"); segs[i].classList.toggle("fix", st === "fix");
       if (st) seen++;
     });
-    var N = notes().length, all = seen === B.length;
+    var N = notes().length + (globChanged() ? 1 : 0), all = seen === B.length;
     $("prog").innerHTML = "已看 <b>" + seen + "</b>/" + B.length + " 拍" + (N ? " · <b>" + N + "</b> 條修改" : "") + '<span class="meter"><i style="width:' + (100 * seen / B.length) + '%"></i></span>';
     var send = $("send");
     if (PICK) { send.textContent = S.pickStyle ? "用「" + styleName(S.pickStyle) + "」開始粗剪" : "先選一個風格"; send.className = "btn"; send.disabled = !S.pickStyle; $("copy").disabled = !S.pickStyle; $("copy").textContent = "複製文字";
@@ -431,7 +510,12 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     if (kind === "style") return PICK ? head + " 選風格：" + styleName(S.pickStyle) + "（" + S.pickStyle + "）\n請用這個風格做第一版粗剪，並更新這個剪輯室頁面。"
                                       : head + " 換風格：" + styleName(S.pickStyle) + "（" + S.pickStyle + "）\n剪接不變，請用新風格重出一版並更新這個剪輯室頁面。";
     var ok = B.filter(function (b) { return S.st[b.n] === "ok"; }).map(function (b) { return b.n; });
-    return head + " 修改\n" + notes().map(function (x) { return "第 " + x.n + " 拍：" + x.text; }).join("\n") + (ok.length ? "\n（第 " + ok.join("、") + " 拍 OK，保持不變）" : "") + "\n改好請更新這個剪輯室頁面，並先給我看改過的那幾拍。";
+    var edits = B.filter(function (b) { return S.st[b.n] === "fix" && dirOf(b); }).map(function (b) { var d = S.dir[b.n]; return { beat: +b.n, caps: d.caps || {}, off: d.off || [], cut: !!d.cut }; });
+    var g = globChanged() ? { scale: S.glob.scale, dy: S.glob.dy } : null;
+    var block = (edits.length || g) ? "\n<!--room-json " + JSON.stringify({ v: VER, edits: edits, global: g || undefined }) + "-->" : "";
+    return head + " 修改\n" + (g ? "全片字幕：大小 " + Math.round(g.scale * 100) + "%、位置 " + (g.dy < 0 ? "往上 " : g.dy > 0 ? "往下 " : "不變 ") + Math.abs(g.dy) + "\n" : "") +
+      notes().map(function (x) { return "第 " + x.n + " 拍：" + x.text; }).join("\n") + (ok.length ? "\n（第 " + ok.join("、") + " 拍 OK，保持不變）" : "") +
+      "\n直接修改照 room-json 套用（scripts/room_apply.py），其他照字面改。改好請更新這個剪輯室頁面，並先給我看改過的那幾拍。" + block;
   }
 
   /* ---------- Claude bridge: send-to-Claude when the viewer offers it, copy otherwise ---------- */
@@ -454,7 +538,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     try {
       var anchor = await comments.anchorFor($("dock"));
       await comments.sendToClaude({ anchor: anchor, text: text });
-      S.pending = { kind: kind, at: Date.now(), beats: notes().map(function (x) { return x.n; }), style: S.pickStyle || null }; save();
+      S.pending = { kind: kind, at: Date.now(), beats: notes().map(function (x) { return x.n; }), style: S.pickStyle || null }; S.dir = {}; S.glob = null; save();
       showWorking(); status("");
     } catch (err) {
       btn.disabled = false;
@@ -464,8 +548,9 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
       else copyText(text);
     }
   }
-  $("send").addEventListener("click", function () { if (PICK) { if (S.pickStyle) deliver("style"); return; } if (D.delivered && !notes().length) { if (DL) DL(); return; } deliver(notes().length ? "fix" : "approve"); });
-  $("copy").addEventListener("click", function () { copyText(message(PICK ? "style" : notes().length ? "fix" : "approve")); });
+  var hasFix = function () { return notes().length > 0 || globChanged(); };
+  $("send").addEventListener("click", function () { if (PICK) { if (S.pickStyle) deliver("style"); return; } if (D.delivered && !hasFix()) { if (DL) DL(); return; } deliver(hasFix() ? "fix" : "approve"); });
+  $("copy").addEventListener("click", function () { copyText(message(PICK ? "style" : hasFix() ? "fix" : "approve")); });
 
   /* ---------- overlay ---------- */
   var veil = $("veil"), sheet = $("sheet"), timer = null;
@@ -476,7 +561,7 @@ textarea { width: 100%; resize: vertical; min-height: 64px; font: inherit; font-
     var p = S.pending, approve = p.kind === "approve", sty = p.kind === "style";
     var steps = approve ? ["Claude 收到", "算 1080×1920 成品", "音量、嘴型、檔案大小檢查", "成品傳到對話"]
               : sty ? ["Claude 收到", "套用「" + styleName(p.style) + "」風格", "算粗剪預覽", "更新這個頁面（v" + (PICK ? 1 : VER + 1) + "）"]
-              : ["Claude 收到", "修改第 " + p.beats.join("、") + " 拍", "算新的預覽", "更新這個頁面（v" + (VER + 1) + "）"];
+              : ["Claude 收到", p.beats.length ? "修改第 " + p.beats.join("、") + " 拍" : "調整全片字幕", "算新的預覽", "更新這個頁面（v" + (VER + 1) + "）"];
     sheet.innerHTML = '<h2 id="veilTitle">' + (approve ? "正在輸出完整版…" : sty ? "Claude 正在用「" + esc(styleName(p.style)) + "」剪…" : "Claude 正在修改…") + '</h2>' +
       '<p>' + (approve ? "通常 1–4 分鐘。好了以後完整影片會出現在對話裡，可以直接下載。" : sty ? "通常 2–4 分鐘。好了這頁會自動換成粗剪，每一拍都可以再改。" : "通常 1–3 分鐘。改好這頁會自動更新，改過的拍會標「已修改」。") + '</p>' +
       '<ol class="steps">' + steps.map(function (s, k) { return '<li data-k="' + k + '">' + esc(s) + '</li>'; }).join("") + '</ol>' +

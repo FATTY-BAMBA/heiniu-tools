@@ -1,12 +1,16 @@
 {
   "name": "heiniu-tools",
   "description": "黑牛的 AI 工具與技能",
-  "owner": { "name": "黑牛 Heiniu (@fatty_bamba)", "url": "https://fattybamba.com" },
+  "owner": {
+    "name": "黑牛 Heiniu (@fatty_bamba)",
+    "url": "https://fattybamba.com"
+  },
   "plugins": [
     {
       "name": "heiniu-video-editor",
       "source": "./plugins/heiniu-video-editor",
-      "description": "跟 AI 聊天剪完整支短影音：原始素材 → 分鏡 → 一句話修改 → 成品"
+      "description": "跟 AI 聊天剪完整支短影音：六種風格 → 剪輯室逐拍確認 → 一句話或直接改 → 成品",
+      "version": "2.0.0"
     }
   ]
 }

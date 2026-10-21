@@ -6,7 +6,9 @@ Step-by-step guide (繁體中文): https://fattybamba.com/edit/
 
 ## Install
 
-**Claude (web / desktop app)** — download [`heiniu-video-editor.zip`](../../edit/heiniu-video-editor.zip), then Customize → Skills → ＋ Add → Upload skill. Turn on Settings → Capabilities → **Cloud code execution and file creation** first.
+**Claude (web / desktop app), paid plans** — Customize → Plugins → Add → Add marketplace → `FATTY-BAMBA/heiniu-tools` → Add **heiniu-video-editor**. It updates automatically. Turn on Settings → Capabilities → **Code execution and file creation** first.
+
+**Free plan** — download [`heiniu-video-editor.zip`](../../edit/heiniu-video-editor.zip), then Customize → Skills → ＋ → Upload skill.
 
 **Claude Code**
 

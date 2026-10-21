@@ -44,6 +44,26 @@ GRADES = {
 }
 def BARS(): b = S(spec.get("bars_px", 200)); return f"drawbox=x=0:y=0:w=iw:h={b}:color=black:t=fill,drawbox=x=0:y=ih-{b}:w=iw:h={b}:color=black:t=fill"
 def run(cmd): subprocess.run(cmd, check=True)
+# ---- voice clean-up: RNNoise (ffmpeg arnndn) sized to how noisy each take is, plus a light "studio" EQ ----
+RNN = os.path.join(ASSETS, "rnnoise", "sh.rnnn"); VOICE = spec.get("voice", "auto"); _snr = {}
+def take_snr(path):
+    """rough SNR of a take: loud speech frames vs the quietest frames (dB)"""
+    if path not in _snr:
+        b = subprocess.run(["ffmpeg", "-v", "error", "-i", path, "-t", "240", "-ac", "1", "-ar", "16000", "-f", "f32le", "-"], capture_output=True).stdout
+        x = np.frombuffer(b, np.float32)
+        if len(x) < 16000: _snr[path] = 99.0
+        else:
+            fr = x[:len(x) // 480 * 480].reshape(-1, 480); r = 20 * np.log10(np.sqrt((fr ** 2).mean(1)) + 1e-7)
+            _snr[path] = float(np.percentile(r, 92) - np.percentile(r, 8))
+    return _snr[path]
+def voice_chain(path):
+    """filters that run BEFORE the clip is cut (arnndn adds 480 samples of latency, trimmed right after so lip-sync stays exact)"""
+    if VOICE == "off" or not os.path.exists(RNN): return "", None
+    snr = take_snr(path); mix = 1.0 if VOICE == "strong" or snr < 22 else 0.85 if snr < 32 else 0.55
+    m = RNN.replace("\\", "/").replace(":", "\\:").replace("'", "\\'")
+    eq = "highpass=f=80,equalizer=f=250:t=q:w=1:g=-2,equalizer=f=3500:t=q:w=1.2:g=2.5,deesser=i=0.3,"
+    return f"aformat=sample_rates=48000,{eq}arnndn=m='{m}':mix={mix},atrim=start_sample=480,asetpts=N/SR/TB,", dict(snr_db=round(snr, 1), mix=mix)
+VOICE_QA = {}
 def has_audio(p): return any(s.get("codec_type") == "audio" for s in probe(p).get("streams", []))
 
 # ================= 1. segments =================
@@ -70,7 +90,9 @@ for i, it in enumerate(spec["timeline"]):
                       [f"setpts=PTS/{keff:.8f}", f"fps={FPS}", "tpad=stop_mode=clone:stop=8", f"trim=end_frame={N}", "setsar=1", "format=yuv420p"])
         lufs = "loudnorm=I=-18:TP=-2:LRA=7,aresample=48000," if it.get("normalize", True) else ""
         if it.get("_mute"): lufs = "volume=0,"
-        af = (f"atrim=0:{b - a:.6f},asetpts=N/SR/TB,aformat=sample_rates=48000:channel_layouts=stereo,{lufs}asetpts=N/SR/TB,"
+        vc, vq = voice_chain(src) if not it.get("_mute") and has_audio(src) else ("", None)
+        if vq: VOICE_QA[os.path.basename(src)] = vq
+        af = (f"{vc}atrim=0:{b - a:.6f},asetpts=N/SR/TB,aformat=sample_rates=48000:channel_layouts=stereo,{lufs}asetpts=N/SR/TB,"
               f"atempo={keff:.8f},asetpts=N/SR/TB,afade=t=in:d=0.012,apad,atrim=end_sample={NS},afade=t=out:st={N / FPS - 0.015:.4f}:d=0.015")
         cmd = ["ffmpeg", "-v", "error", "-y", "-ss", f"{a:.4f}", "-i", src]
         if not has_audio(src): cmd += ["-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo"]; amap = "1:a"
@@ -740,7 +762,7 @@ for n in range(TOTAL_N):
                     pa = {"meme": 0.22, "bold": 0.10}.get(look, 0.08)
                     pop = round(1.0 + (pa * (1 - ease((t - t0) / 0.12)) if t - t0 < 0.12 else 0), 2)
                     kc = P.get(c.get("color", "accent"), EM) if isinstance(c.get("color", "accent"), str) else EM
-                    comp = over(comp, caption(text, c.get("keys", []), lit, kc, pop, c.get("size", CAP["size"]), c.get("y", CAP["y"]), look)); break
+                    comp = over(comp, caption(text, c.get("keys", []), lit, kc, pop, int(c.get("size", CAP["size"]) * float(CAP.get("scale", 1.0))), c.get("y", CAP["y"]) + float(CAP.get("dy", 0)), look)); break
     elif s["kind"] == "freeze":
         u = t - s["start"]; z = 1 + 0.035 * eq(u / 0.5)
         comp = freeze_comp(zoom(rgb, z, 0.4).astype(np.float32) / 255, u, it)
@@ -825,7 +847,7 @@ run(["ffmpeg", "-v", "error", "-y", "-i", VID, "-i", AUD, "-map", "0:v", "-map",
 pr = probe(OUT); durs = {s["codec_type"]: float(s.get("duration", 0)) for s in pr["streams"]}
 qa = dict(output=OUT, seconds=round(DUR, 3), size_mb=round(os.path.getsize(OUT) / 1048576, 2), video_s=durs.get("video"), audio_s=durs.get("audio"),
           av_gap_ms=round(abs(durs.get("video", 0) - durs.get("audio", 0)) * 1000, 1), segments=[dict(kind=s["kind"], start=round(s["start"], 3), frames=s["N"]) for s in segs])
-qa["face_collisions"] = COLL[:40]
+qa["face_collisions"] = COLL[:40]; qa["voice"] = VOICE_QA or "off"
 try:
     import pacing as PACE; qa["dead_spots"] = PACE.analyze(resolve_words(json.load(open(args.spec)), SPEC_DIR))["dead_spots"]
 except Exception as e: qa["dead_spots_error"] = str(e)

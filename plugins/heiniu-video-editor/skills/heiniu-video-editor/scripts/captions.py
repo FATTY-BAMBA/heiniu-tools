@@ -97,6 +97,7 @@ class Engine:
         name = c.get("look", self.base.get("look")); L = dict(LOOKS[name]); L.update({k: v for k, v in self.base.items() if k not in ("look",)})
         if c.get("size"): L["size"] = c["size"]
         if c.get("y"): L["y"] = c["y"]
+        L["size"] = L["size"] * float(self.base.get("scale", 1.0)); L["y"] = L["y"] + float(self.base.get("dy", 0))   # 全片字幕大小／位置 (review room)
         return name, L
     # ---- glyphs ----
     def glyph(self, ch, face, size, fill, stroke_px, shear=0.0):
