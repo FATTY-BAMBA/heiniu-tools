@@ -30,3 +30,7 @@ These came from a long round of real feedback; each one cost a re-render to disc
 
 - **Relative `--work`/`--out` paths broke the concat step** (ffmpeg resolves concat list entries relative to the list file). `render.py` now makes both absolute.
 - **The review room must work without capabilities.** `sendToClaude` only goes through when a Claude session is watching the artifact (`canSendToClaude() === "available"`); otherwise the page copies the notes. Never remove the copy path.
+- Full-resolution renders take ~2–3 GB each; on a small machine run them one at a time (template.py --reel does), previews two at a time. Never run a render while another full render is going.
+- White, outline-free captions vanish over a white shirt: light looks carry a soft dark scrim, and big words pick ink on bright backgrounds. Check the caption frame over the brightest part of the shot.
+- Caption sync must come from the transcript's character times, not from spreading the line over its duration — a 0.3 s drift reads as "wrong" to viewers.
+- Emoji go beside the words, never above them (above = over the mouth).

@@ -386,15 +386,15 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--cjk);font-size
   <div class="features">
     <div class="feat"><img src="/edit/f1.jpg" alt="巨大的「一秒」兩個字在頭頂後方逐字打出" loading="lazy" width="540" height="960"><div><strong>頭後巨字</strong><span>重點字逐字打出，頭部擋在字前面</span></div></div>
     <div class="feat"><img src="/edit/f2.jpg" alt="畫面上方的「對 AI 說」指令框正在打字" loading="lazy" width="540" height="960"><div><strong>對 AI 說</strong><span>指令框邊說邊打，送出就套用</span></div></div>
-    <div class="feat"><img src="/edit/f3.jpg" alt="斜線把畫面分成 AI 調色與原始兩半" loading="lazy" width="540" height="960"><div><strong>前後對比</strong><span>斜線慢慢掃過，原始 vs AI 調色</span></div></div>
-    <div class="feat"><img src="/edit/f4.jpg" alt="朱印風格的字幕：一句話，整支影片跟著改" loading="lazy" width="540" height="960"><div><strong>逐字字幕</strong><span>卡拉 OK 式亮起，重點字自動上色</span></div></div>
+    <div class="feat"><img src="/edit/f3.jpg" alt="同一支影片用六種風格剪出來：衝擊字、雜誌、極簡、新聞快報、電影感、開箱" loading="lazy" width="540" height="960"><div><strong>六種風格</strong><span>先用你自己的影片開頭剪給你看，點一個就照它剪</span></div></div>
+    <div class="feat"><img src="/edit/f4.jpg" alt="衝擊字風格字幕：「但是每個月」，正在講的「是」變成黃色" loading="lazy" width="540" height="960"><div><strong>跟著嘴巴的字幕</strong><span>講到哪個字就亮哪個字，重點字上色、加 emoji</span></div></div>
     <div class="feat"><img src="/edit/f5.jpg" alt="雜誌封面風格的畫面，刊頭「黑牛」在頭後" loading="lazy" width="540" height="960"><div><strong>雜誌封面</strong><span>開場 1.4 秒，先讓人停下來</span></div></div>
     <div class="feat"><img src="/edit/f6.jpg" alt="留言卡片：留言 EDIT，作者回覆" loading="lazy" width="540" height="960"><div><strong>留言結尾</strong><span>打字、愛心、作者回覆，避開 IG 按鈕區</span></div></div>
   </div>
   <ol class="flow">
     <li><strong>丟原始素材</strong><p>NG、重講都留著。附上講稿更準。</p></li>
-    <li><strong>AI 先給分鏡</strong><p>每一拍的畫面、字幕、轉場，下面都有留言框。</p></li>
-    <li><strong>一句話修改</strong><p>「字幕再大一點」「這句剪掉」，改到你滿意。</p></li>
+    <li><strong>選一個風格</strong><p>衝擊字、雜誌、極簡、新聞快報、電影感、開箱，都是用你的影片剪給你看。</p></li>
+    <li><strong>剪輯室逐拍看</strong><p>每一拍按 OK 或寫一句「字幕再大一點」，按送出就直接交給 Claude 改。</p></li>
     <li><strong>拿到成品</strong><p>1080×1920，聲音和嘴型對齊，檔案不超過 30MB。</p></li>
   </ol>
 </section>
@@ -420,18 +420,19 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--cjk);font-size
 我的講稿：【貼上你的講稿】
 我的帳號名稱：【例如：黑牛】，結尾想請大家留言：【例如：EDIT】，留言後會拿到：【例如：完整流程】
 
-先幫我挑最好的那幾段、給我一份分鏡確認。我說可以之後再算圖。</pre>
+先幫我挑最好的那幾段，給我看六種風格讓我選，選好再開剪輯室讓我逐拍確認。</pre>
   </div>
 
   <div class="prompt-card">
     <div class="prompt-head"><div><strong>看完分鏡，一句話修改</strong><span>點一下就複製，貼回對話。也可以直接寫在分鏡頁的留言框。</span></div></div>
     <div class="chip-body">
-      <div class="ctabs" role="tablist" aria-label="修改類型"><button class="ctab" type="button" role="tab" aria-selected="true" aria-controls="cg0" id="ct0">字幕</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg1" id="ct1">節奏</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg2" id="ct2">特效</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg3" id="ct3">修正</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg4" id="ct4">結尾</button></div>
+      <div class="ctabs" role="tablist" aria-label="修改類型"><button class="ctab" type="button" role="tab" aria-selected="true" aria-controls="cg0" id="ct0">字幕</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg1" id="ct1">節奏</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg2" id="ct2">特效</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg3" id="ct3">修正</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg4" id="ct4">結尾</button><button class="ctab" type="button" role="tab" aria-selected="false" aria-controls="cg5" id="ct5">風格</button></div>
       <div class="chips chip-group" id="cg0" role="tabpanel" aria-labelledby="ct0"><button class="chip" type="button" data-copy="c1">這拍字幕再大一點</button><span class="chip-src" id="c1">這拍字幕再大一點</span><button class="chip" type="button" data-copy="c2">「幾千塊」換成紅色</button><span class="chip-src" id="c2">「幾千塊」換成紅色</span><button class="chip" type="button" data-copy="c3">字幕往上一點，不要擋到嘴巴</button><span class="chip-src" id="c3">字幕往上一點，不要擋到嘴巴</span></div>
       <div class="chips chip-group" id="cg1" role="tabpanel" aria-labelledby="ct1"><button class="chip" type="button" data-copy="c4">節奏再快一點</button><span class="chip-src" id="c4">節奏再快一點</span><button class="chip" type="button" data-copy="c5">第 03 拍這句剪掉</button><span class="chip-src" id="c5">第 03 拍這句剪掉</span><button class="chip" type="button" data-copy="c6">這段講太快了，慢一點</button><span class="chip-src" id="c6">這段講太快了，慢一點</span></div>
       <div class="chips chip-group" id="cg2" role="tabpanel" aria-labelledby="ct2"><button class="chip" type="button" data-copy="c7">「一秒」放成頭後面的大字</button><span class="chip-src" id="c7">「一秒」放成頭後面的大字</span><button class="chip" type="button" data-copy="c8">開場做成雜誌封面</button><span class="chip-src" id="c8">開場做成雜誌封面</span><button class="chip" type="button" data-copy="c9">讓它更有質感，加前後對比</button><span class="chip-src" id="c9">讓它更有質感，加前後對比</span></div>
       <div class="chips chip-group" id="cg3" role="tabpanel" aria-labelledby="ct3"><button class="chip" type="button" data-copy="c10">最後這段顏色跟前面不一樣，幫我對齊</button><span class="chip-src" id="c10">最後這段顏色跟前面不一樣，幫我對齊</span><button class="chip" type="button" data-copy="c11">推近一點，更有電影感</button><span class="chip-src" id="c11">推近一點，更有電影感</span><button class="chip" type="button" data-copy="c12">檔案太大，要傳 IG</button><span class="chip-src" id="c12">檔案太大，要傳 IG</span></div>
       <div class="chips chip-group" id="cg4" role="tabpanel" aria-labelledby="ct4"><button class="chip" type="button" data-copy="c13">結尾加留言「EDIT」</button><span class="chip-src" id="c13">結尾加留言「EDIT」</span><button class="chip" type="button" data-copy="c14">第 04 拍加轉場</button><span class="chip-src" id="c14">第 04 拍加轉場</span><button class="chip" type="button" data-copy="c15">結尾停久一點</button><span class="chip-src" id="c15">結尾停久一點</span></div>
+      <div class="chips chip-group" id="cg5" role="tabpanel" aria-labelledby="ct5"><button class="chip" type="button" data-copy="c19">換成衝擊字風格</button><span class="chip-src" id="c19">換成衝擊字風格</span><button class="chip" type="button" data-copy="c20">改成雜誌感</button><span class="chip-src" id="c20">改成雜誌感</span><button class="chip" type="button" data-copy="c21">字幕一次少一點字</button><span class="chip-src" id="c21">字幕一次少一點字</span></div>
       <div class="after-row"><span class="after-label">看完預覽</span><div class="chips"><button class="chip chip-ok" type="button" data-copy="c16">OK，輸出完整版</button><span class="chip-src" id="c16">OK，輸出完整版</span><button class="chip" type="button" data-copy="c17">再大一點</button><span class="chip-src" id="c17">再大一點</span><button class="chip" type="button" data-copy="c18">改回原本</button><span class="chip-src" id="c18">改回原本</span></div></div>
     </div>
   </div>

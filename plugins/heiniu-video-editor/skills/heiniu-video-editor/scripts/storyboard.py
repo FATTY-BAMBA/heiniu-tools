@@ -24,6 +24,7 @@ from PIL import Image
 ap = argparse.ArgumentParser(); ap.add_argument("spec"); ap.add_argument("--out"); ap.add_argument("--version", type=int, default=1)
 ap.add_argument("--video"); ap.add_argument("--prev"); ap.add_argument("--change", action="append", default=[]); ap.add_argument("--delivered")
 ap.add_argument("--max-mb", type=float, default=8.0, help="cap for the embedded review copy")
+ap.add_argument("--styles", help="_render/styles (template.py --previews): adds the 選風格 picker; with no --video the page is the picker only")
 a = ap.parse_args()
 D = os.path.dirname(os.path.abspath(a.spec)); spec = resolve_words(json.load(open(a.spec)), os.path.dirname(os.path.abspath(a.spec))); P = lambda p: p if os.path.isabs(p) else os.path.join(D, p)
 FPS = int(spec.get("output", {}).get("fps", 30))
@@ -96,7 +97,9 @@ for i, it in enumerate(spec["timeline"]):
         if it.get("cta"): acts.append(f"留言卡片滑入，逐字打出 {it['cta'].get('keyword', 'EDIT')}，愛心＋作者回覆「{it['cta'].get('reply', '')}」")
         if it.get("push"): acts.append(f"畫面緩慢推近 {float(it['push']) * 100:.1f}%")
         if k != 1 and not it.get("ramp"): acts.append(f"語速 {k:g}×")
-        if it.get("captions"): acts.append("卡拉 OK 字幕逐字亮起（墨色字卡、橘色重點字）")
+        LOOK = {"impact": "粗黑描邊、跟著嘴巴一次跳 2–5 字、正在講的字變黃", "editorial": "襯線字逐字浮現、重點字斜體上色", "minimal": "小字從模糊浮現",
+                "news": "黑底字幕條、正在講的字變黃", "vlog": "電影字幕、整句淡入", "label": "一段一張標籤滑進來", "card": "墨色字卡、重點字上色", "clean": "乾淨白字、重點字上色", "bold": "粗體白字、重點字螢光筆", "meme": "大字一個一個跳出來", "label": "標籤字卡"}
+        if it.get("captions"): acts.append("卡拉 OK 字幕逐字亮起（" + LOOK.get((spec.get("captions_style") or {}).get("look", "card"), "墨色字卡") + "）")
         if it.get("whip_in"): acts.append("甩鏡模糊轉場進來")
         shot = it.get("shot", "特寫")
         key = next((k_ for c in it.get("captions", []) for k_ in c.get("keys", [])), "")
@@ -151,6 +154,18 @@ if a.delivered:
     cov = os.path.join(D, "_render", "cover.jpg"); os.makedirs(os.path.dirname(cov), exist_ok=True)
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "0.6", "-i", fp, "-frames:v", "1", "-q:v", "3", cov], check=True)
     data["cover"] = "data:image/jpeg;base64," + base64.b64encode(open(cov, "rb").read()).decode()
+
+if a.styles:                                                         # style picker: each preview is THEIR clip in that style, small and looping
+    sd = P(a.styles); meta = json.load(open(os.path.join(sd, "styles.json"))); out_ = []
+    for m in meta:
+        fp = m["file"] if os.path.isabs(m["file"]) else os.path.join(sd, m["file"]); sm = os.path.join(tempfile.mkdtemp(), "s.mp4")
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", fp, "-vf", "scale=288:512:flags=lanczos,format=yuv420p", "-an", "-c:v", "libx264", "-preset", "veryfast",
+                        "-crf", "30", "-profile:v", "main", "-movflags", "+faststart", sm], check=True)
+        pr = subprocess.run(["ffmpeg", "-v", "error", "-ss", "1.2", "-i", fp, "-frames:v", "1", "-vf", "scale=288:512", "-q:v", "5", "-f", "image2pipe", "-vcodec", "mjpeg", "-"], capture_output=True)
+        out_.append(dict(id=m["id"], name=m["name"], line=m["line"], accent=m.get("accent"), video="data:video/mp4;base64," + base64.b64encode(open(sm, "rb").read()).decode(),
+                         poster="data:image/jpeg;base64," + base64.b64encode(pr.stdout).decode() if pr.stdout else ""))
+    data["styles"] = out_
+if spec.get("template"): data["style"] = spec["template"]
 
 def fmt(x): return f"{int(x // 60)}:{x % 60:04.1f}"
 tpl = open(os.path.join(ASSETS, "storyboard_template.html")).read()

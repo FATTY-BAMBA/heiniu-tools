@@ -47,3 +47,7 @@ People talk in outcomes. Translate the sentence, change the spec, re-render, and
 - Long silences between sentences (> 0.35 s at 1.3×).
 - Two takes with visibly different colour back-to-back (use `match_color`).
 - Voice levels jumping between takes (per-clip `normalize` is on by default — keep it).
+| 換風格 / 換成搞笑、衝擊一點 / 改成 vlog 感 / 想要雜誌感 / 新聞感 | `python3 scripts/template.py edit.json --apply impact` (impact · editorial · minimal · news · vlog · product). Keeps the cut; re-render the draft and republish the room. |
+| 標題列改成… / 期數改成 03 | `topic`, `issue` (雜誌), `badge` (新聞快報 / 開箱), then re-apply the same style. |
+| 這裡加 emoji / 不要 emoji | caption `emoji: "🔥"` / `emoji: false` (衝擊字). |
+| 字幕一次少一點字 | `captions_style.max_chars` 3–4 (衝擊字 / 開箱). |

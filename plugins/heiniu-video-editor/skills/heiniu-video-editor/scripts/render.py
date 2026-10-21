@@ -16,6 +16,7 @@ from PIL import Image, ImageDraw, ImageFilter
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from hn_common import *          # noqa: F401,F403
 import cover as COVER
+import captions as CAPV2
 
 ap = argparse.ArgumentParser(); ap.add_argument("spec"); ap.add_argument("--out"); ap.add_argument("--work"); ap.add_argument("--preview", action="store_true")
 args = ap.parse_args()
@@ -32,6 +33,13 @@ def S(v): return int(round(v * SC))                                  # scale 108
 GRADES = {
     "soft": "eq=contrast=1.04:saturation=1.03:gamma=1.02:brightness=0.01,colorbalance=rs=-0.05:bs=0.05:rm=0.02:bh=-0.02,vignette=PI/5",
     "warm": "eq=contrast=1.05:saturation=1.06:gamma=1.0,colorbalance=rs=0.03:bs=-0.03,vignette=PI/5",
+    "airy": "eq=contrast=0.96:saturation=1.07:gamma=1.07:brightness=0.025,colorbalance=rs=0.03:bs=-0.02:rh=0.03:bh=-0.03",     # 日常 Vlog: lifted, warm, soft
+    "crisp": "eq=contrast=1.07:saturation=1.0:gamma=1.01,unsharp=5:5:0.45",                                                  # 知識乾貨: neutral and sharp
+    "punchy": "eq=contrast=1.12:saturation=1.3:gamma=0.99",                                                                  # 搞笑: loud colour
+    "cinema": "eq=contrast=1.12:saturation=0.9:gamma=0.97,colorbalance=rs=-0.06:bs=0.07:rh=0.07:bh=-0.07,vignette=PI/4",     # Showcase: teal shadows, warm skin
+    "clean": "eq=contrast=1.03:saturation=1.05:gamma=1.05:brightness=0.02",                                                  # 開箱: bright, true colour
+    "muted": "eq=contrast=1.06:saturation=0.42:gamma=1.02,colorbalance=bs=0.02:bh=-0.01",                                      # 極簡: desaturated, one accent colour carries
+    "film": "eq=contrast=1.06:saturation=0.9:gamma=1.02,colorbalance=rs=-0.03:bs=0.04:rh=0.05:bh=-0.04,curves=all='0/0.045 0.5/0.5 1/0.965',vignette=PI/4.5",   # 電影感: lifted blacks, warm skin
     "none": "",
 }
 def BARS(): b = S(spec.get("bars_px", 200)); return f"drawbox=x=0:y=0:w=iw:h={b}:color=black:t=fill,drawbox=x=0:y=ih-{b}:w=iw:h={b}:color=black:t=fill"
@@ -117,37 +125,80 @@ def cached(key, fn):
         cache[key] = fn()
     return cache[key]
 CAP = dict(size=64, y=1330); CAP.update(spec.get("captions_style", {}))
-def caption(text, keys, lit, keycol, pop, size, cy):
+CAPE = CAPV2.Engine(W, H, S, P, {k: v for k, v in CAP.items() if k not in ("size", "y")})        # v2 looks: impact / editorial / minimal / news / vlog / label
+try: CHARS = load_chars(spec["words"] if os.path.isabs(spec["words"]) else os.path.join(SPEC_DIR, spec["words"])) if spec.get("words") else {}
+except Exception: CHARS = {}
+GRAIN = float(spec.get("grain", 0)); _grain = [cv2.resize(np.random.default_rng(k).standard_normal((H // 2, W // 2)).astype(np.float32), (W, H))[..., None] for k in range(6)] if GRAIN else []
+def caption(text, keys, lit, keycol, pop, size, cy, look="card"):
+    """karaoke caption in one of the template looks: card (墨牛 ink card) | clean (vlog) | bold (marker highlight) | meme | label"""
     def mk():
-        sz = S(size); fnt = F("serif", sz); track = S(4)
         im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
-        widths = [d.textlength(ch, font=fnt) + track for ch in text]; tw = sum(widths) - track
-        bar, gap, padx, pady, y = S(7), S(26), S(40), S(22), S(cy)
-        bw = bar + gap + tw; bx0 = (W - bw) / 2 - padx; bx1 = (W + bw) / 2 + padx; by0, by1 = y - sz / 2 - pady, y + sz / 2 + pady + S(8)
-        d.rounded_rectangle([bx0, by0, bx1, by1], S(16), fill=INK + (200,), outline=(255, 255, 255, 34), width=max(1, S(2)))
-        x0 = bx0 + padx; d.rounded_rectangle([x0, by0 + S(22), x0 + bar, by1 - S(22)], S(3), fill=EM + (255,))
-        ki = set()
+        face = {"card": "serif", "clean": "sans", "bold": "black", "meme": "black", "label": "sans"}.get(look, "serif")
+        track = S({"card": 4, "clean": 2, "bold": 2, "meme": 1, "label": 2}.get(look, 3))
+        sz = S(size)
+        while True:                                                       # shrink to fit 88% of the width
+            fnt = F(face, sz); widths = [d.textlength(ch, font=fnt) + track for ch in text]; tw = sum(widths) - track
+            if tw <= W * 0.88 - (S(120) if look in ("card", "label") else 0) or sz <= S(30): break
+            sz = int(sz * 0.94)
+        ki = set(); spans = []
         for kw in keys:
             j = text.find(kw)
-            if j >= 0: ki |= set(range(j, j + len(kw)))
-        x = x0 + bar + gap
-        for j, ch in enumerate(text):
-            on = j < lit; col = (keycol if j in ki else IV) if on else IV
-            d.text((x, y - sz / 2 - S(6)), ch, font=fnt, fill=col + (255 if on else 90,)); x += widths[j]
-        im = shadow(im, (0, S(10)), S(18), 0.40)
-        if pop != 1.0:
-            im2 = im.resize((int(W * pop), int(H * pop)), Image.LANCZOS); c = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-            c.paste(im2, ((W - im2.width) // 2, int(y - y * pop))); im = c
-        return to_np(im)
-    return cached(("cap", text, lit, pop, size, cy), mk)
-def bigword(word, n, size, top):
+            if j >= 0: ki |= set(range(j, j + len(kw))); spans.append((j, j + len(kw)))
+        y = S(cy)
+        if look == "card":
+            bar, gap, padx, pady = S(7), S(26), S(40), S(22)
+            bw = bar + gap + tw; bx0 = (W - bw) / 2 - padx; bx1 = (W + bw) / 2 + padx; by0, by1 = y - sz / 2 - pady, y + sz / 2 + pady + S(8)
+            d.rounded_rectangle([bx0, by0, bx1, by1], S(16), fill=INK + (200,), outline=(255, 255, 255, 34), width=max(1, S(2)))
+            x0 = bx0 + padx; d.rounded_rectangle([x0, by0 + S(22), x0 + bar, by1 - S(22)], S(3), fill=EM + (255,))
+            x = x0 + bar + gap
+            for j, ch in enumerate(text):
+                on = j < lit; col = (keycol if j in ki else IV) if on else IV
+                d.text((x, y - sz / 2 - S(6)), ch, font=fnt, fill=col + (255 if on else 90,)); x += widths[j]
+            return to_np(shadow(im, (0, S(10)), S(18), 0.40))
+        x0 = (W - tw) / 2; xs = [x0 + sum(widths[:j]) for j in range(len(text))]
+        if look == "label":                                               # ivory tag with an accent block, like a price label
+            padx, pady, blk = S(34), S(20), S(14)
+            bx0, bx1 = x0 - padx - blk - S(8), x0 + tw + padx; by0, by1 = y - sz / 2 - pady, y + sz / 2 + pady
+            d.rounded_rectangle([bx0, by0, bx1, by1], S(8), fill=(248, 245, 238, 250))
+            d.rectangle([bx0, by0, bx0 + blk, by1], fill=keycol + (255,))
+            for j, ch in enumerate(text):
+                on = j < lit; col = keycol if (j in ki and on) else INK
+                d.text((xs[j], y), ch, font=fnt, fill=col + (255 if on else 105,), anchor="lm")
+            return to_np(shadow(im, (0, S(8)), S(14), 0.35))
+        if look == "bold":                                                # heavy white text, key words on a marker stroke that wipes in
+            for j0, j1 in spans:
+                if lit <= j0: continue
+                k = min(lit, j1); mx0 = xs[j0] - S(10); mx1 = xs[k - 1] + widths[k - 1] - track + S(10)
+                d.rounded_rectangle([mx0, y - sz * 0.50, mx1, y + sz * 0.52], S(10), fill=keycol + (255,))
+            for j, ch in enumerate(text):
+                marked = j in ki and any(j0 <= j < min(lit, j1) for j0, j1 in spans)
+                d.text((xs[j], y), ch, font=fnt, fill=(INK if marked else (255, 255, 255)) + (255,), anchor="lm",
+                       stroke_width=0 if marked else S(5), stroke_fill=(20, 20, 22, 255))
+            return to_np(shadow(im, (0, S(6)), S(12), 0.45))
+        if look == "meme":                                                # big black-stroked letters that pop in one by one
+            for j, ch in enumerate(text[:lit]):
+                d.text((xs[j], y), ch, font=fnt, fill=(keycol if j in ki else (255, 255, 255)) + (255,), anchor="lm", stroke_width=S(10), stroke_fill=(0, 0, 0, 255))
+            return to_np(shadow(im, (0, S(8)), S(6), 0.55))
+        for j, ch in enumerate(text):                                     # clean: plain white sans, soft outline, keys tinted
+            on = j < lit; a_ = 255 if on else 150
+            d.text((xs[j], y), ch, font=fnt, fill=(keycol if j in ki else (255, 255, 255)) + (a_,), anchor="lm", stroke_width=S(2), stroke_fill=(0, 0, 0, int(90 * a_ / 255)))
+        return to_np(shadow(im, (0, S(4)), S(10), 0.55))
+    def popped():
+        base = mk()
+        if pop == 1.0: return base
+        sc = pop; im = Image.fromarray((base * 255).astype(np.uint8), "RGBA"); w2, h2 = int(W * sc), int(H * sc)
+        im2 = im.resize((w2, h2), Image.LANCZOS); c = Image.new("RGBA", (W, H), (0, 0, 0, 0)); yy = S(cy)
+        c.paste(im2, ((W - w2) // 2, int(yy - yy * sc))); return to_np(c)
+    return cached(("cap", look, text, lit, pop, size, cy, tuple(keys), keycol), popped)
+def bigword(word, n, size, top, col=None):
+    col = col or IV
     def mk():
         im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
         fnt = lambda ch: F("lat_serif" if ch.isascii() and ch.strip() else "serif", size * (0.92 if ch.isascii() else 1))
         ws = [d.textlength(ch, font=fnt(ch)) for ch in word]; x = (W - sum(ws)) / 2
-        for j, ch in enumerate(word[:n]): d.text((x, top), ch, font=fnt(ch), fill=IV + (255,)); x += ws[j]
-        return to_np(shadow(im, (0, S(12)), S(18), 0.4))
-    return cached(("big", word, n, size, top), mk)
+        for j, ch in enumerate(word[:n]): d.text((x, top), ch, font=fnt(ch), fill=col + (255,)); x += ws[j]
+        return to_np(shadow(im, (0, S(12)), S(18), 0.4 if col == IV else 0.18))
+    return cached(("big", word, n, size, top, col), mk)
 def prompt_box(text, state, label):
     def mk():
         im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
@@ -163,6 +214,43 @@ def prompt_box(text, state, label):
             d.line([(cx, cy + S(16)), (cx, cy - S(16))], fill="white", width=S(6)); d.line([(cx - S(13), cy - S(3)), (cx, cy - S(16)), (cx + S(13), cy - S(3))], fill="white", width=S(6))
         return to_np(shadow(im, (0, S(10)), S(16), 0.45))
     return cached(("box", text, state, label), mk)
+
+HDR = spec.get("header")
+def header_img(hd):
+    """persistent top line set by a style template: bar (知識乾貨 topic + episode badge) | label (開箱 tag) | stamp (vlog date / place)"""
+    def mk():
+        im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); kind = hd.get("kind", "bar"); text = hd.get("text", ""); badge = hd.get("badge", "")
+        y0 = S(hd.get("y", 205))
+        if kind == "stamp":
+            f = F("mono", S(36)); d.ellipse([S(64), y0 + S(12), S(84), y0 + S(32)], fill=(232, 60, 50, 255))
+            d.text((S(122), y0), text, font=f, fill=(255, 255, 255, 240), stroke_width=S(2), stroke_fill=(0, 0, 0, 90))
+            return to_np(shadow(im, (0, S(3)), S(6), 0.5))
+        if kind == "masthead":                                             # 雜誌: brand + issue on the left, topic on the right, hairline rule
+            fb_, fi, ft = F("serif", S(64)), F("mono", S(28)), F("sans_m", S(32)); x0 = S(64); x1 = W - S(64)
+            d.text((x0, y0 + S(60)), P["brand"], font=fb_, fill=IV + (255,), anchor="ls"); bx = x0 + d.textlength(P["brand"], font=fb_) + S(18)
+            d.text((bx, y0 + S(56)), badge or "N°01", font=fi, fill=EM + (255,), anchor="ls")
+            d.text((x1, y0 + S(56)), text, font=ft, fill=IV + (235,), anchor="rs")
+            d.rectangle([x0, y0 + S(78), x1, y0 + S(78) + max(2, S(3))], fill=IV + (190,))
+            return to_np(shadow(im, (0, S(3)), S(8), 0.45))
+        if kind == "news":                                                 # 新聞快報: red tag + white headline bar + red rule
+            ftag, fh = F("sans", S(32)), F("sans", S(38)); tag = badge or "快報"; x0 = S(56)
+            tw_ = d.textlength(tag, font=ftag) + S(36); hw = min(W - S(56) - x0 - tw_, d.textlength(text, font=fh) + S(44)); y1 = y0 + S(74)
+            d.rectangle([x0, y0, x0 + tw_, y1], fill=RED + (255,)); d.text((x0 + tw_ / 2, (y0 + y1) / 2), tag, font=ftag, fill=(255, 255, 255), anchor="mm")
+            d.rectangle([x0 + tw_, y0, x0 + tw_ + hw, y1], fill=(250, 248, 244, 250)); d.text((x0 + tw_ + S(22), (y0 + y1) / 2), text, font=fh, fill=INK, anchor="lm")
+            d.rectangle([x0, y1, x0 + tw_ + hw, y1 + S(6)], fill=RED + (255,))
+            return to_np(shadow(im, (0, S(6)), S(12), 0.35))
+        f = F("sans", S(40)); fb = F("mono", S(30)) if badge.isascii() else F("sans", S(30)); tw = d.textlength(text, font=f); bw = (d.textlength(badge, font=fb) + S(36)) if badge else 0
+        x0 = (W - (tw + bw + S(56))) / 2; x1 = x0 + tw + bw + S(56); y1 = y0 + S(78)
+        if kind == "label":
+            d.rounded_rectangle([x0, y0, x1, y1], S(10), fill=(248, 245, 238, 245)); col = INK
+        else:
+            d.rounded_rectangle([x0, y0, x1, y1], S(39), fill=INK + (225,), outline=(255, 255, 255, 40), width=max(1, S(2))); col = IV
+        if badge:
+            d.rounded_rectangle([x0 + S(14), y0 + S(14), x0 + S(14) + bw - S(8), y1 - S(14)], S(25 if kind != "label" else 6), fill=EM + (255,))
+            d.text((x0 + S(14) + (bw - S(8)) / 2, (y0 + y1) / 2), badge, font=fb, fill=INK if kind != "label" else (255, 255, 255), anchor="mm")
+        d.text((x0 + S(28) + bw, (y0 + y1) / 2), text, font=f, fill=col + (255,), anchor="lm")
+        return to_np(shadow(im, (0, S(6)), S(12), 0.35))
+    return cached(("hdr", json.dumps(hd, ensure_ascii=False)), mk)
 
 # ---- comment CTA (glass cards) ----
 def rrmask(box, r):
@@ -581,7 +669,9 @@ for n in range(TOTAL_N):
             rgb = zoom(rgb, 1 + (z0 - 1) * (1 - u), float(pb.get("y", 0.32)))
         if (push or it.get("punch") or pb) and it.get("bars", spec.get("bars", False)):   # zooming must not eat the letterbox bars
             bb = S(spec.get("bars_px", 200)); rgb[:bb] = 0; rgb[H - bb:] = 0
-        fr = rgb.astype(np.float32) / 255; comp = fr.copy(); low = False
+        fr = rgb.astype(np.float32) / 255
+        if GRAIN: fr = np.clip(fr + _grain[n % 6] * GRAIN, 0, 1)
+        comp = fr.copy(); low = False
         C = it.get("cta"); cta_on = C is not None and t >= to_out(s, C["show"])
         seg_end = s["start"] + d0; MK = {}
         def getm():
@@ -603,13 +693,18 @@ for n in range(TOTAL_N):
                 ht = head_top(m) if m is not None else None
                 ov = float(bw.get("overlap", 0.10))                   # share of the letters the head covers (0.10 subtle … 0.5 deep behind the head)
                 size = int(max(S(170), min(S(bw.get("size", 300)), (ht + S(20) - S(120)) / max(0.6, 1.18 - ov), W * 0.9 / max(1, nch)))) if ht else 0
-                if m is None or size <= S(170) or place == "low": bigpos[key] = ("low", int(min(S(bw.get("size", 300)), W * 0.9 / max(1, nch))), S(1150))
-                else: bigpos[key] = ("top", size, max(S(120), int(ht + ov * size - size * 1.18)))
+                if m is None or size <= S(170) or place == "low": bigpos[key] = ("low", int(min(S(bw.get("size", 300)), W * 0.9 / max(1, nch))), S(bw.get("low_y", 1150)))
+                else: bigpos[key] = ("top", size, max(S(120) if not HDR or HDR.get("kind") == "stamp" else S(HDR.get("y", 205) + 70), int(ht + ov * size - size * 1.18)))
             mode, size, top = bigpos[key]
             if bw.get("style") == "glass": comp = glass_word(comp, fr, word, k, size, top)
             else:
-                if k > 1: comp = over(comp, bigword(word, k - 1, size, top))
-                comp = over(comp, bigword(word, k, size, top), frac)
+                if ("col",) + key not in bigpos:                          # ivory on dark backgrounds, ink when the spot behind it is bright (a white shirt)
+                    gm = bigword(word, nch, size, top)[..., 3:4]                # brightness measured under the letters themselves
+                    lum = float((fr.mean(axis=2, keepdims=True) * gm).sum() / max(1.0, float(gm.sum())))
+                    bigpos[("col",) + key] = INK if lum > 0.58 else IV
+                bc = bigpos[("col",) + key]
+                if k > 1: comp = over(comp, bigword(word, k - 1, size, top, bc))
+                comp = over(comp, bigword(word, k, size, top, bc), frac)
             if mode == "top": comp = comp * (1 - m) + base_person * m
             else: low = True
         for pr in it.get("prompts", []):
@@ -639,14 +734,20 @@ for n in range(TOTAL_N):
                 t0, t1 = to_out(s, c["start"]), to_out(s, c["end"])
                 if t0 <= t < t1:
                     text = c["text"]; nch = len(text); lit = nch if c.get("instant") else min(nch, 1 + int((t - t0) / max(1e-3, (t1 - t0) * 0.85) * nch))
-                    pop = round(1.0 + (0.08 * (1 - ease((t - t0) / 0.12)) if t - t0 < 0.12 else 0), 2)
+                    look = c.get("look", CAP.get("look", "card"))
+                    if look in CAPV2.LOOKS:
+                        comp = CAPE.draw(comp, t, c, CHARS.get(os.path.basename(it["src"]), []), lambda x, s=s: to_out(s, x), RECTS, id(s)); break
+                    pa = {"meme": 0.22, "bold": 0.10}.get(look, 0.08)
+                    pop = round(1.0 + (pa * (1 - ease((t - t0) / 0.12)) if t - t0 < 0.12 else 0), 2)
                     kc = P.get(c.get("color", "accent"), EM) if isinstance(c.get("color", "accent"), str) else EM
-                    comp = over(comp, caption(text, c.get("keys", []), lit, kc, pop, c.get("size", CAP["size"]), c.get("y", CAP["y"]))); break
+                    comp = over(comp, caption(text, c.get("keys", []), lit, kc, pop, c.get("size", CAP["size"]), c.get("y", CAP["y"]), look)); break
     elif s["kind"] == "freeze":
         u = t - s["start"]; z = 1 + 0.035 * eq(u / 0.5)
         comp = freeze_comp(zoom(rgb, z, 0.4).astype(np.float32) / 255, u, it)
     else:
         comp = rgb.astype(np.float32) / 255
+    if HDR and s["kind"] in ("clip", "freeze") and not (s["kind"] == "clip" and it.get("cta") and t >= to_out(s, it["cta"]["show"])):
+        comp = over(comp, header_img(HDR), eq(t / 0.35))
     for b in impacts:
         dt = t - b
         if 0 <= dt < 0.17:
@@ -701,7 +802,7 @@ for t0, name, g in events:
     x = gen(name)
     if name not in PEAKS:                                             # where this sound is loudest → line that up with the impact
         e = np.convolve(np.abs(x).mean(axis=1), np.ones(240) / 240, "same"); PEAKS[name] = int(e.argmax()) if name in ("whoosh", "swish", "whoosh_rev", "scratch") else 0
-    i0 = max(0, int(t0 * SR) - PEAKS[name]); j = min(len(fx), i0 + len(x)); fx[i0:j] += x[:j - i0] * g
+    i0 = max(0, int(t0 * SR) - PEAKS[name]); j = min(len(fx), i0 + len(x)); fx[i0:j] += x[:j - i0] * g * float(spec.get("sfx_gain", 1.0))
 FXW = os.path.join(WORK, "sfx.wav"); sf.write(FXW, fx[:NS], SR)
 AUD = os.path.join(WORK, "audio.wav")
 mus = spec.get("music"); inputs = ["-i", MASTER, "-i", FXW]
