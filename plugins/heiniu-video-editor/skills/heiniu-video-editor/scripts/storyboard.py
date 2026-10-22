@@ -170,17 +170,31 @@ if a.delivered:
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "0.6", "-i", fp, "-frames:v", "1", "-q:v", "3", cov], check=True)
     data["cover"] = "data:image/jpeg;base64," + base64.b64encode(open(cov, "rb").read()).decode()
 
+def look_spec(sid):
+    """the four facts a creator compares looks by: captions, colour, the way back from a teaser, sound"""
+    try:
+        import template as TPL; from hn_common import TEASER_TR_BY_STYLE, TEASER_TR_NAME
+        t = TPL.T[sid]
+    except Exception: return []
+    CAP = {"impact": "粗黑描邊・跟嘴巴跳", "editorial": "襯線逐字浮現", "minimal": "小字從模糊浮現", "news": "黑底字幕條", "vlog": "淡字＋電影黑邊", "label": "標籤滑入"}
+    GR = {"punchy": "高對比", "soft": "柔光", "muted": "低飽和・單一重點色", "crisp": "清透銳利", "film": "底片顆粒", "clean": "明亮原色"}
+    KIT = {"punchy": "俐落", "cinematic": "電影感", "subtle": "安靜"}
+    return [["CAPTIONS", CAP.get(t["look"], t["look"])], ["COLOUR", GR.get(t["grade"], t["grade"])],
+            ["TEASER", TEASER_TR_NAME.get(TEASER_TR_BY_STYLE.get(sid, "vhs"), "")], ["SOUND", KIT.get(t.get("kit"), "")], ["PACE", f"每 {t['gap']:g} 秒一個變化"]]
 if a.styles:                                                         # style picker: each preview is THEIR clip in that style, small and looping
     sd = P(a.styles); meta = json.load(open(os.path.join(sd, "styles.json"))); out_ = []
     for m in meta:
         fp = m["file"] if os.path.isabs(m["file"]) else os.path.join(sd, m["file"]); sm = os.path.join(tempfile.mkdtemp(), "s.mp4")
-        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", fp, "-vf", "scale=288:512:flags=lanczos,format=yuv420p", "-an", "-c:v", "libx264", "-preset", "veryfast",
-                        "-crf", "30", "-profile:v", "main", "-movflags", "+faststart", sm], check=True)
-        pr = subprocess.run(["ffmpeg", "-v", "error", "-ss", "1.2", "-i", fp, "-frames:v", "1", "-vf", "scale=288:512", "-q:v", "5", "-f", "image2pipe", "-vcodec", "mjpeg", "-"], capture_output=True)
-        out_.append(dict(id=m["id"], name=m["name"], line=m["line"], accent=m.get("accent"), video="data:video/mp4;base64," + base64.b64encode(open(sm, "rb").read()).decode(),
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", fp, "-vf", "scale=432:768:flags=lanczos,format=yuv420p", "-an", "-c:v", "libx264", "-preset", "medium",
+                        "-crf", "29", "-profile:v", "main", "-movflags", "+faststart", sm], check=True)      # big enough for the look browser's stage
+        dur_ = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", fp], capture_output=True, text=True).stdout or 3)
+        pr = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{min(2.0, dur_ * 0.55):.2f}", "-i", fp, "-frames:v", "1", "-vf", "scale=216:384", "-q:v", "4",   # captions are on screen here
+                             "-f", "image2pipe", "-vcodec", "mjpeg", "-"], capture_output=True)
+        out_.append(dict(id=m["id"], name=m["name"], line=m["line"], accent=m.get("accent"), spec=look_spec(m["id"]), video="data:video/mp4;base64," + base64.b64encode(open(sm, "rb").read()).decode(),
                          poster="data:image/jpeg;base64," + base64.b64encode(pr.stdout).decode() if pr.stdout else ""))
     data["styles"] = out_
 if spec.get("template"): data["style"] = spec["template"]
+if isinstance(spec.get("style_pick"), dict) and spec["style_pick"].get("id"): data["recommend"] = dict(id=spec["style_pick"]["id"], why=spec["style_pick"].get("why", ""))
 # ---- 成片質感 (studio finish): what the premium pass added, so the room can show it and switch each part off ----
 qa_ = {}
 if a.video:

@@ -56,24 +56,58 @@ button { font: inherit; cursor: pointer }
 .styles h2 { margin: 0; font-family: var(--display); font-size: 22px }
 .styles h2 em { font-style: normal; color: var(--ember) }
 .styles > p { margin: 0; color: var(--muted); font-size: 14px }
-.sgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px }
-.scard { position: relative; border: 2px solid var(--line); border-radius: 14px; background: var(--bg); padding: 0; overflow: hidden; text-align: left; color: var(--fg); display: grid; transition: border-color .15s, transform .15s }
-.scard:hover { transform: translateY(-2px) }
-.scard[aria-pressed="true"] { border-color: var(--ember); box-shadow: 0 0 0 3px var(--ember-soft) }
-.scard video { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; background: #000 }
-.scard .cap { padding: 9px 10px 11px; display: grid; gap: 2px }
-.scard .cap b { font-size: 15px; display: flex; align-items: center; gap: 6px }
-.scard .cap b i { width: 10px; height: 10px; border-radius: 50%; flex: none }
-.scard .cap span { font-size: 12.5px; color: var(--muted); line-height: 1.45 }
-.scard .tick { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--ember); color: #fff; display: none; place-items: center; font-weight: 700 }
-.scard[aria-pressed="true"] .tick { display: grid }
-.scard .cur { position: absolute; top: 8px; left: 8px; background: rgba(0, 0, 0, .65); color: #fff; border-radius: 6px; padding: 1px 7px; font-size: 11.5px; font-weight: 700 }
+/* ---------- look browser: a dark screening room — big preview of the chosen look, six numbered looks beside it ---------- */
+.styles.lb { color: #f3eee4; border: 1px solid rgba(255, 255, 255, .08); border-radius: 20px; padding: 20px;
+  background: radial-gradient(90% 70% at 0% 0%, rgba(255, 122, 46, .16), transparent 60%), linear-gradient(165deg, #1c1c1f, #111112 75%);
+  box-shadow: 0 22px 60px rgba(20, 10, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .06); gap: 16px }
+.lb .kick { font-family: var(--mono); font-size: 11px; letter-spacing: .22em; color: #ff8a45 }
+.lb h2 { color: #f3eee4; font-size: 26px; margin-top: 2px }
+.lb h2 em { color: #ff8a45 }
+.lb > p, .lb .lbp { color: #b9b3a8; font-size: 14px; margin: 0 }
+.lbbody { display: grid; grid-template-columns: minmax(220px, 300px) 1fr; gap: 22px; align-items: start }
+.lbstage { position: relative; border-radius: 16px; overflow: hidden; background: #000; aspect-ratio: 9 / 16; box-shadow: 0 18px 40px rgba(0, 0, 0, .5), 0 0 0 1px rgba(255, 255, 255, .08) }
+.lbstage video { width: 100%; height: 100%; object-fit: cover; display: block }
+.lbstage .num { position: absolute; top: 12px; left: 12px; font: 700 12px var(--mono); letter-spacing: .12em; color: #fff; background: rgba(0, 0, 0, .55); border-radius: 7px; padding: 3px 8px; backdrop-filter: blur(6px) }
+.lbstage .rec, .lbt .rec { position: absolute; top: 12px; right: 12px; font-size: 12px; font-weight: 700; color: #1a1a1b; background: #ffb066; border-radius: 999px; padding: 2px 9px }
+.lbinfo { display: grid; gap: 10px; align-content: start }
+.lbname { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap }
+.lbname b { font-family: var(--display); font-size: 34px; line-height: 1.1; letter-spacing: .02em }
+.lbname span { font: 12px var(--mono); color: #9b968c; letter-spacing: .14em }
+.lbline { color: #d9d3c8; font-size: 15px; margin: 0 }
+.lbspec { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin: 2px 0 0; padding: 0 }
+.lbspec div { background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .08); border-radius: 10px; padding: 7px 10px }
+.lbspec dt { font: 10.5px var(--mono); letter-spacing: .16em; color: #9b968c }
+.lbspec dd { margin: 2px 0 0; font-size: 13.5px; font-weight: 600; color: #f3eee4 }
+.lbwhy { border-left: 3px solid #ffb066; padding: 6px 12px; background: rgba(255, 176, 102, .08); border-radius: 0 10px 10px 0; font-size: 13.5px; color: #f3e1cf; margin: 0 }
+.lbwhy b { color: #ffb066 }
+.lbgrid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 6px }
+.lbt { position: relative; border: 0; padding: 0; background: none; color: inherit; text-align: left; display: grid; gap: 6px; cursor: pointer }
+.lbt .tv { position: relative; border-radius: 11px; overflow: hidden; aspect-ratio: 9 / 16; background: #000; box-shadow: 0 0 0 1px rgba(255, 255, 255, .1); transition: box-shadow .18s, transform .18s }
+.lbt .tv img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.9) brightness(.85); transition: filter .18s }
+.lbt:hover .tv { transform: translateY(-2px) } .lbt:hover .tv img { filter: none }
+.lbt[aria-pressed="true"] .tv { box-shadow: 0 0 0 2px #ff7a2e, 0 0 0 6px rgba(255, 122, 46, .22) } .lbt[aria-pressed="true"] .tv img { filter: none }
+.lbt .rec { top: 6px; right: 6px; font-size: 10px; padding: 1px 6px; white-space: nowrap }
+.lbt .tl { font-size: 13px; font-weight: 700; display: flex; gap: 6px; align-items: baseline; line-height: 1.25 }
+.lbt .tl i { font: 600 10.5px var(--mono); color: #9b968c; font-style: normal }
+.lbt .cur { position: absolute; left: 6px; bottom: 6px; background: rgba(0, 0, 0, .7); color: #fff; border-radius: 6px; padding: 0 6px; font-size: 11px; font-weight: 700 }
+.lbfin { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, .08); padding-top: 14px; font-size: 13px; color: #d9d3c8 }
+.lbfin .k { font: 11px var(--mono); letter-spacing: .2em; color: #ff8a45; margin-right: 4px }
+.lbfin span:not(.k) { border: 1px solid rgba(255, 255, 255, .12); border-radius: 999px; padding: 2px 10px }
+.styles.lb .srow .btn.ghost { color: #f3eee4; border-color: rgba(255, 255, 255, .2) }
+@media (max-width: 760px) {
+  .styles.lb { padding: 16px; border-radius: 16px }
+  .lbbody { grid-template-columns: 1fr; gap: 12px }
+  .lbinfo { display: contents }                                   /* phone: stage → look strip → details, so switching needs no scrolling */
+  .lbstage { width: min(100%, 210px); margin: 0 auto; order: 0 }
+  .lbgrid { order: 1; margin-top: 0 } .lbname { order: 2 } .lbline { order: 3 } .lbspec { order: 4; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)) } .lbwhy { order: 5 }
+  .lbgrid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 26%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px }
+  .lbt { scroll-snap-align: start }
+  .lbname b { font-size: 28px }
+}
 .srow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
 .stylechip { margin-top: 12px; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 4px 6px 4px 12px }
 .stylechip button { border: 0; background: var(--fg); color: var(--bg); border-radius: 999px; padding: 3px 11px; font-size: 13px; font-weight: 700 }
 @media (max-width: 760px) {
-  .sgrid { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 42%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px }
-  .scard { scroll-snap-align: start }
 }
 
 /* version banner */
@@ -347,20 +381,31 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
   function setFlow(now) { $("flow").innerHTML = FLOW.map(function (f, k) { return '<li class="' + (k < now ? "done" : k === now ? "now" : "") + '"><span>' + (k + 1) + '</span>' + esc(f) + '</li>'; }).join(""); }
   setFlow(PICK ? 0 : OFF);
   var styleName = function (id) { var m = (STY || []).filter(function (x) { return x.id === id; })[0]; return m ? m.name : id; };
+  var REC = D.recommend || null;                      // Claude's pick for THIS video: {id, why}
+  if (PICK && !S.pickStyle && REC && REC.id) { S.pickStyle = REC.id; save(); }
   function buildStyles(open) {
-    var box = $("styles"); box.hidden = !open; if (!open) return;
-    box.innerHTML = '<h2 id="stylesTitle">' + (PICK ? '六種風格・<em>你的影片</em>' : '換一個<em>風格</em>') + '</h2>' +
-      '<p>' + (PICK ? '每張卡片都是<b>你自己影片</b>的開頭，用不同風格剪出來的。點一個，按下面的按鈕，Claude 就用這個風格做粗剪。' : '換風格會用同一份剪接重出一版：字幕、調色、特效、音效都換成新風格。') + '</p>' +
-      (PICK ? '<div class="fmini" aria-label="每個風格都會自動加上"><span>雙機位剪法</span><span>開頭先看結果</span><span>無縫循環結尾</span><span>音效設計</span><span>你的簽名</span></div>' : '') +
-      '<div class="sgrid">' + STY.map(function (m) {
-        return '<button class="scard" type="button" data-sid="' + esc(m.id) + '" aria-pressed="' + (S.pickStyle === m.id) + '">' +
-          '<video muted loop playsinline autoplay preload="auto" src="' + m.video + '"' + (m.poster ? ' poster="' + m.poster + '"' : '') + '></video>' +
-          (D.style === m.id ? '<span class="cur">目前</span>' : '') + '<span class="tick">✓</span>' +
-          '<span class="cap"><b><i style="background:' + esc(m.accent || "#999") + '"></i>' + esc(m.name) + '</b><span>' + esc(m.line) + '</span></span></button>';
-      }).join("") + '</div>' + (PICK ? '' : '<div class="srow"><button class="btn" type="button" id="swap" disabled>選一個新風格</button><button class="btn ghost" type="button" id="swapX">取消</button></div>');
-    box.querySelectorAll("video").forEach(function (vv) { var p = vv.play(); if (p && p.catch) p.catch(function () {}); });
+    var box = $("styles"); box.hidden = !open; if (!open) return; box.className = "styles lb";
+    var cur = S.pickStyle || (REC && REC.id) || D.style || STY[0].id;
+    var m0 = STY.filter(function (x) { return x.id === cur; })[0] || STY[0], k0 = STY.indexOf(m0);
+    var spec = (m0.spec || []).map(function (kv) { return '<div><dt>' + esc(kv[0]) + '</dt><dd>' + esc(kv[1]) + '</dd></div>'; }).join("");
+    box.innerHTML = '<div><div class="kick">LOOK BROWSER · 6 STYLES</div><h2 id="stylesTitle">' + (PICK ? '六種風格・<em>你的影片</em>' : '換一個<em>風格</em>') + '</h2>' +
+      '<p class="lbp">' + (PICK ? '每一個都是你自己影片的開頭，用不同風格剪出來的。點下面的風格看大圖，選好按「開始粗剪」。' : '同一份剪接換一個風格重出：字幕、調色、轉場、音效一起換。') + '</p></div>' +
+      '<div class="lbbody"><div class="lbstage"><video id="lbv" muted loop playsinline autoplay preload="auto" src="' + m0.video + '"' + (m0.poster ? ' poster="' + m0.poster + '"' : '') + '></video>' +
+        '<span class="num">' + String(k0 + 1).padStart(2, "0") + ' / 06</span>' + (REC && REC.id === m0.id ? '<span class="rec">Claude 首選</span>' : '') + '</div>' +
+      '<div class="lbinfo"><div class="lbname"><b>' + esc(m0.name) + '</b><span>' + esc((m0.id || "").toUpperCase()) + '</span></div>' +
+        '<p class="lbline">' + esc(m0.line) + '</p>' + (spec ? '<dl class="lbspec">' + spec + '</dl>' : '') +
+        (REC && REC.id === m0.id && REC.why ? '<p class="lbwhy"><b>為什麼是首選：</b>' + esc(REC.why) + '</p>' : '') +
+        '<div class="lbgrid" role="radiogroup" aria-label="風格">' + STY.map(function (m, k) {
+          return '<button class="lbt" type="button" role="radio" data-sid="' + esc(m.id) + '" aria-pressed="' + (m.id === m0.id) + '" aria-checked="' + (S.pickStyle === m.id) + '">' +
+            '<span class="tv"><img alt="" src="' + (m.poster || "") + '">' + (REC && REC.id === m.id ? '<span class="rec">Claude 首選</span>' : '') + (D.style === m.id ? '<span class="cur">目前</span>' : '') + '</span>' +
+            '<span class="tl"><i>' + String(k + 1).padStart(2, "0") + '</i>' + esc(m.name) + '</span></button>';
+        }).join("") + '</div>' +
+        (PICK ? '' : '<div class="srow"><button class="btn" type="button" id="swap" disabled>選一個新風格</button><button class="btn ghost" type="button" id="swapX">取消</button></div>') +
+      '</div></div>' +
+      '<div class="lbfin"><span class="k">STUDIO FINISH</span>每個風格都附：<span>雙機位剪法</span><span>開頭先看結果（適合的影片）</span><span>無縫循環結尾</span><span>音效設計</span><span>你的簽名</span></div>';
+    var vv = $("lbv"); if (vv) { var pp = vv.play(); if (pp && pp.catch) pp.catch(function () {}); }
     box.onclick = function (e) {
-      var c = e.target.closest(".scard"); if (c) { S.pickStyle = c.dataset.sid; save(); box.querySelectorAll(".scard").forEach(function (x) { x.setAttribute("aria-pressed", x === c); }); refresh(); return; }
+      var c = e.target.closest(".lbt"); if (c) { S.pickStyle = c.dataset.sid; save(); buildStyles(true); refresh(); return; }
       if (e.target.id === "swapX") { S.pickStyle = null; save(); buildStyles(false); refresh(); }
       if (e.target.id === "swap" && S.pickStyle && S.pickStyle !== D.style) deliver("style");
     };
@@ -370,7 +415,7 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
     if (D.style) { var sc = $("stylechip"); sc.hidden = false; sc.innerHTML = '風格：<b>' + esc(styleName(D.style)) + '</b><button type="button" id="restyle">換風格</button>'; $("restyle").onclick = function () { buildStyles(true); $("styles").scrollIntoView({ behavior: "smooth", block: "start" }); }; }
   }
   if (PICK) {
-    document.querySelector(".room").hidden = true; $("pace").hidden = true; document.querySelector(".how").hidden = true;
+    document.querySelector(".room").hidden = true; $("pace").hidden = true; document.querySelector(".how").hidden = true; $("glob").hidden = true;
     document.querySelector(".intro h1").innerHTML = "先選<em>風格</em>，再開始剪";
     document.querySelector(".intro p").textContent = "同一段影片，六種剪法。看看哪一個最像你要的感覺，選好之後 Claude 會用它做第一版粗剪，接下來每一拍都還可以再改。";
     $("phase").textContent = "選風格";
@@ -587,7 +632,7 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
     var N = notes().length + (globChanged() ? 1 : 0) + (FIN && finDiff() ? 1 : 0), all = seen === B.length;
     $("prog").innerHTML = "已看 <b>" + seen + "</b>/" + B.length + " 拍" + (N ? " · <b>" + N + "</b> 條修改" : "") + '<span class="meter"><i style="width:' + (100 * seen / B.length) + '%"></i></span>';
     var send = $("send");
-    if (PICK) { send.textContent = S.pickStyle ? "用「" + styleName(S.pickStyle) + "」開始粗剪" : "先選一個風格"; send.className = "btn"; send.disabled = !S.pickStyle; $("copy").disabled = !S.pickStyle; $("copy").textContent = "複製文字";
+    if (PICK) { send.textContent = S.pickStyle ? "用「" + styleName(S.pickStyle) + "」開始粗剪  →" : "先選一個風格"; send.className = "btn"; send.disabled = !S.pickStyle; $("copy").disabled = !S.pickStyle; $("copy").textContent = "複製文字";
       $("prog").innerHTML = S.pickStyle ? "已選 <b>" + esc(styleName(S.pickStyle)) + "</b>" : "還沒選風格"; return; }
     var sw = $("swap"); if (sw) { var ok_ = S.pickStyle && S.pickStyle !== D.style; sw.disabled = !ok_; sw.textContent = ok_ ? "換成「" + styleName(S.pickStyle) + "」重出一版" : "選一個新風格"; }
     if (D.delivered && !N) { send.textContent = D.delivered.url ? "⬇ 下載完整影片" : "完整影片在對話裡"; send.className = "btn ok"; send.disabled = !D.delivered.url; }
