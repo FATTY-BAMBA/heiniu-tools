@@ -1,11 +1,11 @@
 """App-style UI cards — the graphics that make a tool demo look like a real product.
 
 A clip's `ui` list holds cards that slide in at the top of the frame (above the head, under the Reels top bar):
-  {kind: "file",    start, end?, files: [{name, meta, badge?, thumb?: {src, t} | "image.png"}]}
+  {kind: "file",    start, end?, files: [{name, meta, badge?, thumb?: {src, t} | <path to a picture>}]}
         a file chip per take — thumbnail, badge (PHONE / 4K CAMERA), file name, "1080×1920 · 1:06 · 136 MB"
   {kind: "steps",   start, end?, file?: {name, meta, thumb?}, items: [{text, at}]}
         the pipeline as a checklist: each item ticks at its word, the current one spins, a counter n/N and a bar fill
-  {kind: "install", start, end?, name, sub?, icon?: "icon.png", button?: "Install", done?: "Installed", click_at}
+  {kind: "install", start, end?, name, sub?, icon?: <path to the person's square logo>, button?: "Install", done?: "Installed", click_at}
         an app card; a cursor glides in and clicks the button at `click_at`, the button fills and turns to ✓
 Common: `x`: "left" | "center" (default) | "right", `top` (1080×1920 units, default 230), `width` (default 700).
 """
