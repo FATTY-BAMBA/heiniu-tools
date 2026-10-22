@@ -51,6 +51,10 @@ def analyze(spec, fps=None, max_gap=None):
             for key in ("bg", "sticker", "framebreak", "doodle", "chart"):
                 fx = it.get(key)
                 if fx: add(fx["start"]); add(fx.get("end", fx["start"]))
+            for c in it.get("ui", []):
+                add(c["start"])
+                for row in c.get("items", []): add(row["at"])
+                if "click_at" in c: add(c["click_at"])
             hl = it.get("headlines")
             if hl:
                 for c in hl.get("cards", []): add(c.get("at", hl["start"]))

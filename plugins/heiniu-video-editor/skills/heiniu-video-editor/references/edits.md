@@ -53,3 +53,6 @@ People talk in outcomes. Translate the sentence, change the spec, re-render, and
 | 字幕一次少一點字 | `captions_style.max_chars` 3–4 (衝擊字 / 開箱). |
 | 聲音好吵 / 背景很多雜音 / 夜市太吵 | `"voice": "strong"` (default `auto` already cleans; strong removes more but can thin the voice). |
 | 聲音不要處理 / 保留原音 | `"voice": "off"`. |
+| 加檔案卡 / 顯示素材檔名 | `ui: [{kind:"file", start, files:[{name, meta, badge}]}]` on that beat. |
+| 做成進度清單 / 一項一項打勾（剪掉 NG、字幕…） | `ui: [{kind:"steps", start, items:[{text, at:"@word"}…]}]`. |
+| 做一個安裝按鈕被點下去 / 游標點 Install | `ui: [{kind:"install", start, name, click_at:"@word"}]`. |

@@ -93,6 +93,11 @@ for i, it in enumerate(spec["timeline"]):
         if it.get("doodle"): acts.append("手繪描邊＋小塗鴉（會抖動）")
         if it.get("pullback"): acts.append(f"從臉部特寫拉開到全景（{float(it['pullback'].get('from', 1.6)):g}× → 1×）")
         if it.get("zoom_in"): acts.append("穿越式放大轉場進來")
+        for c in it.get("ui", []):
+            k_ = c.get("kind", "file")
+            if k_ == "file": acts.append("檔案卡滑下來：" + "、".join(f_.get("name", "") for f_ in (c.get("files") or [c])))
+            elif k_ == "steps": acts.append("進度卡逐項打勾：" + "、".join(r["text"] for r in c["items"]) + f"（0/{len(c['items'])} → {len(c['items'])}/{len(c['items'])}）")
+            elif k_ == "install": acts.append(f"安裝卡：游標滑進來按「{c.get('button', 'Install')}」→ ✓ {c.get('done', 'Installed')}")
         for bw in it.get("bigwords", []):
             if bw.get("style") == "glass": acts.append(f"「{bw['word']}」是毛玻璃字")
         if it.get("cta"): acts.append(f"留言卡片滑入，逐字打出 {it['cta'].get('keyword', 'EDIT')}，愛心＋作者回覆「{it['cta'].get('reply', '')}」")

@@ -75,6 +75,15 @@ Times are source seconds, like captions. Budget per reel: one big moment + 3–5
 | `bigwords[].style` | `"glass"` | Frosted-glass letters (blurred background, white rim, soft shadow) instead of solid ivory. |
 Not built on purpose: vertigo (dolly zoom) and orbit — they need a moving camera when filming; faking them from a locked-off shot looks cheap.
 
+## App-style UI cards (`ui`) — make a tool demo look like a real product
+A clip's `ui` list; cards drop in under the Reels top bar (below a style's header line), ivory with a soft shadow, SFX included.
+| kind | shape | what it shows |
+|---|---|---|
+| `file` | `{kind:"file", start, end?, files:[{name, meta, badge?, thumb?}]}` | one chip per take: thumbnail (default: this clip's frame), badge (PHONE / 4K CAMERA), file name, "1080×1920 · 1:06 · 136 MB"; chips stagger in 0.22 s apart |
+| `steps` | `{kind:"steps", start, end?, file?:{name, meta}, items:[{text, at}]}` | the pipeline as a checklist: each item ticks at its word, the current one spins, a counter n/N and a filling bar |
+| `install` | `{kind:"install", start, end?, name, sub?, icon?, button?:"Install", busy?, done?:"Installed", click_at}` | an app card; a cursor glides in and clicks at `click_at`, the button fills, then ✓ |
+Common: `x` left / center / right, `top`, `width`. Use them when the video is ABOUT a tool or a workflow (one or two per reel); time `at` / `click_at` to words (`"@輸入"`). They sit over the top of the head when the person is framed high — fine for hair, never the eyes (QA's `face_collisions`).
+
 ## Word-locked timing (how effects land on the right spot)
 Set `"words": "words.json"` (the transcribe.py output) at the top of edit.json. Then any time field can name the word instead of a number:
 `"at": "@幾千塊"` · `"start": "@工具"` · `"@知道#2"` (the 2nd time it's said in that clip) · `{"word": "6萬", "offset": -0.1}`.

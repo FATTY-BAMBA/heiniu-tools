@@ -17,6 +17,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from hn_common import *          # noqa: F401,F403
 import cover as COVER
 import captions as CAPV2
+import uicards as UICARDS
 
 ap = argparse.ArgumentParser(); ap.add_argument("spec"); ap.add_argument("--out"); ap.add_argument("--work"); ap.add_argument("--preview", action="store_true")
 args = ap.parse_args()
@@ -45,7 +46,15 @@ GRADES = {
 def BARS(): b = S(spec.get("bars_px", 200)); return f"drawbox=x=0:y=0:w=iw:h={b}:color=black:t=fill,drawbox=x=0:y=ih-{b}:w=iw:h={b}:color=black:t=fill"
 def run(cmd): subprocess.run(cmd, check=True)
 # ---- voice clean-up: RNNoise (ffmpeg arnndn) sized to how noisy each take is, plus a light "studio" EQ ----
-RNN = os.path.join(ASSETS, "rnnoise", "sh.rnnn"); VOICE = spec.get("voice", "auto"); _snr = {}
+def _rnn_model():
+    """the RNNoise model ships as plain-text parts (each < 256 KiB); join them once into the work folder"""
+    import glob
+    parts = sorted(glob.glob(os.path.join(ASSETS, "rnnoise", "sh.rnnn.part*")), key=lambda p: int(p.rsplit("part", 1)[1]))
+    if not parts: return ""
+    dst = os.path.join(WORK, "sh.rnnn")
+    if not os.path.exists(dst): open(dst, "w").write("".join(open(p).read() for p in parts))
+    return dst
+RNN = _rnn_model(); VOICE = spec.get("voice", "auto"); _snr = {}
 def take_snr(path):
     """rough SNR of a take: loud speech frames vs the quietest frames (dB)"""
     if path not in _snr:
@@ -649,6 +658,7 @@ for s in segs:
     for key_ in ("sticker", "framebreak"):
         if it.get(key_): events.append((to_out(s, it[key_]["start"]), "pop", 0.85))
     if it.get("bg"): events.append((to_out(s, it["bg"]["start"]), "swish", 0.6))
+    if it.get("ui"): events += UICARDS.UI.sfx(it["ui"], lambda x, s=s: to_out(s, x))
     if it.get("zoom_in") and s["start"] > 0: events.append((s["start"], "whoosh", 0.75))
     if it.get("_fast") is None and s["start"] > 0 and segs[segs.index(s) - 1]["item"].get("_fast"): events.append((s["start"], "swish", 0.6))
     C = it.get("cta")
@@ -659,6 +669,8 @@ for s in segs:
         for k in range(len(C.get("keyword", "EDIT"))): events.append((ty + k * 0.077, "click", 1.0))
         events += [(th_, "pop", 0.9), (tr, "pop", 0.8)]
 
+UIC = UICARDS.UI(W, H, S, P, src_path, cache)
+if HDR and HDR.get("kind") != "stamp": UIC.top_default = int(HDR.get("y", 205)) + 110      # cards sit under a header line, never on it
 # ================= 3. overlay pass =================
 VID = os.path.join(WORK, "video.mp4")
 dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", MASTER, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
@@ -748,6 +760,7 @@ for n in range(TOTAL_N):
         if it.get("phone"):
             comp = phone_comp(comp, t, it["phone"], s, seg_end)
             ph_on = to_out(s, it["phone"]["start"]) <= t < (to_out(s, it["phone"]["end"]) if "end" in it["phone"] else seg_end)
+        if it.get("ui"): comp = UIC.draw(comp, t, it["ui"], s, lambda x, s=s: to_out(s, x), seg_end, RECTS, it["src"], float(it["in"]) + 0.4)   # app-style cards
         if it.get("_fast"): comp = over(comp, badge(f"▶▶ {it['_fast']:g}×", int(it.get("badge_y", 240))))
         if C is not None: comp = cta_comp(comp, t, C, s)
         bub_on = bool(it.get("bubbles")) and to_out(s, min(b_["start"] for b_ in it["bubbles"])) <= t and not it.get("captions_over")

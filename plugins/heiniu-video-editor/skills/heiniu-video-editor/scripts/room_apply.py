@@ -11,7 +11,7 @@ import sys, os, json, argparse, re
 
 LABEL = {"bigwords": "巨字", "prompts": "指令框", "punch": "推近", "bubbles": "對話泡泡", "checklist": "清單", "phone": "手機畫面", "headlines": "標題牆",
          "chart": "長條圖", "bg": "換背景", "sticker": "貼紙", "framebreak": "出框", "doodle": "手繪描邊", "pullback": "拉開", "zoom_in": "穿越轉場",
-         "whip_in": "甩鏡轉場", "push": "慢推", "cta": "留言結尾", "ramp": "加速"}
+         "whip_in": "甩鏡轉場", "push": "慢推", "cta": "留言結尾", "ramp": "加速", "ui": "介面卡片"}
 FX = list(LABEL)
 
 def apply(spec, block):
