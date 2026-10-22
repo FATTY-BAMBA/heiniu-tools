@@ -84,6 +84,17 @@ A clip's `ui` list; cards drop in under the Reels top bar (below a style's heade
 | `install` | `{kind:"install", start, end?, name, sub?, icon?, button?:"Install", busy?, done?:"Installed", click_at}` | an app card; a cursor glides in and clicks at `click_at`, the button fills, then ✓ |
 Common: `x` left / center / right, `top`, `width`. Use them when the video is ABOUT a tool or a workflow (one or two per reel); time `at` / `click_at` to words (`"@輸入"`). They sit over the top of the head when the person is framed high — fine for hair, never the eyes (QA's `face_collisions`).
 
+## Premium finish — second camera, loop ending, sound design, signature
+| field | what it does |
+|---|---|
+| `"multicam": true` (or `{"medium": 1.2, "close": 1.42, "min_shot": 1.3, "pattern": ["wide","medium","wide","close"]}`) | one phone take cut like two cameras: on sentence changes the frame jumps wide → medium → close, framed on the face (person matte). Never reframes inside a big word / headline / sticker / phone / pullback, shots ≥ 1.3 s. On by default in impact, editorial, news, product. qa.json `cameras` lists the cuts. |
+| `"loop": true` | the last framing matches the first and the last frames whip-blur into frame 1, so the Reel replays without a visible seam (people rewatch without noticing → watch time). |
+| `"rewind": {"text": "再看一次", "dur": 1.5}` | after the last line the whole video races backwards as a VHS tape (chroma split, scanlines, tracking band, ◀◀ REWIND, reversed fast voice) and lands exactly on frame 1. Replaces the loop whip; with a teaser use `loop` instead (one rewind per video is enough). Text: plain CJK/latin only (no emoji or arrows). |
+| `"teaser": {"text": "先看結果", "rewind_text": "怎麼做到的？", "dur": 2.0, "rewind": 1.2}` (or `true`) | **flash-forward hook**: the video OPENS on its best 2 s (with a 「● 先看結果」 tag), a VHS rewind races back to frame 1, then the story plays. Auto-picks the last result beat (phone / ui / chart / checklist / compare), else the big moment. Pick it yourself by putting `"teaser": {"at": "@word"}` (or `true` = the beat's last 2 s) on that clip. `rewind_text` = a 3–7 character question that makes them stay (「怎麼做到的？」「為什麼？」). With `loop`, the end whips into the teaser so the replay starts on the payoff. Adds `dur + rewind` seconds before beat 1 — storyboard.py shifts beats and SRT automatically; qa.json `teaser` says which span. `"teaser": false` = off. |
+| `"sfx_kit": "cinematic" \| "punchy" \| "subtle"` | risers that peak exactly on the big hits (booms, zoom-through, pullback) + sub hits under them. cinematic = louder (editorial), punchy = lighter (impact / news / product), subtle = nothing added (minimal / vlog). Set by the template. |
+| `"signature": {"text": "<their name>", "sub": "@handle", "where": "corner" \| "end", "at": 1.8}` | the creator's own sign-off card (top right, under the header) with a soft chime. Use THEIR name/handle — never 黑牛 for someone else. |
+| `"credit": true` (or a string) | small 「剪輯 by 黑牛 AI」 tag in the last 2.4 s. Removable: `"credit": false`. |
+
 ## Word-locked timing (how effects land on the right spot)
 Set `"words": "words.json"` (the transcribe.py output) at the top of edit.json. Then any time field can name the word instead of a number:
 `"at": "@幾千塊"` · `"start": "@工具"` · `"@知道#2"` (the 2nd time it's said in that clip) · `{"word": "6萬", "offset": -0.1}`.

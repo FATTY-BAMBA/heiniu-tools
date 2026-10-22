@@ -37,3 +37,7 @@ These came from a long round of real feedback; each one cost a re-render to disc
 - ffmpeg's `arnndn` delays audio by exactly 480 samples (10 ms at 48 kHz) and `afftdn` by ~25 ms: any denoiser must be followed by a trim of its latency (render.py does `atrim=start_sample=480`), or lip-sync drifts. Measured after the fix: 0.3 ms.
 - RNNoise cleans steady noise (fans, traffic, AC, hiss) by ~19 dB of SNR but crowd chatter only by ~4 dB — for night markets, still tell people to clip the mic on or hold the phone close.
 - Every release ships TWO zips: heiniu-video-editor.zip (skill folder → Customize → Skills → Upload skill, Free plan) and heiniu-video-editor-plugin.zip (.claude-plugin at the root → Customize → Plugins → Upload plugin). Uploading the skill zip into the Plugins box fails with "Zip must contain a .claude-plugin/plugin.json".
+- Teaser (flash-forward) is a post-step on video.mp4 + audio.wav, BEFORE the size encode: teaser frames go to a raw file on disk (not RAM), the rewind uses half-size frames. Every later timeline (storyboard beats, SRT) is shifted by `teaser_frames()` — use that helper, never recompute.
+- The end rewind and the teaser rewind share `vhs_rewind()` / `tape_audio()`; keep one implementation.
+- Rewind / teaser text: plain characters only — ↻ ▶ and emoji render as tofu in the sans font.
+

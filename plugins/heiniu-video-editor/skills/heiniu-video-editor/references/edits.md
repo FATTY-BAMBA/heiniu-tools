@@ -56,3 +56,17 @@ People talk in outcomes. Translate the sentence, change the spec, re-render, and
 | 加檔案卡 / 顯示素材檔名 | `ui: [{kind:"file", start, files:[{name, meta, badge}]}]` on that beat. |
 | 做成進度清單 / 一項一項打勾（剪掉 NG、字幕…） | `ui: [{kind:"steps", start, items:[{text, at:"@word"}…]}]`. |
 | 做一個安裝按鈕被點下去 / 游標點 Install | `ui: [{kind:"install", start, name, click_at:"@word"}]`. |
+
+## Premium finish
+| they say | change |
+|---|---|
+| 不要切來切去 / 鏡頭不要動 | `"multicam": false` |
+| 鏡頭多切一點 / 像兩台攝影機 | `"multicam": {"min_shot": 1.0}` |
+| 結尾接回開頭 / 讓人一直重看 | `"loop": true` |
+| 開頭先放結果 / 先給他們看成品 | `"teaser": true`（或在那一拍加 `"teaser": {"at": "@字"}`） |
+| 不要先看結果 | `"teaser": false` |
+| 倒帶 / 回放效果 | `"rewind": {"text": "再看一次"}` |
+| 拿掉倒帶 | delete `rewind` (keep `loop`) |
+| 音效再有電影感 / 更有張力 | `"sfx_kit": "cinematic"`；安靜一點 → `"subtle"` |
+| 加我的簽名 / 換成我的帳號 | `signature.text` / `signature.sub`；放最後 → `"where": "end"` |
+| 拿掉浮水印 / 不要黑牛字樣 | `"credit": false` |

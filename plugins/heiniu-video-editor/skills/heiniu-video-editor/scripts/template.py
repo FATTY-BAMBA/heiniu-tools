@@ -16,26 +16,26 @@ from hn_common import resolve_words, F, palette           # noqa: E402
 # Five style families that top short-form editors and caption tools converge on (impact word-by-word, editorial serif,
 # minimal, news strip, cinematic vlog) + a product style — rebuilt in our own look, never a copy of one creator's.
 T = {
-    "impact": dict(name="衝擊字", line="粗黑描邊大字・一次 2–5 字跟著嘴巴跳・重點字變色＋emoji", look="impact", grade="punchy", accent="#FFE14D",
+    "impact": dict(kit="punchy", cam=True, name="衝擊字", line="粗黑描邊大字・一次 2–5 字跟著嘴巴跳・重點字變色＋emoji", look="impact", grade="punchy", accent="#FFE14D",
                    shake=14, sfx=1.2, gap=2.5, strip=["headlines"], glass=False, punch=1.25, hold=0.5, freeze="蛤？"),
-    "editorial": dict(name="雜誌", line="襯線字逐字浮現・重點字斜體上色・刊頭＋毛玻璃巨字", look="editorial", grade="soft", accent="#FF6A1A",
+    "editorial": dict(kit="cinematic", cam=True, name="雜誌", line="襯線字逐字浮現・重點字斜體上色・刊頭＋毛玻璃巨字", look="editorial", grade="soft", accent="#FF6A1A",
                       shake=6, sfx=0.85, gap=3.0, header="masthead", strip=[], glass=True, punch=1.12, keep_punch_only=True),
-    "minimal": dict(name="極簡", line="低飽和＋單一重點色・小字從模糊浮現・安靜不吵", look="minimal", grade="muted", accent="#FFC233",
+    "minimal": dict(kit="subtle", cam=False, name="極簡", line="低飽和＋單一重點色・小字從模糊浮現・安靜不吵", look="minimal", grade="muted", accent="#FFC233",
                     shake=0, sfx=0.35, gap=4.5, push=0.025, strip=["bigwords", "headlines", "framebreak", "sticker", "doodle", "bg", "zoom_in", "whip_in", "chart"],
                     drop=["freeze", "cover", "compare"], punch=1.07, keep_punch_only=True),
-    "news": dict(name="新聞快報", line="紅色快報標題列・黑底字幕條・正在講的字變黃", look="news", grade="crisp", accent="#FFD43B",
+    "news": dict(kit="punchy", cam=True, name="新聞快報", line="紅色快報標題列・黑底字幕條・正在講的字變黃", look="news", grade="crisp", accent="#FFD43B",
                  shake=6, sfx=0.9, gap=3.0, header="news", low_words=True, strip=["sticker", "doodle", "framebreak", "bg"], glass=False,
                  punch=1.12, punch_digits_only=True),
-    "vlog": dict(name="電影感 Vlog", line="電影黑邊＋底片顆粒・字小而淡・緩慢推近", look="vlog", grade="film", accent="#F2C98A",
+    "vlog": dict(kit="subtle", cam=False, name="電影感 Vlog", line="電影黑邊＋底片顆粒・字小而淡・緩慢推近", look="vlog", grade="film", accent="#F2C98A",
                  shake=0, sfx=0.3, gap=5.0, push=0.03, header="stamp", bars=True, grain=0.035,
                  strip=["bigwords", "headlines", "framebreak", "sticker", "doodle", "punch", "pullback", "zoom_in", "whip_in", "chart", "bg"],
                  drop=["freeze", "cover", "compare"]),
-    "product": dict(name="開箱／業配", line="一段一張標籤滑進來・明亮原色・留言拿連結", look="label", grade="clean", accent="#14A38B",
+    "product": dict(kit="punchy", cam=True, name="開箱／業配", line="一段一張標籤滑進來・明亮原色・留言拿連結", look="label", grade="clean", accent="#14A38B",
                     shake=4, sfx=0.7, gap=3.0, header="label", low_words=True, strip=["doodle", "framebreak", "headlines", "sticker"], glass=False,
                     punch=1.1, cta=True),
 }
 ORDER = ["impact", "editorial", "minimal", "news", "vlog", "product"]
-GLOBALS = ["captions_style", "grade", "style", "shake_px", "sfx_gain", "header", "bars", "grain", "pacing"]
+GLOBALS = ["captions_style", "grade", "style", "shake_px", "sfx_gain", "header", "bars", "grain", "pacing", "sfx_kit", "multicam"]
 
 # ---------------- reversible edits ----------------
 def _set(it, k, v):
@@ -84,6 +84,8 @@ def apply(spec, name, spec_dir, preview=False):
     if t.get("bars"): spec["bars"] = True
     if t.get("grain"): spec["grain"] = t["grain"]
     spec["pacing"] = dict(spec.get("pacing") or {}, max_gap=t["gap"])
+    spec["sfx_kit"] = t["kit"]
+    if "multicam" not in spec["_base_globals"] or spec["_base_globals"]["multicam"] is None: spec["multicam"] = t["cam"]   # a person's own choice wins
     if t.get("header"):                                                   # topic line: spec "topic" (Claude writes it), else the first caption
         first = next((c["text"] for it in spec["timeline"] for c in it.get("captions", [])), spec.get("name", ""))
         topic = spec.get("topic") or first

@@ -54,6 +54,15 @@ def zoom(img_u8, z, yfrac=0.5):
     H, W = img_u8.shape[:2]; cw, ch = int(W / z), int(H / z); x0, y0 = (W - cw) // 2, int((H - ch) * yfrac)
     return cv2.resize(img_u8[y0:y0 + ch, x0:x0 + cw], (W, H), interpolation=cv2.INTER_LINEAR)
 
+def zoom_at(img_u8, z, cx=0.5, cy=0.5):
+    """crop a 1/z window centred on (cx, cy) (fractions of the frame, clamped to stay inside) and scale it back up"""
+    if abs(z - 1) < 1e-4: return img_u8
+    import cv2
+    H, W = img_u8.shape[:2]; cw, ch = W / z, H / z
+    x0 = min(max(cx * W - cw / 2, 0), W - cw); y0 = min(max(cy * H - ch / 2, 0), H - ch)
+    M = np.float32([[z, 0, -x0 * z], [0, z, -y0 * z]])
+    return cv2.warpAffine(img_u8, M, (W, H), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+
 # ---------------- person mask (optional: text behind the head) ----------------
 MASK_URL = "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net_human_seg.onnx"
 MODEL_DIR = os.environ.get("HN_MODELS", os.path.expanduser("~/.cache/heiniu"))
@@ -180,6 +189,22 @@ def resolve_words(spec, spec_dir, lead=0.067):
         return x
     spec = dict(spec); spec["timeline"] = [walk(it, it) if it.get("src") and it.get("type", "clip") in ("clip", "freeze") else it for it in spec["timeline"]]
     return spec
+def teaser_cfg(spec):
+    """flash-forward hook: top-level "teaser" (true / {text, rewind_text, dur, rewind}) or any clip carrying "teaser". None when off."""
+    if spec.get("teaser") is False: return None
+    top = spec.get("teaser"); marked = any(isinstance(it, dict) and it.get("teaser") for it in spec.get("timeline", []))
+    if not top and not marked: return None
+    c = dict(text="先看結果", rewind_text="", dur=2.0, rewind=1.2); c.update(top if isinstance(top, dict) else {})
+    for it in spec.get("timeline", []):
+        if isinstance(it, dict) and isinstance(it.get("teaser"), dict) and "dur" in it["teaser"]: c["dur"] = float(it["teaser"]["dur"])
+    return c
+def teaser_frames(spec, fps):
+    """frames the teaser + its rewind add at the start of the video (storyboard / SRT shift everything by this)"""
+    c = teaser_cfg(spec)
+    return 0 if not c else int(round(float(c["dur"]) * fps)) + int(round(float(c["rewind"]) * fps))
+def end_frames(spec, fps):
+    r = spec.get("rewind")
+    return int(round(float((r if isinstance(r, dict) else {}).get("dur", 1.6)) * fps)) if r else 0
 def spring(p):
     """ease-out with ~6% overshoot — for pops (bubbles, cards, ticks)"""
     p = min(max(p, 0.0), 1.0); return 1 - math.exp(-7 * p) * math.cos(8.5 * p) if p < 1 else 1.0

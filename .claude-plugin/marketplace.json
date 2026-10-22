@@ -9,8 +9,8 @@
     {
       "name": "heiniu-video-editor",
       "source": "./plugins/heiniu-video-editor",
-      "description": "跟 AI 聊天剪完整支短影音：六種風格 → 剪輯室逐拍確認 → 一句話或直接改 → 成品",
-      "version": "2.1.1"
+      "description": "跟 AI 聊天剪完整支短影音：六種風格 → 開頭先看結果、雙機位、無縫循環、音效設計 → 剪輯室逐拍確認 → 成品",
+      "version": "2.2.0"
     }
   ]
 }
