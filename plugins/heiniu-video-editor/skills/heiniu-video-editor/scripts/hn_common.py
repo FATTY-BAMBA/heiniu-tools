@@ -98,10 +98,24 @@ def grab(path, t, w=1080, h=1920, vf=None):
     b = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{max(0, t):.3f}", "-i", path, "-frames:v", "1", "-vf", chain,
                         "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True).stdout
     return np.frombuffer(b, np.uint8).reshape(h, w, 3).copy()
-def sfx(name):
-    import soundfile as sf
-    x, sr = sf.read(os.path.join(ASSETS, "sfx", name + ".wav"), dtype="float32")
-    return x if x.ndim == 2 else np.stack([x, x], 1)
+def sfx(name, sr=48000):
+    """the four base sound effects, synthesised in code (no binary audio files in the plugin):
+    boom = 50→60 Hz body thump, pop = 900 Hz blip, tick = 1.8 kHz click, whoosh = swelling band of air peaking at 0.45 s"""
+    rng = np.random.default_rng({"boom": 1, "pop": 2, "tick": 3, "whoosh": 4}.get(name, 0))
+    if name == "boom":
+        t = np.arange(int(0.6 * sr)) / sr; f = 50 + 10 * t / 0.6; ph = 2 * np.pi * np.cumsum(f) / sr
+        x = (np.sin(ph) + 0.18 * np.sin(2 * ph)) * np.exp(-t / 0.45) * np.minimum(1, t / 0.003)
+        x *= 0.08 / np.abs(x).max()
+    elif name in ("pop", "tick"):
+        f, d, tau, pk = (900, 0.08, 0.045, 0.026) if name == "pop" else (1800, 0.05, 0.03, 0.031)
+        t = np.arange(int(d * sr)) / sr; x = (np.sin(2 * np.pi * f * t) + 0.3 * np.sin(4 * np.pi * f * t)) * np.exp(-t / tau) * np.minimum(1, t / 0.0015); x *= pk / np.abs(x).max()
+    elif name == "whoosh":
+        n = int(0.8 * sr); t = np.arange(n) / sr; noise = rng.standard_normal(n)
+        fq = np.fft.rfftfreq(n, 1 / sr); band = np.fft.irfft(np.fft.rfft(noise) * np.exp(-0.5 * ((fq - 3000) / 1400) ** 2), n)   # air around 3 kHz
+        env = np.where(t < 0.12, 0, np.where(t < 0.45, np.sin(np.pi / 2 * (t - 0.12) / 0.33) ** 3, np.cos(np.pi / 2 * np.minimum(1, (t - 0.45) / 0.35)) ** 2))
+        x = (band + 0.25 * np.sin(2 * np.pi * 560 * t)) * env; x *= 0.121 / np.abs(x).max()
+    else: raise ValueError(f"unknown sound {name}")
+    x = x.astype(np.float32); return np.stack([x, x], 1)
 
 # ---------------- timeline expansion (speed ramps) ----------------
 def expand_timeline(timeline, default_speed=1.0):
@@ -128,7 +142,7 @@ def expand_timeline(timeline, default_speed=1.0):
     return out
 
 # ---------------- word-locked timing ----------------
-TIME_START_KEYS = {"at", "start", "send", "show", "type_at", "heart_at", "reply_at", "from"}
+TIME_START_KEYS = {"at", "start", "send", "show", "type_at", "heart_at", "reply_at", "from", "click_at"}
 TIME_END_KEYS = {"end", "until", "to"}
 def load_chars(words_path):
     """words.json (transcribe.py) → {file basename: [(char, t), …]} in source seconds"""
