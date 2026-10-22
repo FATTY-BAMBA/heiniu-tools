@@ -180,7 +180,8 @@ if __name__ == "__main__":
         print(f"✓ {os.path.basename(a.spec)} → {T[a.apply]['name']}（{a.apply}）. Switch any time with --apply <style>; the base cut is kept.")
     elif a.previews or a.reel:
         base = restore_full(spec) if spec.get("template") else spec
-        sub = dict(base, timeline=opening(base, a.seconds), name="style"); sub.pop("music", None)
+        sub = dict(base, timeline=[{k: v for k, v in it.items() if k != "teaser"} for it in opening(base, a.seconds)], name="style"); sub.pop("music", None)
+        for k in ("loop", "rewind", "teaser", "signature", "credit"): sub.pop(k, None)        # previews show the LOOK only — no endings, sign-offs or credit
         wd = os.path.join(D, "_render", "styles"); os.makedirs(wd, exist_ok=True)
         jobs = {n: apply(sub, n, D, preview=True) for n in names}
         with cf.ThreadPoolExecutor(max_workers=1 if a.reel else min(2, len(jobs))) as ex:      # full-res renders use ~2–3 GB each
