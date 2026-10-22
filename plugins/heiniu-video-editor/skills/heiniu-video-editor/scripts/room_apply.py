@@ -53,6 +53,10 @@ def apply(spec, block):
                 if isinstance(spec.get("teaser"), dict): spec["_teaser_off"] = spec["teaser"]
                 spec["teaser"] = False
             msg.append("先看結果開頭" + ("開" if f["teaser"] else "關"))
+        if "teaser_tr" in f and f["teaser_tr"] in ("vhs", "rewind", "whip", "card"):
+            t_ = spec.get("teaser") if isinstance(spec.get("teaser"), dict) else ({} if spec.get("teaser") else None)
+            if t_ is not None: t_["transition"] = f["teaser_tr"]; spec["teaser"] = t_
+            msg.append("倒回開頭的方式：" + {"vhs": "VHS 倒帶", "rewind": "快速倒轉", "whip": "甩鏡", "card": "字卡"}[f["teaser_tr"]])
         if "ending" in f:
             e_ = f["ending"]
             if e_ in ("loop", "off") and spec.get("rewind"): spec["_rewind_off"] = spec.pop("rewind")

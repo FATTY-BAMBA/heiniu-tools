@@ -191,6 +191,7 @@ tz_ = teaser_cfg(spec); sig_ = spec.get("signature") or spec.get("_signature_off
 data["finish"] = dict(
     multicam=bool(spec.get("multicam")), cams=len(qa_.get("cameras", [])),
     teaser=bool(tz_), teaser_text=(tz_ or {}).get("text", "先看結果"), teaser_src=(qa_.get("teaser") or {}).get("source", ""),
+    teaser_tr=(tz_ or {}).get("transition", "vhs"), teaser_why=((tz_ or {}).get("why") if tz_ else spec.get("teaser_skip")) or "",
     ending="rewind" if spec.get("rewind") else "loop" if spec.get("loop") else "off",
     kit=spec.get("sfx_kit") or "subtle",
     signature=bool(spec.get("signature")), sig_text=" · ".join(x for x in [(sig_ or {}).get("text", ""), (sig_ or {}).get("sub", "")] if x), has_sig=bool(sig_),

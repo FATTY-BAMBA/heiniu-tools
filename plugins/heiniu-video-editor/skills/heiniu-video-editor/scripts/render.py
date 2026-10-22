@@ -929,6 +929,49 @@ def tape_audio(src, Rs, rng):
     ix = np.linspace(0, len(va) - 1, Rs).astype(int); ra = va[ix] * 0.22; ra = np.stack([np.convolve(ra[:, c], np.ones(5) / 5, "same") for c in (0, 1)], 1)
     ra += rng.standard_normal((Rs, 2)).astype(np.float32) * 0.012; tt = np.arange(Rs) / SR
     return (ra * (np.minimum(1, tt / 0.08) * np.minimum(1, (tt[-1] - tt) / 0.12))[:, None]).astype(np.float32)
+def teaser_bridge(kind, frames, R_, txt, last, land):
+    """the way back from the teaser to frame 1: vhs | rewind (clean fast reverse) | whip (motion-blur pan) | card (text card over a blur)"""
+    if kind == "vhs":
+        yield from vhs_rewind(frames, R_, txt, land); return
+    L8 = land.astype(np.float32) / 255
+    if kind == "rewind":
+        for r in range(R_):
+            q = r / max(1, R_ - 1); idx = int(round((len(frames) - 1) * (1 - smooth(q))))
+            fr_ = cv2.resize(frames[idx], (W, H), interpolation=cv2.INTER_LINEAR)
+            fr_ = cv2.blur(fr_, (1, max(1, S(18)))).astype(np.float32) / 255                     # soft vertical smear = speed
+            fr_ = over(fr_, RWI, 0.9 if r < R_ - 3 else 0)
+            if r >= R_ - 3: k_ = (r - (R_ - 3) + 1) / 3; fr_ = fr_ * (1 - k_) + L8 * k_
+            yield (np.clip(fr_, 0, 1) * 255).astype(np.uint8)
+        return
+    if kind == "whip":
+        A, Bf = last.astype(np.float32), land.astype(np.float32)
+        for r in range(R_):
+            q = (r + 1) / R_; e = q * q * (3 - 2 * q); src = A if e < 0.5 else Bf
+            off = int((e if e < 0.5 else e - 1) * W * 1.1); L = max(1, int(S(160) * math.sin(math.pi * e)))
+            fr_ = np.roll(src, -off, 1); fr_ = cv2.blur(fr_, (L, 1))
+            yield np.clip(fr_, 0, 255).astype(np.uint8)
+        return
+    # card: the teaser freezes under a heavy blur, a title card rises in, then the story starts
+    bg = cv2.GaussianBlur(cv2.resize(last, (W // 4, H // 4), interpolation=cv2.INTER_AREA), (0, 0), 6)
+    bg = cv2.resize(bg, (W, H), interpolation=cv2.INTER_LINEAR).astype(np.float32) / 255 * 0.45
+    def card():
+        im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); t1 = txt or "從頭說起"
+        f = F("serif", S(78)); tw = d.textlength(t1, font=f)
+        while tw > W * 0.8: f = F("serif", int(f.size * 0.92)); tw = d.textlength(t1, font=f)
+        d.text((W / 2, H * 0.47), t1, font=f, fill=IV + (255,), anchor="mm")
+        d.rectangle([W / 2 - S(46), H * 0.47 + S(70), W / 2 + S(46), H * 0.47 + S(76)], fill=EM + (255,))
+        return to_np(im)
+    CD = card()
+    for r in range(R_):
+        u = r / FPS; a_ = eq(u / 0.25); fr_ = over(bg, CD, a_)
+        if r >= R_ - 4: k_ = (r - (R_ - 4) + 1) / 4; fr_ = fr_ * (1 - k_) + L8 * k_
+        yield (np.clip(fr_, 0, 1) * 255).astype(np.uint8)
+def rw_icon():
+    im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+    d.rounded_rectangle([S(56), S(226), S(196), S(300)], S(37), fill=(10, 10, 12, 170))                 # top-left, clear of the face
+    d.text((S(126), S(263)), "◀◀", font=F("mono", S(44)), fill=(255, 255, 255, 240), anchor="mm")
+    return to_np(im)
+RWI = rw_icon() if TZ and TZ["transition"] == "rewind" else None
 if REWON and REWF:                                                         # VHS rewind racing back to the first frame, then the video loops
     R_ = REW_N
     for fr8 in vhs_rewind(REWF, R_, REW.get("text", ""), FIRST): enc.stdin.write(fr8.tobytes())
@@ -1053,11 +1096,13 @@ if TZ:
             if len(buf) < FB: break
             fr = np.frombuffer(buf, np.uint8).reshape(H, W, 3)
             if T0 is None: T0 = fr.copy()
+            TL = fr
             u_ = k / FPS; a_ = eq(u_ / 0.25) * (1 - eq((u_ - (td - 0.35)) / 0.3) if u_ > td - 0.35 else 1)
             out8 = (np.clip(over(fr.astype(np.float32) / 255, TAG, a_), 0, 1) * 255).astype(np.uint8)
             if (LOOP or REWON) and k < 3: out8 = vblur(out8, int(S(60) * (3 - k) / 3))
             enc.stdin.write(out8.tobytes())
-    for fr8 in vhs_rewind(small, NR, TZ.get("rewind_text", ""), MAIN0): enc.stdin.write(fr8.tobytes())
+    TL = TL.copy(); TR = TZ["transition"]
+    for fr8 in teaser_bridge(TR, small, NR, TZ.get("rewind_text", ""), TL, MAIN0): enc.stdin.write(fr8.tobytes())
     dv = subprocess.Popen(["ffmpeg", "-v", "error", "-i", VID, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
     for n in range(TOTAL_N):
         buf = dv.stdout.read(FB)
@@ -1070,13 +1115,19 @@ if TZ:
     enc.stdin.close(); enc.wait(); dv.kill(); os.remove(TRAW)
     a8, _ = sf.read(AUD, dtype="float32", always_2d=True); ia, ib = int(round(ta * SR)), int(round(ta * SR)) + int(NT / FPS * SR)
     tz_a = a8[ia:ib].copy(); fl = int(0.012 * SR); tz_a[:fl] *= np.linspace(0, 1, fl)[:, None]; tz_a[-fl:] *= np.linspace(1, 0, fl)[:, None]
-    rs = int(NR / FPS * SR); rew_a = tape_audio(a8[:ib], rs, rng); w_ = gen("whoosh_rev"); rew_a[:len(w_)] += w_[:rs] * 0.5
+    rs = int(NR / FPS * SR)
+    if TR in ("vhs", "rewind"):
+        rew_a = tape_audio(a8[:ib], rs, rng) * (1.0 if TR == "vhs" else 0.6); w_ = gen("whoosh_rev"); rew_a[:len(w_)] += w_[:rs] * 0.5
+    else:
+        rew_a = np.zeros((rs, 2), np.float32); w_ = gen("whoosh" if TR == "whip" else "chime")
+        j_ = max(0, rs // 2 - (PEAKS.get("whoosh", len(w_) // 2) if TR == "whip" else 0)) if TR == "whip" else 0
+        rew_a[j_:j_ + len(w_)] += w_[:rs - j_] * (0.7 if TR == "whip" else 0.9)
     hit = gen("subhit")[:rs] if spec.get("sfx_kit") in ("cinematic", "punchy") else None
     a2 = np.concatenate([tz_a, rew_a, a8]).astype(np.float32)
     if hit is not None: j0 = len(tz_a) + rs - int(0.02 * SR); a2[j0:j0 + len(hit)] += hit[:len(a2) - j0] * 0.5
     a2 = np.clip(a2, -0.97, 0.97); AUD2 = os.path.join(WORK, "audio_tz.wav"); sf.write(AUD2, a2, SR, subtype="PCM_16")
     VID, AUD = VID2, AUD2; TOTAL_N += NT + NR; DUR = TOTAL_N / FPS
-    TEASER_QA = dict(source=why, span=f"{ta:.2f}–{tb:.2f}s", offset_s=round((NT + NR) / FPS, 3))
+    TEASER_QA = dict(source=why, span=f"{ta:.2f}–{tb:.2f}s", transition=TR, offset_s=round((NT + NR) / FPS, 3))
     print(f"[teaser] {why} {ta:.2f}–{tb:.2f}s + rewind {NR / FPS:.2f}s", flush=True)
 
 # ================= 5. encode to size =================

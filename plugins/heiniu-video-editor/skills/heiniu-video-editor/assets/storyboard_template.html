@@ -526,10 +526,12 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
   };
   function fv(k) { return S.fin.hasOwnProperty(k) ? S.fin[k] : FIN[k]; }
   function finDiff() { var d = {}; Object.keys(S.fin || {}).forEach(function (k) { if (S.fin[k] !== FIN[k]) d[k] = S.fin[k]; }); return Object.keys(d).length ? d : null; }
+  var TRN = { vhs: "VHS 倒帶", rewind: "快速倒轉", whip: "甩鏡", card: "字卡" };
   var KITN = { cinematic: "電影感", punchy: "俐落", subtle: "安靜" }, ENDN = { loop: "無縫接回", rewind: "VHS 倒帶", off: "不循環" };
   function finText(d) {
     var m = [];
     if ("multicam" in d) m.push("雙機位" + (d.multicam ? "開" : "關")); if ("teaser" in d) m.push("先看結果開頭" + (d.teaser ? "開" : "關"));
+    if ("teaser_tr" in d) m.push("倒回開頭：" + TRN[d.teaser_tr]);
     if ("ending" in d) m.push("結尾：" + ENDN[d.ending]); if ("kit" in d) m.push("音效：" + KITN[d.kit]);
     if ("signature" in d) m.push("簽名" + (d.signature ? "開" : "關")); if ("credit" in d) m.push("黑牛 AI 標記" + (d.credit ? "開" : "關"));
     return m.join("、");
@@ -538,7 +540,7 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
     var box = $("finish"); if (!FIN || PICK) { box.hidden = true; return; } box.hidden = false;
     var T = [
       { k: "multicam", t: "雙機位剪法", d: fv("multicam") ? (FIN.cams ? "一支手機拍，剪成兩台攝影機：" + FIN.cams + " 次換鏡，都對準臉" : "換句話時切近景／遠景，都對準臉") : "鏡頭固定不切換", sw: 1 },
-      { k: "teaser", t: "開頭先看結果", d: fv("teaser") ? "最精彩的 2 秒放最前面，倒帶回開頭再講" + (FIN.teaser_src ? "（" + FIN.teaser_src.replace("beat ", "第 ").replace(" (auto)", " 拍").replace(" (marked)", " 拍") + "）" : "") : "從第一句直接開始", sw: 1 },
+      { k: "teaser", t: "開頭先看結果", d: fv("teaser") ? (FIN.teaser_why || "最精彩的 2 秒放最前面，再倒回開頭講") + (FIN.teaser_src ? "（" + FIN.teaser_src.replace("beat ", "第 ").replace(" (auto)", " 拍").replace(" (marked)", " 拍") + "）" : "") : (FIN.teaser_why ? "沒加：" + FIN.teaser_why : "從第一句直接開始"), sw: 1, sub: fv("teaser") ? { k: "teaser_tr", o: TRN } : null },
       { k: "ending", t: "結尾循環", d: { loop: "結尾無縫接回開頭，滑過去不會發現重播", rewind: "整支 VHS 倒帶回第一格，再播一次", off: "播完就停" }[fv("ending")], seg: ENDN },
       { k: "kit", t: "音效設計", d: { cinematic: "大時刻前有上升音，落下有低頻重擊", punchy: "輕一點的上升音和重擊", subtle: "只保留基本轉場音" }[fv("kit")], seg: KITN },
       { k: "signature", t: "你的簽名", d: FIN.has_sig ? (fv("signature") ? FIN.sig_text + "，開場後出現，附一聲輕鈴" : "不顯示簽名") : "還沒設定：跟 Claude 說你的名字和帳號", sw: FIN.has_sig ? 1 : 0 },
@@ -550,9 +552,10 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
     box.innerHTML = '<div class="fhead"><div><div class="kick"><i></i>STUDIO FINISH</div><h2 id="finTitle">成片質感</h2>' +
       '<p class="fsub">選好風格後自動做完的後製精修。每一項都可以在這裡關掉或換。</p></div><span class="fscore"><b>' + on + '</b> / ' + T.length + ' 項已加上</span></div>' +
       '<div class="fgrid">' + T.map(function (x, i) {
-        var v = fv(x.k), isOn = x.seg ? v !== "off" : !!v, ed = S.fin.hasOwnProperty(x.k) && S.fin[x.k] !== FIN[x.k];
+        var v = fv(x.k), isOn = x.seg ? v !== "off" : !!v, ed = (S.fin.hasOwnProperty(x.k) && S.fin[x.k] !== FIN[x.k]) || (x.sub && S.fin.hasOwnProperty(x.sub.k) && S.fin[x.sub.k] !== FIN[x.sub.k]);
         var ctl = x.sw ? '<button type="button" class="fsw" role="switch" data-fk="' + x.k + '" aria-checked="' + !!v + '" aria-label="' + esc(x.t) + '"></button>' : '<span></span>';
         var seg = x.seg ? '<div class="fseg" role="group" aria-label="' + esc(x.t) + '">' + Object.keys(x.seg).map(function (o) { return '<button type="button" data-fk="' + x.k + '" data-fv="' + o + '" aria-pressed="' + (v === o) + '">' + esc(x.seg[o]) + '</button>'; }).join("") + '</div>' : '';
+        if (x.sub) { var sv = fv(x.sub.k); seg = '<div class="fseg" role="group" aria-label="倒回開頭的方式">' + Object.keys(x.sub.o).map(function (o) { return '<button type="button" data-fk="' + x.sub.k + '" data-fv="' + o + '" aria-pressed="' + (sv === o) + '">' + esc(x.sub.o[o]) + '</button>'; }).join("") + '</div>'; }
         return '<div class="ftile ' + (isOn ? "on" : "off") + (ed ? " edited" : "") + '" style="animation-delay:' + (first ? 120 + i * 110 : 0) + 'ms"><span class="ic" aria-hidden="true" style="animation-delay:' + (first ? 220 + i * 110 : 0) + 'ms">' + ICON[x.k] + '</span><span class="ft">' + esc(x.t) + '</span>' + ctl + '<span class="fd">' + esc(x.d) + '</span>' + seg + '</div>';
       }).join("") + '</div><p class="fnote">改了這裡，按下面的按鈕送出，Claude 會重出一版。</p>';
     box.onclick = function (e) {
