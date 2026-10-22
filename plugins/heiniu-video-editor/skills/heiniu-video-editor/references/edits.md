@@ -65,6 +65,7 @@ People talk in outcomes. Translate the sentence, change the spec, re-render, and
 | 結尾接回開頭 / 讓人一直重看 | `"loop": true` |
 | 開頭先放結果 / 先給他們看成品 | `"teaser": true`（或在那一拍加 `"teaser": {"at": "@字"}`） |
 | 不要先看結果 | `"teaser": false` |
+| 倒回去的方式換一個 / 不要 VHS | `teaser.transition`: `"whip"` 甩鏡、`"card"` 字卡、`"rewind"` 快速倒轉、`"vhs"` |
 | 倒帶 / 回放效果 | `"rewind": {"text": "再看一次"}` |
 | 拿掉倒帶 | delete `rewind` (keep `loop`) |
 | 音效再有電影感 / 更有張力 | `"sfx_kit": "cinematic"`；安靜一點 → `"subtle"` |

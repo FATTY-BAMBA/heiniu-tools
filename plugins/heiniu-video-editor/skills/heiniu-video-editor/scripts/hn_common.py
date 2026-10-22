@@ -189,12 +189,18 @@ def resolve_words(spec, spec_dir, lead=0.067):
         return x
     spec = dict(spec); spec["timeline"] = [walk(it, it) if it.get("src") and it.get("type", "clip") in ("clip", "freeze") else it for it in spec["timeline"]]
     return spec
+TEASER_TR_DUR = {"vhs": 0.8, "rewind": 0.7, "whip": 0.4, "card": 0.9}
+TEASER_TR_BY_STYLE = {"impact": "vhs", "news": "whip", "editorial": "card", "minimal": "rewind", "vlog": "card", "product": "whip"}
+TEASER_TR_NAME = {"vhs": "VHS 倒帶", "rewind": "快速倒轉", "whip": "甩鏡", "card": "字卡"}
 def teaser_cfg(spec):
     """flash-forward hook: top-level "teaser" (true / {text, rewind_text, dur, rewind}) or any clip carrying "teaser". None when off."""
     if spec.get("teaser") is False: return None
     top = spec.get("teaser"); marked = any(isinstance(it, dict) and it.get("teaser") for it in spec.get("timeline", []))
     if not top and not marked: return None
-    c = dict(text="先看結果", rewind_text="", dur=2.0, rewind=1.2); c.update(top if isinstance(top, dict) else {})
+    # how the teaser gets back to the start — varied per style so every creator's videos don't share one look
+    tr = (top if isinstance(top, dict) else {}).get("transition") or TEASER_TR_BY_STYLE.get(spec.get("template"), "vhs")
+    c = dict(text="先看結果", rewind_text="", dur=2.0, transition=tr, rewind=TEASER_TR_DUR.get(tr, 0.8)); c.update(top if isinstance(top, dict) else {})
+    c["transition"] = tr if tr in TEASER_TR_DUR else "vhs"
     for it in spec.get("timeline", []):
         if isinstance(it, dict) and isinstance(it.get("teaser"), dict) and "dur" in it["teaser"]: c["dur"] = float(it["teaser"]["dur"])
     return c
