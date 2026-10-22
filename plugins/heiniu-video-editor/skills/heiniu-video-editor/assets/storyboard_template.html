@@ -184,6 +184,46 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
 .steps li.done { color: var(--fg) } .steps li.done::before { background: var(--ok); border-color: var(--ok) }
 .steps li.now { color: var(--fg); font-weight: 700 } .steps li.now::before { border-color: var(--ember); border-top-color: transparent; animation: spin .9s linear infinite }
 @keyframes spin { to { transform: rotate(360deg) } }
+/* ---------- 成片質感 · studio finish: a dark "mastering" card — the premium pass the style added ---------- */
+.finish { margin-top: 18px; position: relative; overflow: hidden; border-radius: 18px; padding: 18px; color: #f3eee4;
+  background: radial-gradient(120% 90% at 100% 0%, rgba(255, 122, 46, .22), transparent 55%), linear-gradient(160deg, #1d1d20, #121213 70%);
+  border: 1px solid rgba(255, 255, 255, .08); box-shadow: 0 18px 50px rgba(20, 10, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .06) }
+.finish .fhead { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap }
+.finish .kick { font-family: var(--mono); font-size: 11px; letter-spacing: .22em; color: #ff8a45; display: flex; align-items: center; gap: 8px }
+.finish .kick i { width: 7px; height: 7px; border-radius: 50%; background: #ff8a45; box-shadow: 0 0 0 0 rgba(255, 138, 69, .6); animation: fpulse 2.2s ease-out infinite }
+.finish h2 { margin: 4px 0 0; font-family: var(--display); font-size: 24px; font-weight: 700; letter-spacing: .02em }
+.finish .fsub { margin: 4px 0 0; color: #b9b3a8; font-size: 13.5px }
+.finish .fscore { font-family: var(--mono); font-size: 12px; color: #d9d3c8; border: 1px solid rgba(255, 255, 255, .14); border-radius: 999px; padding: 5px 12px; white-space: nowrap }
+.finish .fscore b { color: #fff }
+.fgrid { margin-top: 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 10px }
+.ftile { position: relative; display: grid; grid-template-columns: 38px 1fr auto; gap: 4px 12px; align-items: start; align-content: start; padding: 14px; border-radius: 13px;
+  background: rgba(255, 255, 255, .045); border: 1px solid rgba(255, 255, 255, .08); transition: background .2s, border-color .2s, opacity .2s }
+.ftile.on { background: rgba(255, 138, 69, .09); border-color: rgba(255, 138, 69, .32) }
+.ftile.off { opacity: .62 }
+.ftile.edited::after { content: "已調整"; position: absolute; top: -8px; right: 10px; font-size: 10.5px; font-weight: 700; background: #ff8a45; color: #1a1a1b; border-radius: 6px; padding: 0 6px }
+.ftile .ic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; background: rgba(255, 255, 255, .06); grid-row: span 3 }
+.ftile .ic svg { width: 22px; height: 22px; stroke: #ff9a5c; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round }
+.ftile.off .ic svg { stroke: #8d877d }
+.ftile .ft { font-weight: 700; font-size: 15px; line-height: 1.3; align-self: center }
+.ftile .fd { grid-column: 2 / 4; font-size: 12.5px; color: #b9b3a8; line-height: 1.45 }
+.fsw { align-self: center; width: 42px; height: 24px; border-radius: 999px; border: 0; padding: 0; background: #4a4845; position: relative; transition: background .2s; flex: none }
+.fsw::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #f3eee4; transition: transform .22s cubic-bezier(.2, .8, .2, 1) }
+.fsw[aria-checked="true"] { background: #ff7a2e }
+.fsw[aria-checked="true"]::after { transform: translateX(18px) }
+.fseg { grid-column: 2 / 4; display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap }
+.fseg button { border: 1px solid rgba(255, 255, 255, .14); background: transparent; color: #d9d3c8; border-radius: 8px; padding: 3px 9px; font-size: 12.5px }
+.fseg button[aria-pressed="true"] { background: #f3eee4; color: #1a1a1b; border-color: #f3eee4; font-weight: 700 }
+.finish .fnote { margin: 12px 0 0; font-size: 12.5px; color: #9b968c }
+.fmini { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px }
+.fmini span { font-size: 12.5px; color: var(--fg); background: var(--panel2); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px }
+.fmini span::before { content: "✦ "; color: var(--ember) }
+/* studio pass: the tiles light up one by one the first time this version opens */
+.finish.pass .ftile { animation: frise .55s cubic-bezier(.2, .8, .2, 1) both }
+.finish.pass .ftile .ic { animation: fglow 1.1s ease-out both }
+@keyframes frise { from { opacity: 0; transform: translateY(8px) scale(.98) } to { opacity: 1; transform: none } }
+@keyframes fglow { 0% { box-shadow: 0 0 0 0 rgba(255, 138, 69, 0) } 35% { box-shadow: 0 0 0 6px rgba(255, 138, 69, .25) } 100% { box-shadow: 0 0 0 0 rgba(255, 138, 69, 0) } }
+@keyframes fpulse { 0% { box-shadow: 0 0 0 0 rgba(255, 138, 69, .55) } 70%, 100% { box-shadow: 0 0 0 9px rgba(255, 138, 69, 0) } }
+@media (prefers-reduced-motion: reduce) { .finish.pass .ftile, .finish.pass .ftile .ic, .finish .kick i { animation: none } }
 @media (prefers-reduced-motion: reduce) { .steps li.now::before { animation: none; background: var(--ember) } }
 .sheet .row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end }
 .sheet .elapsed { font: 500 12.5px var(--mono); color: var(--muted) }
@@ -236,6 +276,7 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
   </section>
 
   <section id="styles" class="styles" hidden aria-labelledby="stylesTitle"></section>
+  <section id="finish" class="finish" hidden aria-labelledby="finTitle"></section>
   <section id="changes" class="changes" hidden></section>
   <section id="deliver" class="deliver" hidden></section>
 
@@ -310,6 +351,7 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
     var box = $("styles"); box.hidden = !open; if (!open) return;
     box.innerHTML = '<h2 id="stylesTitle">' + (PICK ? '六種風格・<em>你的影片</em>' : '換一個<em>風格</em>') + '</h2>' +
       '<p>' + (PICK ? '每張卡片都是<b>你自己影片</b>的開頭，用不同風格剪出來的。點一個，按下面的按鈕，Claude 就用這個風格做粗剪。' : '換風格會用同一份剪接重出一版：字幕、調色、特效、音效都換成新風格。') + '</p>' +
+      (PICK ? '<div class="fmini" aria-label="每個風格都會自動加上"><span>雙機位剪法</span><span>開頭先看結果</span><span>無縫循環結尾</span><span>音效設計</span><span>你的簽名</span></div>' : '') +
       '<div class="sgrid">' + STY.map(function (m) {
         return '<button class="scard" type="button" data-sid="' + esc(m.id) + '" aria-pressed="' + (S.pickStyle === m.id) + '">' +
           '<video muted loop playsinline autoplay preload="auto" src="' + m.video + '"' + (m.poster ? ' poster="' + m.poster + '"' : '') + '></video>' +
@@ -472,6 +514,55 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
   });
   paintGlob();
 
+  /* ---------- 成片質感 · studio finish ---------- */
+  var FIN = D.finish || null; if (!S.fin) S.fin = {};
+  var ICON = {
+    multicam: '<svg viewBox="0 0 24 24"><rect x="2.5" y="7" width="12" height="10" rx="2"/><path d="M14.5 10.5 21 7v10l-6.5-3.5"/><path d="M6 4h5"/></svg>',
+    teaser: '<svg viewBox="0 0 24 24"><path d="M4 5v14"/><path d="M8 12 19 5v14z"/></svg>',
+    ending: '<svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v4.5h-4.5"/></svg>',
+    kit: '<svg viewBox="0 0 24 24"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2"/></svg>',
+    signature: '<svg viewBox="0 0 24 24"><path d="M3 17c3-1 4-8 6-8s0 8 2 8 3-5 4.5-5 1 4 3 4 2.5-1 2.5-1"/><path d="M3 21h18"/></svg>',
+    credit: '<svg viewBox="0 0 24 24"><path d="m12 3 2.2 5.4L20 9l-4.4 3.8L17 19l-5-3.1L7 19l1.4-6.2L4 9l5.8-.6z"/></svg>'
+  };
+  function fv(k) { return S.fin.hasOwnProperty(k) ? S.fin[k] : FIN[k]; }
+  function finDiff() { var d = {}; Object.keys(S.fin || {}).forEach(function (k) { if (S.fin[k] !== FIN[k]) d[k] = S.fin[k]; }); return Object.keys(d).length ? d : null; }
+  var KITN = { cinematic: "電影感", punchy: "俐落", subtle: "安靜" }, ENDN = { loop: "無縫接回", rewind: "VHS 倒帶", off: "不循環" };
+  function finText(d) {
+    var m = [];
+    if ("multicam" in d) m.push("雙機位" + (d.multicam ? "開" : "關")); if ("teaser" in d) m.push("先看結果開頭" + (d.teaser ? "開" : "關"));
+    if ("ending" in d) m.push("結尾：" + ENDN[d.ending]); if ("kit" in d) m.push("音效：" + KITN[d.kit]);
+    if ("signature" in d) m.push("簽名" + (d.signature ? "開" : "關")); if ("credit" in d) m.push("黑牛 AI 標記" + (d.credit ? "開" : "關"));
+    return m.join("、");
+  }
+  function buildFinish() {
+    var box = $("finish"); if (!FIN || PICK) { box.hidden = true; return; } box.hidden = false;
+    var T = [
+      { k: "multicam", t: "雙機位剪法", d: fv("multicam") ? (FIN.cams ? "一支手機拍，剪成兩台攝影機：" + FIN.cams + " 次換鏡，都對準臉" : "換句話時切近景／遠景，都對準臉") : "鏡頭固定不切換", sw: 1 },
+      { k: "teaser", t: "開頭先看結果", d: fv("teaser") ? "最精彩的 2 秒放最前面，倒帶回開頭再講" + (FIN.teaser_src ? "（" + FIN.teaser_src.replace("beat ", "第 ").replace(" (auto)", " 拍").replace(" (marked)", " 拍") + "）" : "") : "從第一句直接開始", sw: 1 },
+      { k: "ending", t: "結尾循環", d: { loop: "結尾無縫接回開頭，滑過去不會發現重播", rewind: "整支 VHS 倒帶回第一格，再播一次", off: "播完就停" }[fv("ending")], seg: ENDN },
+      { k: "kit", t: "音效設計", d: { cinematic: "大時刻前有上升音，落下有低頻重擊", punchy: "輕一點的上升音和重擊", subtle: "只保留基本轉場音" }[fv("kit")], seg: KITN },
+      { k: "signature", t: "你的簽名", d: FIN.has_sig ? (fv("signature") ? FIN.sig_text + "，開場後出現，附一聲輕鈴" : "不顯示簽名") : "還沒設定：跟 Claude 說你的名字和帳號", sw: FIN.has_sig ? 1 : 0 },
+      { k: "credit", t: "剪輯 by 黑牛 AI", d: fv("credit") ? "結尾右下角的小標記" : "不顯示標記", sw: 1 }
+    ];
+    var on = T.filter(function (x) { var v = fv(x.k); return x.seg ? v !== "off" && !(x.k === "kit" && v === "subtle") : !!v && (x.k !== "signature" || FIN.has_sig); }).length;
+    var first = !S.finSeen; S.finSeen = true; save();
+    box.className = "finish" + (first ? " pass" : "");
+    box.innerHTML = '<div class="fhead"><div><div class="kick"><i></i>STUDIO FINISH</div><h2 id="finTitle">成片質感</h2>' +
+      '<p class="fsub">選好風格後自動做完的後製精修。每一項都可以在這裡關掉或換。</p></div><span class="fscore"><b>' + on + '</b> / ' + T.length + ' 項已加上</span></div>' +
+      '<div class="fgrid">' + T.map(function (x, i) {
+        var v = fv(x.k), isOn = x.seg ? v !== "off" : !!v, ed = S.fin.hasOwnProperty(x.k) && S.fin[x.k] !== FIN[x.k];
+        var ctl = x.sw ? '<button type="button" class="fsw" role="switch" data-fk="' + x.k + '" aria-checked="' + !!v + '" aria-label="' + esc(x.t) + '"></button>' : '<span></span>';
+        var seg = x.seg ? '<div class="fseg" role="group" aria-label="' + esc(x.t) + '">' + Object.keys(x.seg).map(function (o) { return '<button type="button" data-fk="' + x.k + '" data-fv="' + o + '" aria-pressed="' + (v === o) + '">' + esc(x.seg[o]) + '</button>'; }).join("") + '</div>' : '';
+        return '<div class="ftile ' + (isOn ? "on" : "off") + (ed ? " edited" : "") + '" style="animation-delay:' + (first ? 120 + i * 110 : 0) + 'ms"><span class="ic" aria-hidden="true" style="animation-delay:' + (first ? 220 + i * 110 : 0) + 'ms">' + ICON[x.k] + '</span><span class="ft">' + esc(x.t) + '</span>' + ctl + '<span class="fd">' + esc(x.d) + '</span>' + seg + '</div>';
+      }).join("") + '</div><p class="fnote">改了這裡，按下面的按鈕送出，Claude 會重出一版。</p>';
+    box.onclick = function (e) {
+      var b = e.target.closest("[data-fk]"); if (!b) return; var k = b.dataset.fk;
+      S.fin[k] = b.dataset.fv ? b.dataset.fv : !fv(k); if (S.fin[k] === FIN[k]) delete S.fin[k];
+      save(); buildFinish(); refresh();
+    };
+  }
+  buildFinish();
+
   /* ---------- state → UI ---------- */
   function notes() {
     var out = [];
@@ -490,7 +581,7 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
       segs[i].classList.toggle("ok", st === "ok"); segs[i].classList.toggle("fix", st === "fix");
       if (st) seen++;
     });
-    var N = notes().length + (globChanged() ? 1 : 0), all = seen === B.length;
+    var N = notes().length + (globChanged() ? 1 : 0) + (FIN && finDiff() ? 1 : 0), all = seen === B.length;
     $("prog").innerHTML = "已看 <b>" + seen + "</b>/" + B.length + " 拍" + (N ? " · <b>" + N + "</b> 條修改" : "") + '<span class="meter"><i style="width:' + (100 * seen / B.length) + '%"></i></span>';
     var send = $("send");
     if (PICK) { send.textContent = S.pickStyle ? "用「" + styleName(S.pickStyle) + "」開始粗剪" : "先選一個風格"; send.className = "btn"; send.disabled = !S.pickStyle; $("copy").disabled = !S.pickStyle; $("copy").textContent = "複製文字";
@@ -512,8 +603,9 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
     var ok = B.filter(function (b) { return S.st[b.n] === "ok"; }).map(function (b) { return b.n; });
     var edits = B.filter(function (b) { return S.st[b.n] === "fix" && dirOf(b); }).map(function (b) { var d = S.dir[b.n]; return { beat: +b.n, caps: d.caps || {}, off: d.off || [], cut: !!d.cut }; });
     var g = globChanged() ? { scale: S.glob.scale, dy: S.glob.dy } : null;
-    var block = (edits.length || g) ? "\n<!--room-json " + JSON.stringify({ v: VER, edits: edits, global: g || undefined }) + "-->" : "";
-    return head + " 修改\n" + (g ? "全片字幕：大小 " + Math.round(g.scale * 100) + "%、位置 " + (g.dy < 0 ? "往上 " : g.dy > 0 ? "往下 " : "不變 ") + Math.abs(g.dy) + "\n" : "") +
+    var fd = FIN ? finDiff() : null;
+    var block = (edits.length || g || fd) ? "\n<!--room-json " + JSON.stringify({ v: VER, edits: edits, global: g || undefined, finish: fd || undefined }) + "-->" : "";
+    return head + " 修改\n" + (fd ? "成片質感：" + finText(fd) + "\n" : "") + (g ? "全片字幕：大小 " + Math.round(g.scale * 100) + "%、位置 " + (g.dy < 0 ? "往上 " : g.dy > 0 ? "往下 " : "不變 ") + Math.abs(g.dy) + "\n" : "") +
       notes().map(function (x) { return "第 " + x.n + " 拍：" + x.text; }).join("\n") + (ok.length ? "\n（第 " + ok.join("、") + " 拍 OK，保持不變）" : "") +
       "\n直接修改照 room-json 套用（scripts/room_apply.py），其他照字面改。改好請更新這個剪輯室頁面，並先給我看改過的那幾拍。" + block;
   }
@@ -548,7 +640,7 @@ blockquote s { color: var(--muted); font-size: .78em; font-weight: 500 }
       else copyText(text);
     }
   }
-  var hasFix = function () { return notes().length > 0 || globChanged(); };
+  var hasFix = function () { return notes().length > 0 || globChanged() || !!(FIN && finDiff()); };
   $("send").addEventListener("click", function () { if (PICK) { if (S.pickStyle) deliver("style"); return; } if (D.delivered && !hasFix()) { if (DL) DL(); return; } deliver(hasFix() ? "fix" : "approve"); });
   $("copy").addEventListener("click", function () { copyText(message(PICK ? "style" : hasFix() ? "fix" : "approve")); });
 

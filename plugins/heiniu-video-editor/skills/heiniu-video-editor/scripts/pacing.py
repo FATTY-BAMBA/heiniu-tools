@@ -55,6 +55,8 @@ def analyze(spec, fps=None, max_gap=None):
                 add(c["start"])
                 for row in c.get("items", []): add(row["at"])
                 if "click_at" in c: add(c["click_at"])
+            if spec.get("multicam") and not it.get("pullback") and not it.get("fit"):
+                for c in it.get("captions", [])[1:]: add(c["start"])          # the virtual second camera reframes on sentence changes (≈, render.py has the exact list)
             hl = it.get("headlines")
             if hl:
                 for c in hl.get("cards", []): add(c.get("at", hl["start"]))

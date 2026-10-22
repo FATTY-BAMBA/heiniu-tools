@@ -17,7 +17,7 @@ version is republished to the SAME URL so the open page reloads itself (see SKIL
 """
 import sys, os, json, base64, html, argparse, io, subprocess, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from hn_common import grab, ASSETS, expand_timeline, resolve_words
+from hn_common import grab, ASSETS, expand_timeline, resolve_words, teaser_frames, end_frames
 import pacing as PACE
 import room_apply as RA
 from PIL import Image
@@ -52,7 +52,7 @@ changes = {}
 for c in a.change:
     k, _, v = c.partition("="); changes[int(k)] = v.strip()
 # output-time span of every beat (speed-ramped beats are several clip pieces) + SRT from the pieces
-spans, srt, t = {}, [], 0.0
+spans, srt, t = {}, [], teaser_frames(spec, FPS) / FPS          # a flash-forward hook (teaser) plays before beat 1
 for pc in expand_timeline(spec["timeline"], float(spec.get("speed", 1.0))):
     kind = pc.get("type", "clip"); bi = pc["_beat"]
     if kind == "clip":
@@ -64,7 +64,7 @@ for pc in expand_timeline(spec["timeline"], float(spec.get("speed", 1.0))):
     else:
         dur = round(float(pc.get("dur", 1.4 if kind == "cover" else 1.0 if kind == "freeze" else 2.625)) * FPS) / FPS
     sp = spans.setdefault(bi, [t, t]); sp[1] = t + dur; t += dur
-TOTAL = t
+TOTAL = t + end_frames(spec, FPS) / FPS
 srt.sort()
 pace = PACE.analyze(spec)
 warn = {}
@@ -181,6 +181,20 @@ if a.styles:                                                         # style pic
                          poster="data:image/jpeg;base64," + base64.b64encode(pr.stdout).decode() if pr.stdout else ""))
     data["styles"] = out_
 if spec.get("template"): data["style"] = spec["template"]
+# ---- 成片質感 (studio finish): what the premium pass added, so the room can show it and switch each part off ----
+qa_ = {}
+if a.video:
+    try: qa_ = json.load(open(os.path.splitext(P(a.video))[0] + ".qa.json"))
+    except Exception: qa_ = {}
+from hn_common import teaser_cfg
+tz_ = teaser_cfg(spec); sig_ = spec.get("signature") or spec.get("_signature_off")
+data["finish"] = dict(
+    multicam=bool(spec.get("multicam")), cams=len(qa_.get("cameras", [])),
+    teaser=bool(tz_), teaser_text=(tz_ or {}).get("text", "先看結果"), teaser_src=(qa_.get("teaser") or {}).get("source", ""),
+    ending="rewind" if spec.get("rewind") else "loop" if spec.get("loop") else "off",
+    kit=spec.get("sfx_kit") or "subtle",
+    signature=bool(spec.get("signature")), sig_text=" · ".join(x for x in [(sig_ or {}).get("text", ""), (sig_ or {}).get("sub", "")] if x), has_sig=bool(sig_),
+    credit=bool(spec.get("credit")))
 
 def fmt(x): return f"{int(x // 60)}:{x % 60:04.1f}"
 tpl = open(os.path.join(ASSETS, "storyboard_template.html")).read()

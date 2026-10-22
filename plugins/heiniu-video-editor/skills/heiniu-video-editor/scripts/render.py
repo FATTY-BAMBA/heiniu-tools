@@ -671,6 +671,78 @@ for s in segs:
 
 UIC = UICARDS.UI(W, H, S, P, src_path, cache)
 if HDR and HDR.get("kind") != "stamp": UIC.top_default = int(HDR.get("y", 205)) + 110      # cards sit under a header line, never on it
+# ---- virtual second camera ("multicam"): cut wide / medium / close on sentence changes, framed on the face ----
+MC = spec.get("multicam"); LOOP = bool(spec.get("loop")); TZ = teaser_cfg(spec); REW = spec.get("rewind"); SIG = spec.get("signature"); CREDIT = spec.get("credit")
+MCD = MC if isinstance(MC, dict) else {}
+ZOOMS = {"wide": 1.0, "medium": float(MCD.get("medium", 1.2)), "close": float(MCD.get("close", 1.42))}
+CAMS, CAMPOS = [], {}
+if MC:
+    def _spans(it, s):
+        out = []
+        for key in ("bigwords",):
+            for fx_ in it.get(key, []): out.append((to_out(s, fx_["start"]), to_out(s, fx_["end"])))
+        for key in ("headlines", "framebreak", "sticker", "bg", "doodle", "chart", "phone"):
+            fx_ = it.get(key)
+            if fx_: out.append((to_out(s, fx_["start"]), to_out(s, fx_["end"]) if "end" in fx_ else s["start"] + s["N"] / FPS))
+        return out
+    cuts, blocked = [], []
+    for s in segs:
+        if s["kind"] != "clip": continue
+        it = s["item"]; s0, s1 = s["start"], s["start"] + s["N"] / FPS
+        if it.get("pullback") or it.get("fit"): blocked.append((s0 - 1e-3, s1)); continue
+        cuts.append(s0); blocked += _spans(it, s)
+        for c in it.get("captions", []):
+            tc_ = to_out(s, float(c["start"]))
+            if s0 + 0.05 < tc_ < s1 - 0.35: cuts.append(tc_)
+    kept = []
+    for tc_ in sorted(set(round(x, 3) for x in cuts)):
+        if any(a_ < tc_ < b_ for a_, b_ in blocked): continue                  # never reframe in the middle of an effect
+        if kept and tc_ - kept[-1] < float(MCD.get("min_shot", 1.3)): continue
+        kept.append(tc_)
+    cycle = MCD.get("pattern", ["wide", "medium", "wide", "close"])
+    CAMS = [[t_, kept[k + 1] if k + 1 < len(kept) else DUR + 1, cycle[k % len(cycle)]] for k, t_ in enumerate(kept)]
+    if CAMS: CAMS[0][2] = "wide"
+    if LOOP and len(CAMS) > 1: CAMS[-1][2] = CAMS[0][2]                          # the loop restarts on the same framing
+def cam_at(t):
+    for k, (a_, b_, f_) in enumerate(CAMS):
+        if a_ <= t < b_: return k, f_
+    return None, "wide"
+def face_center(rgb, z):
+    m_ = person_mask(rgb)
+    if m_ is None: return 0.5, 0.42
+    ht = head_top(m_); band = m_[ht:ht + S(420), :, 0] > 0.5; cols = np.where(band.mean(axis=0) > 0.2)[0]
+    cx = float(cols.mean()) / W if len(cols) else 0.5; ch_ = H / z
+    return cx, (ht - 0.13 * ch_ + ch_ / 2) / H                                  # head top sits ~13 % below the top of the new frame
+# ---- rewind reveal + loop + signature ----
+FIRST = None; REWF = []; RK = 1
+REWON = bool(REW); REW = REW if isinstance(REW, dict) else {}
+if REWON:
+    REW_N = int(round(float(REW.get("dur", 1.6)) * FPS)); RK = max(1, TOTAL_N // max(1, REW_N))
+def sig_layer(alpha):
+    def mk():
+        im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); t1 = SIG.get("text", P["brand"]); t2 = SIG.get("sub", "")
+        f1, f2 = F("serif", S(40)), F("mono", S(22)); w = max(d.textlength(t1, font=f1), d.textlength(t2, font=f2) if t2 else 0) + S(76)
+        x1 = W - S(56); x0 = x1 - w; y0 = S(SIG.get("y", 320 if HDR else 232)); y1 = y0 + (S(112) if t2 else S(78))
+        d.rounded_rectangle([x0, y0, x1, y1], S(20), fill=INK + (215,), outline=(255, 255, 255, 40), width=max(1, S(2)))
+        d.rectangle([x0 + S(22), y0 + S(20), x0 + S(26), y1 - S(20)], fill=EM + (255,))
+        d.text((x0 + S(44), y0 + S(14)), t1, font=f1, fill=IV + (255,))
+        if t2: d.text((x0 + S(46), y0 + S(68)), t2, font=f2, fill=(190, 184, 174, 255))
+        return to_np(shadow(im, (0, S(8)), S(14), 0.4))
+    return over_layer(cached(("sig", json.dumps(SIG, ensure_ascii=False)), mk), alpha)
+def over_layer(L, a): return (L, a)
+def credit_layer():
+    def mk():
+        im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); txt = CREDIT if isinstance(CREDIT, str) else "剪輯 by 黑牛 AI"
+        f = F("sans_m", S(24)); tw = d.textlength(txt, font=f); x1 = W - S(56); y0 = S(1540)
+        d.rounded_rectangle([x1 - tw - S(36), y0, x1, y0 + S(46)], S(23), fill=(0, 0, 0, 120)); d.text((x1 - tw - S(18), y0 + S(23)), txt, font=f, fill=(255, 255, 255, 210), anchor="lm")
+        return to_np(im)
+    return cached(("credit", str(CREDIT)), mk)
+SIG_T0 = (float(SIG.get("at", 1.8)) if SIG.get("where", "corner") == "corner" else max(0.0, DUR - 2.2)) if SIG else 0
+if SIG: events.append((SIG_T0 + 0.05, "chime", 0.8))
+def vblur(img8, L):
+    if L < 3: return img8
+    ker = np.zeros((L, L), np.float32); ker[:, L // 2] = 1.0 / L; return cv2.filter2D(img8, -1, ker)
+
 # ================= 3. overlay pass =================
 VID = os.path.join(WORK, "video.mp4")
 dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", MASTER, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
@@ -690,6 +762,10 @@ for n in range(TOTAL_N):
     if len(buf) < W * H * 3: break
     t = n / FPS; rgb = np.frombuffer(buf, np.uint8).reshape(H, W, 3).copy(); s = seg_at(t); it = s["item"]; RECTS.clear()
     if s["kind"] == "clip":
+        ci, fz = cam_at(t) if CAMS else (None, "wide"); zc = ZOOMS.get(fz, 1.0)
+        if ci is not None and zc > 1.001:
+            if ci not in CAMPOS: CAMPOS[ci] = face_center(rgb, zc)
+            rgb = zoom_at(rgb, zc, *CAMPOS[ci])
         push = float(it.get("push", 0)); d0 = s["N"] / FPS
         if push: rgb = zoom(rgb, 1 + push * (0.5 - 0.5 * math.cos(math.pi * (t - s["start"]) / d0)), 0.4)
         for pz in it.get("punch", []):                                 # hard punch-in on a word (60 ms snap), held until `until` or the end of the clip
@@ -701,7 +777,7 @@ for n in range(TOTAL_N):
         if pb:                                                           # start tight on the face, then release to the wide shot
             q0 = to_out(s, pb.get("at", it["in"])); z0 = float(pb.get("from", 1.6)); u = smooth((t - q0) / float(pb.get("dur", 0.8)))
             rgb = zoom(rgb, 1 + (z0 - 1) * (1 - u), float(pb.get("y", 0.32)))
-        if (push or it.get("punch") or pb) and it.get("bars", spec.get("bars", False)):   # zooming must not eat the letterbox bars
+        if (push or it.get("punch") or pb or zc > 1.001) and it.get("bars", spec.get("bars", False)):   # zooming must not eat the letterbox bars
             bb = S(spec.get("bars_px", 200)); rgb[:bb] = 0; rgb[H - bb:] = 0
         fr = rgb.astype(np.float32) / 255
         if GRAIN: fr = np.clip(fr + _grain[n % 6] * GRAIN, 0, 1)
@@ -808,8 +884,55 @@ for n in range(TOTAL_N):
             for nm, x0, y0, x1, y1 in RECTS:
                 ov = max(0, min(x1, fx1) - max(x0, fx0)) * max(0, min(y1, fy1) - max(y0, fy0)) / fa
                 if ov > 0.06: COLL.append(dict(t=round(t, 2), what=nm, face_cover=round(ov, 2)))
-    enc.stdin.write((np.clip(comp, 0, 1) * 255).astype(np.uint8).tobytes())
+    if SIG and SIG_T0 <= t < SIG_T0 + 1.9:
+        L_, _ = sig_layer(1.0); u_ = t - SIG_T0; a_ = eq(u_ / 0.3) * (1 - eq((u_ - 1.5) / 0.4) if u_ > 1.5 else 1); comp = over(comp, L_, a_)
+    if CREDIT and t >= DUR - 2.4: comp = over(comp, credit_layer(), eq((t - (DUR - 2.4)) / 0.4))
+    out8 = (np.clip(comp, 0, 1) * 255).astype(np.uint8)
+    if n == 0: FIRST = out8.copy()
+    if LOOP and not REWON and not TZ:                                     # the end whips into the first frame, the start whips out of it
+        ke = TOTAL_N - 1 - n
+        if ke < 4: w_ = (4 - ke) / 4; out8 = vblur((out8.astype(np.float32) * (1 - 0.6 * w_) + FIRST.astype(np.float32) * 0.6 * w_).astype(np.uint8), int(S(80) * w_))
+        if n < 3: out8 = vblur(out8, int(S(60) * (3 - n) / 3))
+    if REWON and n % RK == 0: REWF.append(cv2.resize(out8, (W // 2, H // 2), interpolation=cv2.INTER_AREA))
+    enc.stdin.write(out8.tobytes())
     if n % (FPS * 5) == 0: print(f"[overlay] {t:6.1f}/{DUR:.1f}s", flush=True)
+DUR_MAIN = DUR
+def vhs_rewind(frames, R_, txt, land):
+    """VHS tape racing backwards through `frames` (small, in play order) for R_ frames, landing on `land` (full-size uint8)"""
+    rng_v = np.random.default_rng(7)
+    def rew_text():
+        im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
+        d.text((S(60), S(230)), "◀◀  REWIND", font=F("mono", S(40)), fill=(255, 255, 255, 235), stroke_width=S(3), stroke_fill=(0, 0, 0, 160))
+        if txt:
+            f = F("sans", S(58)); tw = d.textlength(txt, font=f)
+            while tw > W * 0.86: f = F("sans", int(f.size * 0.92)); tw = d.textlength(txt, font=f)
+            d.rounded_rectangle([(W - tw) / 2 - S(36), S(1290), (W + tw) / 2 + S(36), S(1400)], S(20), fill=(10, 10, 12, 210))
+            d.text((W / 2, S(1345)), txt, font=f, fill=(255, 255, 255, 255), anchor="mm")
+        return to_np(im)
+    RT = rew_text(); L8 = land.astype(np.float32) / 255
+    for r in range(R_):
+        q = r / max(1, R_ - 1); idx = int(round((len(frames) - 1) * (1 - smooth(q))))
+        fr_ = cv2.resize(frames[idx], (W, H), interpolation=cv2.INTER_LINEAR).astype(np.float32) / 255
+        sh = S(7); fr_[..., 0] = np.roll(fr_[..., 0], sh, 1); fr_[..., 2] = np.roll(fr_[..., 2], -sh, 1)       # chroma split
+        g_ = fr_.mean(2, keepdims=True); fr_ = fr_ * 0.8 + g_ * 0.2
+        fr_[::4] *= 0.86                                                                                   # scanlines
+        by = int((q * 3.1 % 1) * H); bh = S(46); fr_[max(0, by):by + bh] = np.clip(fr_[max(0, by):by + bh] * 0.6 + rng_v.random((min(H, by + bh) - max(0, by), W, 1)) * 0.5, 0, 1)
+        fr_ = np.roll(fr_, int(S(10) * math.sin(r * 1.7)), 1)
+        a_t = eq(q / 0.15) * (1 - eq((q - 0.82) / 0.18)) if txt else 0
+        fr_ = over(fr_, RT, max(0.35, a_t) if r < R_ - 3 else 0)
+        if r >= R_ - 3: k_ = (r - (R_ - 3) + 1) / 3; fr_ = fr_ * (1 - k_) + L8 * k_
+        yield (np.clip(fr_, 0, 1) * 255).astype(np.uint8)
+def tape_audio(src, Rs, rng):
+    """the voice played backwards, very fast and soft, with tape hiss — Rs samples"""
+    va = src[::-1]
+    if len(va) < 10: return np.zeros((Rs, 2), np.float32)
+    ix = np.linspace(0, len(va) - 1, Rs).astype(int); ra = va[ix] * 0.22; ra = np.stack([np.convolve(ra[:, c], np.ones(5) / 5, "same") for c in (0, 1)], 1)
+    ra += rng.standard_normal((Rs, 2)).astype(np.float32) * 0.012; tt = np.arange(Rs) / SR
+    return (ra * (np.minimum(1, tt / 0.08) * np.minimum(1, (tt[-1] - tt) / 0.12))[:, None]).astype(np.float32)
+if REWON and REWF:                                                         # VHS rewind racing back to the first frame, then the video loops
+    R_ = REW_N
+    for fr8 in vhs_rewind(REWF, R_, REW.get("text", ""), FIRST): enc.stdin.write(fr8.tobytes())
+    TOTAL_N += R_; DUR = TOTAL_N / FPS
 enc.stdin.close(); enc.wait(); dec.kill()
 
 # ================= 4. audio =================
@@ -831,13 +954,39 @@ def gen(name):
         d = float(name.split(":")[1]); k = int(d * SR); tt = np.arange(k) / SR
         x = np.convolve(rng.standard_normal(k), np.ones(3) / 3, "same") * 0.022 + 0.018 * np.sin(2 * np.pi * (900 + 500 * tt / d) * tt) * np.sin(2 * np.pi * 2.5 * tt) ** 2
         x *= np.minimum(1, tt / 0.4) * np.minimum(1, (d - tt) / 0.25); return np.stack([x, x], 1).astype(np.float32)
+    if name == "riser":                                               # noise swell + rising tone, loudest at the very end (the hit)
+        k = int(0.9 * SR); tt = np.arange(k) / SR; env = (tt / tt[-1]) ** 2.4
+        fq = np.fft.rfftfreq(k, 1 / SR); noise = np.fft.irfft(np.fft.rfft(rng.standard_normal(k)) * np.exp(-0.5 * ((fq - 2600) / 1700) ** 2), k)
+        tone = np.sin(2 * np.pi * np.cumsum(220 + 700 * (tt / tt[-1]) ** 2) / SR)
+        x = (noise / (np.abs(noise).max() + 1e-6) * 0.7 + tone * 0.3) * env * 0.09; return np.stack([x, x], 1).astype(np.float32)
+    if name == "subhit":                                              # deep cinematic hit under a reveal
+        k = int(0.9 * SR); tt = np.arange(k) / SR; ph = 2 * np.pi * np.cumsum(62 * np.exp(-tt * 2.2) + 34) / SR
+        x = np.sin(ph) * np.exp(-tt / 0.38) * np.minimum(1, tt / 0.004) * 0.16; x[:240] += rng.standard_normal(240) * np.exp(-np.arange(240) / 40) * 0.05
+        return np.stack([x, x], 1).astype(np.float32)
+    if name == "chime":                                               # soft two-note signature chime
+        k = int(0.9 * SR); tt = np.arange(k) / SR
+        x = (np.sin(2 * np.pi * 1318.5 * tt) * np.exp(-tt / 0.32) + 0.7 * np.sin(2 * np.pi * 1975.5 * np.maximum(0, tt - 0.09)) * np.exp(-np.maximum(0, tt - 0.09) / 0.36) * (tt > 0.09)) * 0.025
+        x *= np.minimum(1, tt / 0.003); return np.stack([x, x * 0.95], 1).astype(np.float32)
     return sfx(name)
+KIT = spec.get("sfx_kit")
+if KIT in ("cinematic", "punchy"):                                    # sound design: risers into the big moments, sub hits under them
+    big = sorted(set([round(t0, 2) for t0, name, g in events if name == "boom" and g >= 0.3] + [round(z_, 2) for z_ in zthru] +
+                     [round(to_out(s_, float((s_["item"]["pullback"] if isinstance(s_["item"]["pullback"], dict) else {}).get("at", s_["a"]))), 2) for s_ in segs if s_["kind"] == "clip" and s_["item"].get("pullback")]))
+    last = -9
+    for th in big:
+        if th - last < 1.2 or th < 0.5: continue
+        last = th; events.append((th, "riser", 0.55 if KIT == "cinematic" else 0.35)); events.append((th, "subhit", 0.8 if KIT == "cinematic" else 0.5))
 PEAKS = {}
 for t0, name, g in events:
     x = gen(name)
     if name not in PEAKS:                                             # where this sound is loudest → line that up with the impact
-        e = np.convolve(np.abs(x).mean(axis=1), np.ones(240) / 240, "same"); PEAKS[name] = int(e.argmax()) if name in ("whoosh", "swish", "whoosh_rev", "scratch") else 0
+        e = np.convolve(np.abs(x).mean(axis=1), np.ones(240) / 240, "same"); PEAKS[name] = int(e.argmax()) if name in ("whoosh", "swish", "whoosh_rev", "scratch", "riser") else 0
     i0 = max(0, int(t0 * SR) - PEAKS[name]); j = min(len(fx), i0 + len(x)); fx[i0:j] += x[:j - i0] * g * float(spec.get("sfx_gain", 1.0))
+if REWON and DUR > DUR_MAIN:                                             # tape-rewind sound: the voice played backwards, very fast
+    b_ = subprocess.run(["ffmpeg", "-v", "error", "-i", MASTER, "-ac", "2", "-ar", str(SR), "-f", "f32le", "-"], capture_output=True).stdout
+    Rs = int((DUR - DUR_MAIN) * SR); ra = tape_audio(np.frombuffer(b_, np.float32).reshape(-1, 2), Rs, rng)
+    i0 = int(DUR_MAIN * SR); fx[i0:i0 + Rs] += ra[:len(fx) - i0]
+    w_ = gen("whoosh_rev"); i0 = max(0, int(DUR_MAIN * SR) - len(w_) // 2); fx[i0:i0 + len(w_)] += w_[:len(fx) - i0] * 0.6
 FXW = os.path.join(WORK, "sfx.wav"); sf.write(FXW, fx[:NS], SR)
 AUD = os.path.join(WORK, "audio.wav")
 mus = spec.get("music"); inputs = ["-i", MASTER, "-i", FXW]
@@ -847,11 +996,88 @@ if mus:
     fc = (f"[2:a]atrim={st}:{st + DUR},asetpts=N/SR/TB,aformat=sample_rates=48000:channel_layouts=stereo,volume={g}dB,"
           f"afade=t=in:d=0.8,afade=t=out:st={max(0, DUR - mus.get('fade_out', 2.0)):.3f}:d={mus.get('fade_out', 2.0)}[m];"
           "[0:a]asplit=2[v][vsc];[m][vsc]sidechaincompress=threshold=0.02:ratio=6:attack=15:release=350[md];"
-          "[v][1:a][md]amix=inputs=3:duration=first:normalize=0[mix];")
+          "[v][1:a][md]amix=inputs=3:duration=longest:normalize=0[mix];")
 else:
-    fc = "[0:a][1:a]amix=inputs=2:duration=first:normalize=0[mix];"
+    fc = "[0:a][1:a]amix=inputs=2:duration=longest:normalize=0[mix];"
 fc += f"[mix]acompressor=threshold=-20dB:ratio=3:attack=10:release=200:makeup=2,loudnorm=I={O['lufs']}:TP=-1.5:LRA=7,aresample=48000,apad,atrim=end_sample={NS}[a]"
 run(["ffmpeg", "-v", "error", "-y"] + inputs + ["-filter_complex", fc, "-map", "[a]", "-c:a", "pcm_s16le", AUD])
+
+# ================= 4b. flash-forward hook (teaser) =================
+# The video opens on its best moment for ~2 s (with a 「先看結果」 tag), a VHS rewind races back to the start, then the story plays.
+TEASER_QA = None
+if TZ:
+    def beat_span(bi):
+        ss = [s_ for s_ in segs if s_["item"].get("_beat") == bi]; return (ss[0]["start"], ss[-1]["start"] + ss[-1]["N"] / FPS, ss) if ss else None
+    nb = max(s_["item"].get("_beat", 0) for s_ in segs) + 1; td = float(TZ["dur"]); ta = None; why = ""
+    for s_ in segs:                                                             # a beat marked "teaser": {"at": "@word"} (or true)
+        tz_ = s_["item"].get("teaser")
+        if tz_ and s_["kind"] == "clip":
+            a_, b_, _ = beat_span(s_["item"]["_beat"])
+            ta = to_out(s_, float(tz_["at"])) if isinstance(tz_, dict) and "at" in tz_ else max(a_, b_ - td); why = f"beat {s_['item']['_beat'] + 1} (marked)"; break
+    if ta is None:                                                              # auto: the last result beat, else the big moment, else the last clip
+        RES = ("phone", "ui", "chart", "checklist", "compare"); MOM = ("pullback", "headlines", "framebreak", "bigwords", "sticker", "bg")
+        cand = [(2, bi) for bi in range(nb) if any(s_["item"].get("_beat") == bi and (s_["item"].get(k) or s_["kind"] == k) for s_ in segs for k in RES)]
+        cand += [(1, bi) for bi in range(nb) if any(s_["item"].get("_beat") == bi and s_["item"].get(k) for s_ in segs for k in MOM)]
+        bi = max(cand)[1] if cand else nb - 1
+        a_, b_, ss = beat_span(bi); it_ = ss[0]["item"]; why = f"beat {bi + 1} (auto)"
+        fx_ = next((it_[k] for k in MOM if it_.get(k) and not isinstance(it_[k], list)), None) if not any(it_.get(k) for k in RES) else None
+        ta = to_out(ss[0], float(fx_.get("start", fx_.get("at", ss[0]["a"])))) if isinstance(fx_, dict) else max(a_, b_ - td)
+    ta = min(max(0.0, ta), DUR_MAIN - td); tb = ta + td; NT = int(round(td * FPS)); NR = int(round(float(TZ["rewind"]) * FPS))
+    i_a, i_b = int(round(ta * FPS)), int(round(ta * FPS)) + NT
+    # pass 1: grab the teaser frames (to disk) and small frames 0..tb for the rewind
+    TRAW = os.path.join(WORK, "teaser.raw"); small = []; kst = max(1, i_b // max(1, NR))
+    dv = subprocess.Popen(["ffmpeg", "-v", "error", "-i", VID, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE); FB = W * H * 3
+    with open(TRAW, "wb") as fo:
+        for n in range(i_b):
+            buf = dv.stdout.read(FB)
+            if len(buf) < FB: break
+            if n == 0: MAIN0 = np.frombuffer(buf, np.uint8).reshape(H, W, 3).copy()
+            if n % kst == 0: small.append(cv2.resize(np.frombuffer(buf, np.uint8).reshape(H, W, 3), (W // 2, H // 2), interpolation=cv2.INTER_AREA))
+            if n >= i_a: fo.write(buf)
+    dv.kill()
+    def tag_layer():
+        im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); txt = TZ.get("text") or "先看結果"
+        f = F("sans", S(36)); tw = d.textlength(txt, font=f); x0 = S(56); y0 = S(320 if HDR else 232)
+        d.rounded_rectangle([x0, y0, x0 + tw + S(92), y0 + S(72)], S(36), fill=INK + (225,), outline=(255, 255, 255, 50), width=max(1, S(2)))
+        d.ellipse([x0 + S(26), y0 + S(26), x0 + S(46), y0 + S(46)], fill=(255, 59, 48, 255))
+        d.text((x0 + S(62), y0 + S(36)), txt, font=f, fill=IV + (255,), anchor="lm")
+        return to_np(shadow(im, (0, S(8)), S(14), 0.45))
+    TAG = tag_layer()
+    VID2 = os.path.join(WORK, "video_tz.mp4")
+    enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
+                            "-c:v", "libx264", "-crf", "14", "-preset", "medium", "-pix_fmt", "yuv420p", VID2], stdin=subprocess.PIPE)
+    T0 = None
+    with open(TRAW, "rb") as fi:
+        for k in range(NT):
+            buf = fi.read(FB)
+            if len(buf) < FB: break
+            fr = np.frombuffer(buf, np.uint8).reshape(H, W, 3)
+            if T0 is None: T0 = fr.copy()
+            u_ = k / FPS; a_ = eq(u_ / 0.25) * (1 - eq((u_ - (td - 0.35)) / 0.3) if u_ > td - 0.35 else 1)
+            out8 = (np.clip(over(fr.astype(np.float32) / 255, TAG, a_), 0, 1) * 255).astype(np.uint8)
+            if (LOOP or REWON) and k < 3: out8 = vblur(out8, int(S(60) * (3 - k) / 3))
+            enc.stdin.write(out8.tobytes())
+    for fr8 in vhs_rewind(small, NR, TZ.get("rewind_text", ""), MAIN0): enc.stdin.write(fr8.tobytes())
+    dv = subprocess.Popen(["ffmpeg", "-v", "error", "-i", VID, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
+    for n in range(TOTAL_N):
+        buf = dv.stdout.read(FB)
+        if len(buf) < FB: break
+        out8 = np.frombuffer(buf, np.uint8).reshape(H, W, 3)
+        ke = TOTAL_N - 1 - n
+        if (LOOP or REWON) and ke < 4:                                        # the end whips into the teaser, so the replay starts on the payoff
+            w_ = (4 - ke) / 4; out8 = vblur((out8.astype(np.float32) * (1 - 0.6 * w_) + T0.astype(np.float32) * 0.6 * w_).astype(np.uint8), int(S(80) * w_))
+        enc.stdin.write(out8.tobytes())
+    enc.stdin.close(); enc.wait(); dv.kill(); os.remove(TRAW)
+    a8, _ = sf.read(AUD, dtype="float32", always_2d=True); ia, ib = int(round(ta * SR)), int(round(ta * SR)) + int(NT / FPS * SR)
+    tz_a = a8[ia:ib].copy(); fl = int(0.012 * SR); tz_a[:fl] *= np.linspace(0, 1, fl)[:, None]; tz_a[-fl:] *= np.linspace(1, 0, fl)[:, None]
+    rs = int(NR / FPS * SR); rew_a = tape_audio(a8[:ib], rs, rng); w_ = gen("whoosh_rev"); rew_a[:len(w_)] += w_[:rs] * 0.5
+    hit = gen("subhit")[:rs] if spec.get("sfx_kit") in ("cinematic", "punchy") else None
+    a2 = np.concatenate([tz_a, rew_a, a8]).astype(np.float32)
+    if hit is not None: j0 = len(tz_a) + rs - int(0.02 * SR); a2[j0:j0 + len(hit)] += hit[:len(a2) - j0] * 0.5
+    a2 = np.clip(a2, -0.97, 0.97); AUD2 = os.path.join(WORK, "audio_tz.wav"); sf.write(AUD2, a2, SR, subtype="PCM_16")
+    VID, AUD = VID2, AUD2; TOTAL_N += NT + NR; DUR = TOTAL_N / FPS
+    TEASER_QA = dict(source=why, span=f"{ta:.2f}–{tb:.2f}s", offset_s=round((NT + NR) / FPS, 3))
+    print(f"[teaser] {why} {ta:.2f}–{tb:.2f}s + rewind {NR / FPS:.2f}s", flush=True)
 
 # ================= 5. encode to size =================
 abr = 160_000; vbr = int(max(1.5e6, min(12e6, (O["max_mb"] * 8 * 1024 * 1024 * 0.94) / DUR - abr)))
@@ -861,7 +1087,10 @@ pr = probe(OUT); durs = {s["codec_type"]: float(s.get("duration", 0)) for s in p
 qa = dict(output=OUT, seconds=round(DUR, 3), size_mb=round(os.path.getsize(OUT) / 1048576, 2), video_s=durs.get("video"), audio_s=durs.get("audio"),
           av_gap_ms=round(abs(durs.get("video", 0) - durs.get("audio", 0)) * 1000, 1), segments=[dict(kind=s["kind"], start=round(s["start"], 3), frames=s["N"]) for s in segs])
 qa["face_collisions"] = COLL[:40]; qa["voice"] = VOICE_QA or "off"
+if CAMS: qa["cameras"] = [f"{a_:.2f}s {f_}" for a_, b_, f_ in CAMS]
+if REWON: qa["rewind_s"] = round(end_frames(spec, FPS) / FPS, 2)
+if TEASER_QA: qa["teaser"] = TEASER_QA
 try:
     import pacing as PACE; qa["dead_spots"] = PACE.analyze(resolve_words(json.load(open(args.spec)), SPEC_DIR))["dead_spots"]
 except Exception as e: qa["dead_spots_error"] = str(e)
-json.dump(qa, open(os.path.join(WORK, "qa.json"), "w"), indent=1, ensure_ascii=False); print(json.dumps(qa, ensure_ascii=False))
+json.dump(qa, open(os.path.join(WORK, "qa.json"), "w"), indent=1, ensure_ascii=False); json.dump(qa, open(os.path.splitext(OUT)[0] + ".qa.json", "w"), indent=1, ensure_ascii=False); print(json.dumps(qa, ensure_ascii=False))
