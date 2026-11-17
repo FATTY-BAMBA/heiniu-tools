@@ -51,6 +51,9 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 #fin{left:0;right:0;text-align:center;opacity:0;transform:translateY(1cqh);transition:opacity .6s,transform .8s cubic-bezier(.2,.9,.2,1)}
 #fin.on{opacity:1;transform:none}
 #fin .t{font-family:var(--disp);font-stretch:72%;font-weight:900;font-size:var(--ffin);line-height:1;white-space:nowrap}
+#fin .nx{display:inline-block;margin-top:1.4cqh;padding:.8cqh 1.8cqh;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 85%,transparent);font-size:max(12px,1.45cqh);line-height:1.45;color:var(--ink);letter-spacing:.02em;border-radius:1.6cqh}
+#fin .nx:empty,body.rec #fin .nx{display:none}
+#fin .nx b{color:#f5b942}
 #fin .d{font-size:calc(var(--ffin)*.36);color:var(--soft);margin-top:.9cqh;letter-spacing:.05em;font-variant-numeric:tabular-nums}
 
 .ui{transition:opacity .35s}
@@ -135,7 +138,7 @@ body.rec #stage{cursor:pointer}
     </div>
     <div class="hud" id="cap"><span class="pill"><b id="capN"></b><span id="capT"></span></span></div>
     <div class="hud" id="hero"><div class="box"><div class="n" id="heroN"></div><div class="w">FILES</div><div class="s" id="heroS"></div></div></div>
-    <div class="hud" id="fin"><div class="t">FILES CLASSIFIED</div><div class="d" id="finD"></div></div>
+    <div class="hud" id="fin"><div class="t">FILES CLASSIFIED</div><div class="d" id="finD"></div><div class="nx" id="finN"></div></div>
 
     <button id="start" class="ui">開始整理</button>
     <div id="bar" class="ui">
@@ -171,7 +174,7 @@ body.rec #stage{cursor:pointer}
       <li><b data-zh="Claude 會給你一個檔案：classification.json" data-en="Claude gives you one file: classification.json"></b><span data-zh="這是它的整理計畫。把這個檔案拖到下面，就能看到你的檔案怎麼被分類，也可以點進每一類檢查。" data-en="It is Claude's sorting plan. Drop it below to watch how your files get sorted, and click into any category to check it."></span>
         <div class="dz"><input id="pick" type="file" accept=".json,application/json"><span data-zh="把 classification.json 拖到這裡，或點一下選擇" data-en="Drop classification.json here, or click to choose it"></span></div>
         <p class="dzn" data-zh="只要拖 Claude 給你的那個檔案，不是你自己的文件。" data-en="Only the file Claude made, not your own documents."></p><p id="dzErr"></p></li>
-      <li><b data-zh="沒問題？回 Claude 說「批准搬移」" data-en="Looks right? Tell Claude &quot;approve the move&quot;"></b><span data-zh="這時候 Claude 才會把檔案放進各個分類資料夾。它不會刪除任何東西。" data-en="Only then does Claude put your files into category folders. It never deletes anything."></span></li>
+      <li><b data-zh="沒問題？回 Claude 說「批准搬移」" data-en="Looks right? Tell Claude &quot;approve the move&quot;"></b><span data-zh="在你說這句話之前，資料夾不會有任何變化。說了之後，Claude 才會在同一個資料夾裡建立分類資料夾，把檔案搬進去。它不會刪除任何東西。" data-en="Until you say this, nothing in your folder changes. Once you do, Claude creates the category folders inside that same folder and moves your files into them. It never deletes anything."></span></li>
     </ol>
     <p class="lpp" data-zh="隱私：classification.json 只在你的瀏覽器裡讀取，不會上傳到任何地方。Claude 可能分錯，批准前請抽查幾個分類。" data-en="Privacy: classification.json is read inside your browser and is not uploaded anywhere. Claude can get files wrong, so spot-check a few categories before you approve."></p>
   </div>
@@ -405,6 +408,7 @@ function layout() {
     }
     $('head').style.display = reel ? 'none' : '';
   }
+  $('finN').style.maxWidth = (wide ? W * .255 : W * .86) + 'px';
   ball.tile = ball.R * .27;
   // slot grid: the largest tile that lets the fullest bin hold all its files
   const maxC = Math.max(1, ...CATS.map((c, i) => tiles.filter(t => t.ci === i).length)), b0 = bins[0], hd = binHead(), ip = Math.max(5, b0.w * .035), iw = b0.w - ip * 2, ih = b0.h - hd - ip;
@@ -546,8 +550,13 @@ function drawBins(a) {
     if (b.flash > .02) { ctx.globalAlpha = a * Math.min(1, b.flash); ctx.strokeStyle = c.color; ctx.lineWidth = 2; ctx.stroke(); ctx.fillStyle = hex(c.color, .08); ctx.fill(); b.flash *= .9; }
     ctx.globalAlpha = a; const px = b.x + Math.max(8, b.w * .055), ty = b.y + hd * .64;
     ctx.fillStyle = c.color; rr(ctx, px, ty - fn * .78, fn * .8, fn * .8, fn * .2); ctx.fill();
-    ctx.fillStyle = TH.ink; ctx.font = `700 ${fn}px ${SANS}`; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(EN && c.en ? c.en : c.name, px + fn * 1.15, ty);
-    ctx.fillStyle = done ? c.color : (b.flash > .3 ? TH.ink : TH.mute); ctx.font = `700 ${fn * (1.08 + Math.min(.5, b.flash * .32))}px ${DISP}`; ctx.textAlign = 'right'; ctx.fillText((done ? '✓ ' : '') + String(n), b.x + b.w - Math.max(8, b.w * .055), ty);
+    const cntTxt = (done ? '✓ ' : '') + String(n), padR = Math.max(8, b.w * .055);
+    ctx.fillStyle = done ? c.color : (b.flash > .3 ? TH.ink : TH.mute); ctx.font = `700 ${fn * (1.08 + Math.min(.5, b.flash * .32))}px ${DISP}`; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText(cntTxt, b.x + b.w - padR, ty);
+    ctx.font = `700 ${fn * 1.08}px ${DISP}`; const room = b.w - padR - ctx.measureText('✓ ' + String(c.count)).width - fn * .7 - (px - b.x) - fn * 1.15;
+    let nm = EN && c.en ? c.en : c.name, nf = fn; ctx.font = `700 ${nf}px ${SANS}`;
+    while (ctx.measureText(nm).width > room && nf > fn * .74) { nf -= .5; ctx.font = `700 ${nf}px ${SANS}`; }
+    if (ctx.measureText(nm).width > room) { while (nm.length > 2 && ctx.measureText(nm + '…').width > room) nm = nm.slice(0, -1); nm += '…'; }
+    ctx.fillStyle = TH.ink; ctx.textAlign = 'left'; ctx.fillText(nm, px + fn * 1.15, ty);
   }
   ctx.globalAlpha = 1; ctx.textAlign = 'left';
 }
@@ -568,6 +577,7 @@ function applyLang() {
   $('brand').textContent = DATA.brand || '黑牛 Heiniu · File Universe'; $('logo').textContent = '牛';
   $('heroN').textContent = N.toLocaleString('en-US'); $('heroS').textContent = Object.entries(DATA.byType).sort((a, b) => b[1] - a[1]).slice(0, 6).map(e => e[0].toUpperCase()).join(' ') + (SAMPLED ? L(`　每張卡片代表約 ${Math.round(N / TN)} 個檔案`, `   each tile = about ${Math.round(N / TN)} files`) : '');
   $('finD').textContent = L(`${N} 個檔案　${realCats} 個分類` + (reviewN ? `　${reviewN} 個待確認` : ''), `${N} files   ${realCats} categories` + (reviewN ? `   ${reviewN} to review` : ''));
+  $('finN').innerHTML = DATA.demo ? '' : DATA.moved ? L('檔案已經搬進各分類資料夾。', 'Your files have been moved into their folders.') : L('<b>檔案還沒搬移。</b>沒問題的話，回 Claude 說「批准搬移」。', '<b>Nothing has moved yet.</b> If this looks right, go back to Claude and say "approve the move".');
   const b = { start: ['開始整理', 'Sort my files'], bReplay: ['重播', 'Replay'], bOver: ['總覽', 'Overview'], bFull: ['全螢幕', 'Fullscreen'], bRec: ['錄影模式', 'Recording mode'], shX: ['關閉', 'Close'], bTheme: ['淺色', 'Light'], bLang: ['EN', '繁中'] };
   for (const k in b) $(k).textContent = L(b[k][0], b[k][1]);
   $('bSound').textContent = L('音效 開', 'Sound on'); $('recHint').textContent = L('錄影模式：點畫面或按空白鍵播放　按 Esc 離開', 'Recording mode: click or press space to play, Esc to leave');
@@ -729,7 +739,7 @@ function normalize(d) {
   cats = cats.filter(c => c.count > 0); const rv = cats.findIndex(c => c.id === 'review'); if (rv >= 0) cats.push(cats.splice(rv, 1)[0]);
   cats.forEach((c, i) => { if (!/^#[0-9a-fA-F]{6}$/.test(c.color || '')) c.color = c.id === 'review' ? '#94A3B8' : PAL[i % PAL.length]; });
   const byType = {}; files.forEach(f => byType[f.ext] = (byType[f.ext] || 0) + 1);
-  return { source: String(d.source || 'Files'), title: d.title, brand: d.brand, lang: d.lang || (/^zh/i.test(navigator.language || '') ? 'zh' : 'en'), analyzedAt: d.analyzedAt || '', moved: !!d.moved,
+  return { source: String(d.source || 'Files'), title: d.title, brand: d.brand, lang: d.lang || (/^zh/i.test(navigator.language || '') ? 'zh' : 'en'), analyzedAt: d.analyzedAt || '', moved: !!d.moved, demo: !!d.demo,
     totalFiles: files.length, byType, readMethods: d.readMethods && typeof d.readMethods === 'object' ? d.readMethods : {}, unreadable: +d.unreadable || 0,
     nameConflicts: files.filter(f => f.nameType === 'conflict').length, genericNames: files.filter(f => f.nameType === 'generic').length, needsReview: files.filter(f => f.needsReview).length,
     categories: cats, files };
@@ -752,7 +762,7 @@ function normalize(d) {
   $('pick').onchange = e => read(e.target.files[0]);
   addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); }); addEventListener('dragleave', () => dz.classList.remove('over'));
   addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); read(e.dataTransfer.files[0]); });
-  $('demo').onclick = () => fetch('demo.json').then(r => r.json()).then(d => { if (en) { d.source = 'Demo: 300 test files'; d.brand = 'Heiniu · File Universe'; } go(d); }).catch(() => { err.textContent = en ? 'Could not load the demo.' : '示範資料載入失敗。'; });
+  $('demo').onclick = () => fetch('demo.json').then(r => r.json()).then(d => { d.demo = true; if (en) { d.source = 'Demo: 300 test files'; d.brand = 'Heiniu · File Universe'; } go(d); }).catch(() => { err.textContent = en ? 'Could not load the demo.' : '示範資料載入失敗。'; });
   const copy = id => { const t = $(id).textContent.replace(/<\\\//g, '</'); const ok = () => { $('cpOk').textContent = en ? 'Copied. Paste it into Claude.' : '已複製，貼到 Claude 吧。'; };
     (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(ok).catch(() => { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) { $('cpOk').textContent = en ? 'Copy failed. Select the text manually.' : '複製失敗，請手動選取。'; } a.remove(); }); };
   $('cpMain').onclick = () => copy(en ? 'p-en' : 'p-zh'); $('cpAlt').onclick = () => copy(en ? 'p-zh' : 'p-en');
