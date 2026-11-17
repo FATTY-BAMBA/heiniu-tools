@@ -120,6 +120,8 @@ body.rec #stage{cursor:pointer}
 .dz.over{border-color:#f2f0ea;background:#1c1f25}
 .dz input{position:absolute;inset:0;opacity:0;cursor:pointer}
 #dzErr{color:#ff8a7a;margin-top:8px;font-size:14px}
+.dzn{font-size:13px;color:#8f939d;margin-top:8px}
+.lps{margin-top:22px!important}
 .lpp{font-size:13px;line-height:1.7;color:#8f939d;margin-top:26px}
 </style>
 </head>
@@ -160,21 +162,21 @@ body.rec #stage{cursor:pointer}
     <nav class="lpn"><a href="../" data-zh="← 黑牛工具" data-en="← Heiniu Tools"></a><span class="lsw" role="group" aria-label="Language"><button type="button" data-l="zh">繁中</button><button type="button" data-l="en">EN</button></span></nav>
     <p class="lpk" data-zh="免費工具 04" data-en="Free tool 04"></p>
     <h1 data-zh="讓 Claude 看內容，整理你的資料夾" data-en="Let Claude sort your folder by what's inside"></h1>
-    <p class="lpl" data-zh="不是看檔名，是打開每個檔案讀過才分類。整理前先給你看計畫，你批准才會搬。" data-en="It opens every file and reads it before deciding, not just the file name. You see the plan first, and nothing moves until you approve."></p>
+    <p class="lpl" data-zh="Claude 負責讀檔案和分類，這個頁面負責把結果變成動畫給你看。你需要 Claude 桌面版。" data-en="Claude does the reading and sorting. This page turns the result into an animation you can check. You need the Claude desktop app."></p>
+    <div class="lpb"><button id="demo" type="button" data-zh="先看示範（不需要 Claude）" data-en="Watch the demo first (no Claude needed)"></button></div>
     <ol class="lps">
-      <li><b data-zh="複製提示詞" data-en="Copy the prompt"></b><span data-zh="貼到 Claude 桌面版（先連接你的資料夾），第一行填上資料夾路徑。" data-en="Paste it into the Claude desktop app with your folder connected, and put the folder path on the first line."></span>
+      <li><b data-zh="打開 Claude，連接你要整理的資料夾" data-en="Open Claude and connect the folder you want sorted"></b><span data-zh="在 Claude 桌面版開一個新對話，把資料夾加進去。建議先把資料夾備份一份。" data-en="In the Claude desktop app, start a new chat and add the folder to it. Make a backup copy of the folder first."></span></li>
+      <li><b data-zh="複製這段提示詞，貼給 Claude" data-en="Copy this prompt and send it to Claude"></b><span data-zh="Claude 會打開每個檔案來讀，可能要幾分鐘。這時候它不會動你的檔案。" data-en="Claude opens and reads every file, which can take a few minutes. It will not move anything yet."></span>
         <div class="lpb"><button id="cpMain" type="button" class="pri2"></button><button id="cpAlt" type="button"></button><span id="cpOk"></span></div></li>
-      <li><b data-zh="Claude 讀完會給你 classification.json" data-en="Claude reads the files and gives you classification.json"></b><span data-zh="這時候檔案都還沒動。" data-en="Nothing has moved at this point."></span></li>
-      <li><b data-zh="把 classification.json 拖進這個頁面" data-en="Drop classification.json on this page"></b><span data-zh="看你的檔案自己飛進分類，點任一分類檢查。沒問題再回 Claude 說「批准搬移」。" data-en="Watch your files fly into their categories and click any one to check it. If it looks right, tell Claude &quot;approve the move&quot;."></span>
-        <div class="dz"><input id="pick" type="file" accept=".json,application/json"><span data-zh="拖曳檔案到這裡，或點一下選擇" data-en="Drop the file here, or click to choose"></span></div><p id="dzErr"></p></li>
+      <li><b data-zh="Claude 會給你一個檔案：classification.json" data-en="Claude gives you one file: classification.json"></b><span data-zh="這是它的整理計畫。把這個檔案拖到下面，就能看到你的檔案怎麼被分類，也可以點進每一類檢查。" data-en="It is Claude's sorting plan. Drop it below to watch how your files get sorted, and click into any category to check it."></span>
+        <div class="dz"><input id="pick" type="file" accept=".json,application/json"><span data-zh="把 classification.json 拖到這裡，或點一下選擇" data-en="Drop classification.json here, or click to choose it"></span></div>
+        <p class="dzn" data-zh="只要拖 Claude 給你的那個檔案，不是你自己的文件。" data-en="Only the file Claude made, not your own documents."></p><p id="dzErr"></p></li>
+      <li><b data-zh="沒問題？回 Claude 說「批准搬移」" data-en="Looks right? Tell Claude &quot;approve the move&quot;"></b><span data-zh="這時候 Claude 才會把檔案放進各個分類資料夾。它不會刪除任何東西。" data-en="Only then does Claude put your files into category folders. It never deletes anything."></span></li>
     </ol>
-    <div class="lpb"><button id="demo" type="button" class="pri" data-zh="先看示範：300 個檔案" data-en="See the demo: 300 files"></button></div>
-    <p class="lpp" data-zh="隱私：檔案清單只在你的瀏覽器裡讀取，不會上傳到任何地方。Claude 可能分錯，批准搬移前請先備份並抽查。" data-en="Privacy: the file list is read inside your browser and is not uploaded anywhere. Claude can get files wrong, so back up and spot-check before you approve the move."></p>
+    <p class="lpp" data-zh="隱私：classification.json 只在你的瀏覽器裡讀取，不會上傳到任何地方。Claude 可能分錯，批准前請抽查幾個分類。" data-en="Privacy: classification.json is read inside your browser and is not uploaded anywhere. Claude can get files wrong, so spot-check a few categories before you approve."></p>
   </div>
 </div>
-<script type="text/plain" id="p-zh">要整理的資料夾：`把資料夾路徑貼在這裡`
-
-請幫我整理這個資料夾。如果上面沒有路徑，或你找不到這個資料夾，請停下來問我，不要自己猜其他路徑。
+<script type="text/plain" id="p-zh">請幫我整理我在這個對話連接的資料夾。如果沒有連接資料夾，或連了不只一個，請先問我要整理哪一個，不要自己猜。
 
 ## 第一步：全部讀過，什麼都不要動
 - 計算檔案數量。只算最上層，除非我說要進子資料夾。略過檔名以點開頭的隱藏檔。
@@ -187,7 +189,7 @@ body.rec #stage{cursor:pointer}
 - 在我批准之前，不要移動、改名、修改或刪除任何東西。
 
 ## 第二步：寫出 classification.json
-存在要整理的資料夾旁邊，不要放進資料夾裡。請完全照這個格式：
+存在這個資料夾的最上層，檔名就叫 classification.json。它是你唯一可以新增的檔案，不算在要整理的檔案裡，之後也不要搬動它。請完全照這個格式：
 
 ```json
 {
@@ -214,15 +216,13 @@ body.rec #stage{cursor:pointer}
 
 ## 第三步：給我看整理計畫，然後等我
 簡短告訴我：找到幾個檔案、幾個讀不了；每個分類的數量和理由；`review` 裡每個檔案的原因；檔名與內容不符的檔案。
-最後請我打開 https://fattybamba.com/sort/ ，把 classification.json 拖進去看整理動畫。
+最後告訴我 classification.json 存在哪裡，並請我打開 https://fattybamba.com/sort/ ，把它拖進去看整理動畫。
 
 ## 第四步：我說「批准搬移」才動檔案
 - 在資料夾裡為每個分類建立一個資料夾，把檔案搬進去。
 - 不可以刪除或覆蓋檔案；有同名衝突就停下來告訴我。不要碰這個資料夾以外的東西。
 - 完成後重新計數核對，把 `"moved"` 改成 `true`，給我一份簡短報告。</script>
-<script type="text/plain" id="p-en">Folder to sort: `PASTE THE FOLDER PATH HERE`
-
-Please sort this folder for me. If the path above is missing or you can't find the folder, stop and ask me. Never guess a different path.
+<script type="text/plain" id="p-en">Please sort the folder I connected to this chat. If no folder is connected, or more than one is, ask me which one before you start. Never guess.
 
 ## Step 1. Read everything. Move nothing.
 - Count the files. Top level only unless I say to go into subfolders. Skip hidden files (names starting with a dot).
@@ -235,7 +235,7 @@ Please sort this folder for me. If the path above is missing or you can't find t
 - Until I approve, do not move, rename, edit or delete anything.
 
 ## Step 2. Write classification.json
-Save it next to the folder being sorted, not inside it. Use exactly this shape:
+Save it at the top level of that folder, named classification.json. It is the only file you may add. Do not count it as one of the files to sort, and never move it. Use exactly this shape:
 
 ```json
 {
@@ -262,7 +262,7 @@ Save it next to the folder being sorted, not inside it. Use exactly this shape:
 
 ## Step 3. Show me the plan, then wait
 Tell me briefly: how many files and how many unreadable; each category with its count and reason; every file in `review` and why; every file whose name didn't match its content.
-Then ask me to open https://fattybamba.com/sort/ and drop classification.json on the page to watch the sort.
+Then tell me where classification.json is saved, and ask me to open https://fattybamba.com/sort/ and drop it on the page to watch the sort.
 
 ## Step 4. Move files only if I say "approve the move"
 - Create one folder per category inside the folder and move each file into it.
