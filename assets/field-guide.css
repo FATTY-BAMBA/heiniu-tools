@@ -65,3 +65,9 @@
   .field-tools { grid-template-columns: 1fr; padding-top: 12px; }
   .field-index { border-left: 0; border-top: 1px solid var(--field-rule); padding-left: 0; }
 }
+.field-masthead h1 { font-weight: 500; }
+.field-branch { mask-image: linear-gradient(to right, transparent, black 14%, black 96%, transparent); }
+@media (min-width: 1050px) {
+  .field-masthead h1 { font-size: clamp(3.1rem, 5.6vw, 5.65rem); }
+  .field-masthead .field-intro > p:last-child { max-width: 72ch; }
+}
