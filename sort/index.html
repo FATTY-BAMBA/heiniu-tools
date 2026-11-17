@@ -99,8 +99,12 @@ body.rec #stage{cursor:pointer}
 .lp{max-width:720px;margin:0 auto;padding:28px 22px 64px}
 .lpn{display:flex;justify-content:space-between;align-items:center;margin-bottom:44px;font-size:14px}
 .lpn a{color:#c9ccd3;text-decoration:none}.lpn a:hover{color:#fff}
+.lsw{display:inline-flex;padding:3px;border:1px solid #3a3e48;border-radius:10px;gap:2px}
+.lsw button{border:0!important;border-radius:7px!important;padding:6px 12px!important;font-size:13px!important;font-weight:700;color:#aeb2bb!important}
+.lsw button[aria-pressed="true"]{background:#f2f0ea;color:#0c0d10!important}
 .lpn button,.lpb button{font-size:14px;padding:9px 16px;border-radius:999px;border:1px solid #3a3e48;color:#f2f0ea}
 .lpn button:hover,.lpb button:hover{background:#1c1f25}
+.lpb button.pri2{background:#f2f0ea;color:#0c0d10;border-color:#f2f0ea;font-weight:700}
 .lpb button.pri{background:#f2f0ea;color:#0c0d10;border-color:#f2f0ea;font-weight:700;padding:13px 26px;font-size:16px}
 .lpk{font-size:13px;color:#8f939d;letter-spacing:.08em;margin-bottom:12px}
 .lp h1{font-family:var(--serif);font-weight:900;font-size:clamp(30px,6vw,46px);line-height:1.2}
@@ -153,13 +157,13 @@ body.rec #stage{cursor:pointer}
 
 <div id="drop" hidden>
   <div class="lp">
-    <nav class="lpn"><a href="../">← 黑牛工具</a><button id="lpLang" type="button">EN</button></nav>
+    <nav class="lpn"><a href="../" data-zh="← 黑牛工具" data-en="← Heiniu Tools"></a><span class="lsw" role="group" aria-label="Language"><button type="button" data-l="zh">繁中</button><button type="button" data-l="en">EN</button></span></nav>
     <p class="lpk" data-zh="免費工具 04" data-en="Free tool 04"></p>
     <h1 data-zh="讓 Claude 看內容，整理你的資料夾" data-en="Let Claude sort your folder by what's inside"></h1>
     <p class="lpl" data-zh="不是看檔名，是打開每個檔案讀過才分類。整理前先給你看計畫，你批准才會搬。" data-en="It opens every file and reads it before deciding, not just the file name. You see the plan first, and nothing moves until you approve."></p>
     <ol class="lps">
       <li><b data-zh="複製提示詞" data-en="Copy the prompt"></b><span data-zh="貼到 Claude 桌面版（先連接你的資料夾），第一行填上資料夾路徑。" data-en="Paste it into the Claude desktop app with your folder connected, and put the folder path on the first line."></span>
-        <div class="lpb"><button id="cpZh" type="button">複製提示詞（中文）</button><button id="cpEn" type="button">Copy prompt (English)</button><span id="cpOk"></span></div></li>
+        <div class="lpb"><button id="cpMain" type="button" class="pri2"></button><button id="cpAlt" type="button"></button><span id="cpOk"></span></div></li>
       <li><b data-zh="Claude 讀完會給你 classification.json" data-en="Claude reads the files and gives you classification.json"></b><span data-zh="這時候檔案都還沒動。" data-en="Nothing has moved at this point."></span></li>
       <li><b data-zh="把 classification.json 拖進這個頁面" data-en="Drop classification.json on this page"></b><span data-zh="看你的檔案自己飛進分類，點任一分類檢查。沒問題再回 Claude 說「批准搬移」。" data-en="Watch your files fly into their categories and click any one to check it. If it looks right, tell Claude &quot;approve the move&quot;."></span>
         <div class="dz"><input id="pick" type="file" accept=".json,application/json"><span data-zh="拖曳檔案到這裡，或點一下選擇" data-en="Drop the file here, or click to choose"></span></div><p id="dzErr"></p></li>
@@ -564,7 +568,7 @@ function applyLang() {
   $('brand').textContent = DATA.brand || '黑牛 Heiniu · File Universe'; $('logo').textContent = '牛';
   $('heroN').textContent = N.toLocaleString('en-US'); $('heroS').textContent = Object.entries(DATA.byType).sort((a, b) => b[1] - a[1]).slice(0, 6).map(e => e[0].toUpperCase()).join(' ') + (SAMPLED ? L(`　每張卡片代表約 ${Math.round(N / TN)} 個檔案`, `   each tile = about ${Math.round(N / TN)} files`) : '');
   $('finD').textContent = L(`${N} 個檔案　${realCats} 個分類` + (reviewN ? `　${reviewN} 個待確認` : ''), `${N} files   ${realCats} categories` + (reviewN ? `   ${reviewN} to review` : ''));
-  const b = { start: ['開始整理', 'Sort my files'], bReplay: ['重播', 'Replay'], bOver: ['總覽', 'Overview'], bFull: ['全螢幕', 'Fullscreen'], bRec: ['錄影模式', 'Recording mode'], shX: ['關閉', 'Close'], bTheme: ['淺色', 'Light'], bLang: ['EN', '中文'] };
+  const b = { start: ['開始整理', 'Sort my files'], bReplay: ['重播', 'Replay'], bOver: ['總覽', 'Overview'], bFull: ['全螢幕', 'Fullscreen'], bRec: ['錄影模式', 'Recording mode'], shX: ['關閉', 'Close'], bTheme: ['淺色', 'Light'], bLang: ['EN', '繁中'] };
   for (const k in b) $(k).textContent = L(b[k][0], b[k][1]);
   $('bSound').textContent = L('音效 開', 'Sound on'); $('recHint').textContent = L('錄影模式：點畫面或按空白鍵播放　按 Esc 離開', 'Recording mode: click or press space to play, Esc to leave');
 }
@@ -680,7 +684,7 @@ $('bTheme').onclick = e => { const v = document.body.classList.toggle('light'); 
 $('bFrame').onclick = e => { portraitFrame = !portraitFrame; e.currentTarget.setAttribute('aria-pressed', portraitFrame); layout(); };
 $('bFull').onclick = () => { try { (document.fullscreenElement ? document.exitFullscreen() : $('wrap').requestFullscreen()).catch(() => { }); } catch (e) { } };
 $('bRec').onclick = () => setRec(true);
-$('bLang').onclick = () => { EN = !EN; applyLang(); };
+$('bLang').onclick = () => { EN = !EN; if (window.__siteLang) window.__siteLang(EN); applyLang(); };
 cv.addEventListener('mousemove', e => { const h = isRec() ? -1 : pick(e); if (h !== hover) { hover = h; cv.style.cursor = h >= 0 ? 'pointer' : ''; } });
 cv.addEventListener('click', e => { if (isRec()) { start(); return; } const h = pick(e); if (h >= 0) openCat(h); else closeSheet(); });
 addEventListener('keydown', e => {
@@ -732,20 +736,26 @@ function normalize(d) {
 }
 (function () {
   const $ = id => document.getElementById(id), drop = $('drop'), dz = drop.querySelector('.dz'), err = $('dzErr');
-  let en = !/^zh/i.test(navigator.language || 'zh');
-  const lang = () => { drop.querySelectorAll('[data-zh]').forEach(e => e.textContent = e.dataset[en ? 'en' : 'zh']); $('lpLang').textContent = en ? '中文' : 'EN'; document.documentElement.lang = en ? 'en' : 'zh-Hant'; };
-  const go = raw => { try { const d = normalize(raw); drop.hidden = true; window.__boot(d); } catch (e) { drop.hidden = false; err.textContent = e.message; } };
+  // Same language choice as the rest of the site: ?lang= first, then the saved toggle, Chinese by default.
+  const KEY = 'heiniu-language'; let en = false;
+  try { const q = new URLSearchParams(location.search).get('lang'); en = q === 'en' || (q !== 'zh' && localStorage.getItem(KEY) === 'en'); } catch (e) { }
+  window.__siteLang = v => { if (v != null) { en = !!v; try { localStorage.setItem(KEY, en ? 'en' : 'zh'); } catch (e) { } } return en; };
+  const lang = () => { drop.querySelectorAll('[data-zh]').forEach(e => e.textContent = e.dataset[en ? 'en' : 'zh']);
+    drop.querySelectorAll('.lsw button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.l === 'en') === en)));
+    $('cpMain').textContent = en ? 'Copy the prompt' : '複製提示詞'; $('cpAlt').textContent = en ? '中文版提示詞' : 'English prompt'; $('cpOk').textContent = '';
+    document.documentElement.lang = en ? 'en' : 'zh-Hant'; document.title = en ? 'AI Folder Sorter · File Universe | Heiniu' : 'AI 整理資料夾 · File Universe｜黑牛'; };
+  const go = raw => { try { raw.lang = en ? 'en' : 'zh'; const d = normalize(raw); drop.hidden = true; window.__boot(d); } catch (e) { drop.hidden = false; err.textContent = e.message; } };
   if (DATA) return go(DATA);
   lang(); drop.hidden = false;
-  $('lpLang').onclick = () => { en = !en; lang(); };
+  drop.querySelectorAll('.lsw button').forEach(b => b.onclick = () => { window.__siteLang(b.dataset.l === 'en'); lang(); });
   const read = f => f && f.text().then(t => go(JSON.parse(t))).catch(e => { err.textContent = (en ? 'Could not read that file: ' : '讀不了這個檔案：') + e.message; });
   $('pick').onchange = e => read(e.target.files[0]);
   addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); }); addEventListener('dragleave', () => dz.classList.remove('over'));
   addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); read(e.dataTransfer.files[0]); });
-  $('demo').onclick = () => fetch('demo.json').then(r => r.json()).then(d => { d.lang = en ? 'en' : 'zh'; go(d); }).catch(() => { err.textContent = en ? 'Could not load the demo.' : '示範資料載入失敗。'; });
+  $('demo').onclick = () => fetch('demo.json').then(r => r.json()).then(d => { if (en) { d.source = 'Demo: 300 test files'; d.brand = 'Heiniu · File Universe'; } go(d); }).catch(() => { err.textContent = en ? 'Could not load the demo.' : '示範資料載入失敗。'; });
   const copy = id => { const t = $(id).textContent.replace(/<\\\//g, '</'); const ok = () => { $('cpOk').textContent = en ? 'Copied. Paste it into Claude.' : '已複製，貼到 Claude 吧。'; };
     (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(ok).catch(() => { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) { $('cpOk').textContent = en ? 'Copy failed. Select the text manually.' : '複製失敗，請手動選取。'; } a.remove(); }); };
-  $('cpZh').onclick = () => copy('p-zh'); $('cpEn').onclick = () => copy('p-en');
+  $('cpMain').onclick = () => copy(en ? 'p-en' : 'p-zh'); $('cpAlt').onclick = () => copy(en ? 'p-zh' : 'p-en');
 })();
 </script>
 </body>
