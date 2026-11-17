@@ -8,38 +8,62 @@
   <meta property="og:title" content="黑牛工具｜日常 AI 工具與實作教學">
   <meta property="og:description" content="黑牛打造的日常工具、AI 實作教學與研究筆記。免費探索薪水試算、PDF 文字擷取和更多工作流程。">
   <link rel="stylesheet" href="assets/studio.css">
+  <link rel="stylesheet" href="assets/field-guide.css">
   <script src="assets/language.js" defer></script>
 </head>
-<body data-english-title="HEINIU Tools | Practical AI from Taiwan">
+<body class="field-guide" data-english-title="HEINIU Tools | Practical AI from Taiwan">
 <a class="skip" href="#main"><span data-lang-zh>跳到主要內容</span><span data-lang-en lang="en" hidden>Skip to content</span></a>
 <nav class="site-nav"><div class="wrap nav-inner">
   <a class="wordmark" href="./"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#233b31"/><path d="M8 10q2 6 8 6t8-6" fill="none" stroke="#ebf59a" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="21" r="3" fill="#ebf59a"/></svg><span>HEINIU<span class="brand-light"> TOOLS</span></span></a>
   <div class="nav-links"><a class="" href="#tools"><span data-lang-zh>工具</span><span data-lang-en lang="en" hidden>Tools</span></a><a class="" href="#methods"><span data-lang-zh>教學</span><span data-lang-en lang="en" hidden>Guides</span></a><a class="" href="#radar"><span data-lang-zh>雷達</span><span data-lang-en lang="en" hidden>Radar</span></a><a class="" href="./portfolio/"><span data-lang-zh>作品集</span><span data-lang-en lang="en" hidden>Portfolio</span></a></div>
 </div></nav>
 <main id="main">
-  <header class="hero"><div class="wrap hero-inner">
-    <div class="hero-copy">
-      <p class="kicker"><i></i><span data-lang-zh>黑牛在台灣做的 AI 小工具</span><span data-lang-en lang="en" hidden>INDEPENDENT AI STUDIO · TAIWAN</span></p>
-      <h1><span data-lang-zh>讓 AI 走進<br>你的日常。</span><span data-lang-en lang="en" hidden>Practical AI.<br><em>Everyday life.</em></span></h1>
-      <p class="lede"><span data-lang-zh>從整理檔案到剪影片，這裡有我做的小工具，也有能跟著做的完整教學。</span><span data-lang-en lang="en" hidden>Sort a folder, make a video, or learn a new workflow. Try the tools I build and follow the steps to make them your own.</span></p>
-      <div class="link-row"><a class="button primary" href="#tools"><span data-lang-zh>探索工具 ↓</span><span data-lang-en lang="en" hidden>Browse tools ↓</span></a><a class="button secondary" href="#methods"><span data-lang-zh>跟著做</span><span data-lang-en lang="en" hidden>Find a guide</span></a></div>
+  <header class="field-masthead wrap">
+    <div class="field-intro">
+      <p class="field-kicker"><span data-lang-zh>在台灣打造的實用工具</span><span data-lang-en lang="en" hidden>Useful tools. Built in Taiwan.</span></p>
+      <h1><span data-lang-zh>黑牛的日常工具指南</span><span data-lang-en lang="en" hidden>The Taiwanese Maker’s<br><em>Field Guide.</em></span></h1>
+      <p><span data-lang-zh>我是黑牛。這裡收錄我為日常工作與生活打造的實用工具與教學。</span><span data-lang-en lang="en" hidden>A collection of practical tools for work and life, by an independent maker in Taiwan.</span></p>
     </div>
-    <a class="feature" href="./sort/">
-      <div class="feature-top"><span><span data-lang-zh>檔案整理</span><span data-lang-en lang="en" hidden>FILE ORGANIZATION</span></span><span aria-hidden="true">↗</span></div>
-      <div class="sort-board" aria-hidden="true">
-        <div class="file-source">~/ Downloads <span>⋯</span></div>
-        <div class="file-route"></div>
-        <div class="file-folders"><span><i></i> PDF</span><span><i></i> JPG</span><span><i></i> CSV</span></div>
-      </div>
+    <img class="field-branch" src="assets/field-guide/branch.webp" alt="" width="414" height="262" fetchpriority="high">
+  </header>
+  <section class="field-tools wrap" id="tools" aria-label="工具 / Tools">
+    <article class="field-feature">
+      <p class="field-kicker"><span data-lang-zh>精選工具</span><span data-lang-en lang="en" hidden>Featured tool</span></p>
       <h2>File Universe</h2>
-      <p><span data-lang-zh>用 Claude 依檔案內容分類，再用範例查看整理結果。</span><span data-lang-en lang="en" hidden>Sort with Claude by file contents, then explore the results with sample data.</span></p>
-      <span class="feature-action"><span data-lang-zh>開啟工具 ↗</span><span data-lang-en lang="en" hidden>Open tool ↗</span></span>
-    </a>
-  </div></header>
-  <section class="catalog " id="tools"><div class="wrap">
-  <div class="section-head"><h2><span data-lang-zh>工具箱</span><span data-lang-en lang="en" hidden>The toolbox</span></h2><p><span data-lang-zh>整理文件、估算薪資或了解自己的花費。</span><span data-lang-en lang="en" hidden>Organize files, estimate your paycheck, or make sense of your spending.</span></p></div>
-  <div class="grid" id="toolGrid"></div>
-</div></section>
+      <p><span data-lang-zh>用 Claude 依檔案內容整理資料夾。先用虛構檔案看看分類效果。</span><span data-lang-en lang="en" hidden>Sort files with Claude by their contents. Explore how grouping works with a few fictional files.</span></p>
+      <div class="file-sample">
+        <div class="sample-panel">
+          <h3><span data-lang-zh>整理前</span><span data-lang-en lang="en" hidden>Before sorting</span></h3>
+          <ul><li>IMG_4487.jpg</li><li>notes.pdf</li><li>receipt.csv</li><li>IMG_4490.jpg</li></ul>
+        </div>
+        <details class="sample-result">
+          <summary><span data-lang-zh>試用範例</span><span data-lang-en lang="en" hidden>Try sample</span></summary>
+          <div class="sample-panel">
+            <h3><span data-lang-zh>依內容分組</span><span data-lang-en lang="en" hidden>Grouped by topic</span></h3>
+            <ul>
+              <li><strong><span data-lang-zh>台南旅行</span><span data-lang-en lang="en" hidden>Tainan trip</span></strong><small>IMG_4487.jpg, notes.pdf</small></li>
+              <li><strong><span data-lang-zh>工作室開支</span><span data-lang-en lang="en" hidden>Studio expenses</span></strong><small>receipt.csv, IMG_4490.jpg</small></li>
+            </ul>
+          </div>
+        </details>
+      </div>
+      <a class="field-link" href="./sort/"><span data-lang-zh>開啟完整工具 →</span><span data-lang-en lang="en" hidden>Open the full tool →</span></a>
+    </article>
+    <ul class="field-index">
+      <li><a href="./salary/">
+        <img src="assets/field-guide/salary.webp" alt="" width="270" height="152">
+        <div><h3><span data-lang-zh>薪水實拿計算機</span><span data-lang-en lang="en" hidden>Take-home Pay Calculator</span></h3><p><span data-lang-zh>估算每月扣除勞健保後的實領薪水。</span><span data-lang-en lang="en" hidden>Estimate monthly take-home pay after labor and health insurance.</span></p></div><span class="tool-arrow" aria-hidden="true">→</span>
+      </a></li>
+      <li><a href="./spending/">
+        <img src="assets/field-guide/spending.webp" alt="" width="270" height="152">
+        <div><h3><span data-lang-zh>錢去哪了？</span><span data-lang-en lang="en" hidden>Where Did My Money Go?</span></h3><p><span data-lang-zh>貼上交易明細，看看各類支出占了多少。</span><span data-lang-en lang="en" hidden>Paste your transactions to see where your money goes.</span></p></div><span class="tool-arrow" aria-hidden="true">→</span>
+      </a></li>
+      <li><a href="./pdf/">
+        <img src="assets/field-guide/pdf.webp" alt="" width="270" height="152">
+        <div><h3><span data-lang-zh>PDF 頁面擷取</span><span data-lang-en lang="en" hidden>PDF Page Extractor</span></h3><p><span data-lang-zh>選取需要的頁面，直接在瀏覽器擷取文字。</span><span data-lang-en lang="en" hidden>Pick the pages you need and extract their text in your browser.</span></p></div><span class="tool-arrow" aria-hidden="true">→</span>
+      </a></li>
+    </ul>
+  </section>
   <section class="catalog tinted" id="methods"><div class="wrap">
   <div class="section-head"><h2><span data-lang-zh>完整教學</span><span data-lang-en lang="en" hidden>Hands-on guides</span></h2><p><span data-lang-zh>跟著黑牛的影片，自己做一遍。</span><span data-lang-en lang="en" hidden>Go from watching a HEINIU video to trying the full workflow yourself.</span></p></div>
   <div class="grid" id="guideGrid"></div><details class="roadmap"><summary><span data-lang-zh>接下來想做的題目</span><span data-lang-en lang="en" hidden>On the roadmap</span></summary><ul id="nextList"></ul><p><span data-lang-zh>到影片留言，告訴我你想先看哪一個。</span><span data-lang-en lang="en" hidden>Tell me which one to build next in the video comments.</span></p></details>
