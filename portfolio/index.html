@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Abdoulie Fatty, PhD｜AI 工程與研究</title>
+  <meta name="description" content="Abdoulie Fatty’s AI engineering and research portfolio, with applied computer vision, mobile machine learning, and HEINIU Tools.">
+  <meta property="og:title" content="Abdoulie Fatty, PhD｜AI 工程與研究">
+  <meta property="og:description" content="Abdoulie Fatty’s AI engineering and research portfolio, with applied computer vision, mobile machine learning, and HEINIU Tools.">
+  <link rel="stylesheet" href="../assets/studio.css">
+  <script src="../assets/language.js" defer></script>
+</head>
+<body class="portfolio" data-english-title="Abdoulie Fatty, PhD | AI Engineering & Research">
+<a class="skip" href="#main"><span data-lang-zh>跳到主要內容</span><span data-lang-en lang="en" hidden>Skip to content</span></a>
+<nav class="site-nav"><div class="wrap nav-inner">
+  <a class="wordmark" href="../"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#233b31"/><path d="M8 10q2 6 8 6t8-6" fill="none" stroke="#ebf59a" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="21" r="3" fill="#ebf59a"/></svg><span>HEINIU<span class="brand-light"> STUDIO</span></span></a>
+  <div class="nav-links"><a class="" href="#work"><span data-lang-zh>案例</span><span data-lang-en lang="en" hidden>Case studies</span></a><a class="" href="#research"><span data-lang-zh>研究</span><span data-lang-en lang="en" hidden>Research</span></a><a class="" href="#contact"><span data-lang-zh>聯絡</span><span data-lang-en lang="en" hidden>Contact</span></a></div>
+</div></nav>
+<main id="main">
+  <header class="portfolio-hero"><div class="wrap portfolio-intro">
+    <div>
+      <p class="kicker"><i></i><span data-lang-zh>AI 工程 · 應用研究</span><span data-lang-en lang="en" hidden>AI ENGINEERING · APPLIED RESEARCH</span></p>
+      <h1>Abdoulie<br>Fatty<span>, PhD</span></h1>
+      <p class="lede"><span data-lang-zh>從空拍影像辨識、行動機器學習，到一般人能直接使用的 AI 工具。</span><span data-lang-en lang="en" hidden>I build applied AI systems, from aerial image segmentation and mobile machine learning to tools people can use in their browser.</span></p>
+      <div class="link-row"><a class="button primary" href="#work"><span data-lang-zh>看案例 ↓</span><span data-lang-en lang="en" hidden>Explore case studies ↓</span></a><a class="button secondary" href="#contact"><span data-lang-zh>聯絡我</span><span data-lang-en lang="en" hidden>Get in touch</span></a></div>
+    </div>
+    <figure class="portrait"><img src="./abdoulie-fatty.jpg" alt="Abdoulie Fatty" fetchpriority="high"><figcaption><span data-lang-zh>Abdoulie Fatty · 黑牛</span><span data-lang-en lang="en" hidden>Abdoulie Fatty · Heiniu</span></figcaption></figure>
+  </div></header>
+  <section class="portfolio-section" id="work"><div class="wrap">
+    <div class="section-head"><h2><span data-lang-zh>精選案例</span><span data-lang-en lang="en" hidden>Selected case studies</span></h2><p><span data-lang-zh>從問題、方法到可驗證的成果。</span><span data-lang-en lang="en" hidden>The problem, the method, and the evidence behind each project.</span></p></div>
+    <article class="case" id="building">
+  <div class="case-heading"><p class="kicker">COMPUTER VISION</p><h3><span data-lang-zh>從空拍影像分割建物</span><span data-lang-en lang="en" hidden>Mapping buildings from aerial imagery</span></h3><p><span data-lang-zh>在高密度市區中，緊鄰的屋頂與不規則輪廓容易被合併成同一塊。</span><span data-lang-en lang="en" hidden>Closely spaced roofs and irregular footprints make individual buildings difficult to distinguish in dense urban imagery.</span></p></div>
+  <div class="case-detail"><dl><div><dt><span data-lang-zh>方法</span><span data-lang-en lang="en" hidden>Method</span></dt><dd><span data-lang-zh>我們結合 Mask R-CNN、PointRend、遷移學習與資料增強，生成個別建物的遮罩。</span><span data-lang-en lang="en" hidden>We combined Mask R-CNN, PointRend, transfer learning, and data augmentation to produce masks for individual buildings.</span></dd></div><div><dt><span data-lang-zh>研究結果</span><span data-lang-en lang="en" hidden>Finding</span></dt><dd><span data-lang-zh>論文展示方法能自動擷取研究區內形狀各異的建物。資料及程式碼可依論文說明向通訊作者申請。</span><span data-lang-en lang="en" hidden>The study demonstrated automatic extraction of distinct, complex-shaped buildings in the study area. The paper provides a request pathway for data and code.</span></dd></div></dl><div class="link-row"><a class="button secondary" href="https://doi.org/10.1007/s11042-023-15905-w"><span data-lang-zh>閱讀 Springer 論文 ↗</span><span data-lang-en lang="en" hidden>Read the Springer paper ↗</span></a></div><details class="research-demo"><summary><span data-lang-zh>互動示範：辨識相鄰建物</span><span data-lang-en lang="en" hidden>Interactive demo · separate neighboring buildings</span></summary>
+  <p><span data-lang-zh>切換圖層，觀察兩棟相鄰建物如何各自標示。圖形是簡化示意，無模型推論。</span><span data-lang-en lang="en" hidden>Toggle the overlay to see how adjacent buildings can receive separate masks. This schematic uses sample shapes and runs without a model.</span></p>
+  <label class="overlay-toggle"><input type="checkbox" checked> <span data-lang-zh>顯示個別遮罩</span><span data-lang-en lang="en" hidden>Show instance masks</span></label>
+  <div class="roof-map" aria-hidden="true"><span>A</span><span>B</span><span>C</span></div>
+</details></div>
+</article>
+    <article class="case" id="slope">
+  <div class="case-heading"><p class="kicker">MOBILE MACHINE LEARNING</p><h3><span data-lang-zh>行動岩坡安全評估</span><span data-lang-en lang="en" hidden>Mobile rock slope assessment</span></h3><p><span data-lang-zh>把岩坡穩定性研究帶到 iOS，支援兩種不同的初步評估情境。</span><span data-lang-en lang="en" hidden>Our research brought preliminary rock slope assessment to iOS for two distinct engineering scenarios.</span></p></div>
+  <div class="case-detail"><dl><div><dt><span data-lang-zh>方法</span><span data-lang-en lang="en" hidden>Method</span></dt><dd><span data-lang-zh>研究團隊以循環神經網路建立兩款 iOS 原型，分別處理地震與孔隙水壓對岩坡穩定性的影響。</span><span data-lang-en lang="en" hidden>We developed two recurrent neural network–based iOS prototypes. One models the effect of earthquakes and the other models pore-water pressure.</span></dd></div><div><dt><span data-lang-zh>研究結果</span><span data-lang-en lang="en" hidden>Finding</span></dt><dd><span data-lang-zh>論文展示如何把兩個模型整合成可在行動裝置上使用的評估流程。這些原型用於初步篩查，現場安全決策仍需專業評估。</span><span data-lang-en lang="en" hidden>The paper demonstrates how the two models were incorporated into mobile assessment workflows. The prototypes support preliminary screening. Site safety decisions require professional assessment.</span></dd></div></dl><div class="link-row"><a class="button secondary" href="https://doi.org/10.1109/MCE.2022.3174334"><span data-lang-zh>閱讀 IEEE 論文 ↗</span><span data-lang-en lang="en" hidden>Read the IEEE paper ↗</span></a></div></div>
+</article>
+    <article class="case" id="heiniu">
+  <div class="case-heading"><p class="kicker">PRODUCT ENGINEERING</p><h3><span data-lang-zh>把工作流程做成小工具</span><span data-lang-en lang="en" hidden>Turning workflows into web tools</span></h3><p><span data-lang-zh>黑牛工具把教學中的做法，做成可直接操作的瀏覽器工具。</span><span data-lang-en lang="en" hidden>HEINIU Tools turns workflows from my tutorials into browser utilities people can try firsthand.</span></p></div>
+  <div class="case-detail"><dl><div><dt><span data-lang-zh>設計</span><span data-lang-en lang="en" hidden>Design</span></dt><dd><span data-lang-zh>PDF 擷取器在瀏覽器處理檔案，可以只取指定頁面。File Universe 則用分類結果展示檔案怎麼分組。</span><span data-lang-en lang="en" hidden>The PDF extractor processes selected pages in the browser. File Universe visualizes how files have been grouped from classification results.</span></dd></div><div><dt><span data-lang-zh>驗證方式</span><span data-lang-en lang="en" hidden>Try it</span></dt><dd><span data-lang-zh>在 File Universe 載入範例。也可以使用自己的 PDF，實際測試頁面選取和擷取。</span><span data-lang-en lang="en" hidden>Load sample data in File Universe, or use your own PDF to try page selection and extraction.</span></dd></div></dl><div class="link-row"><a class="button secondary" href="../sort/"><span data-lang-zh>試用 File Universe ↗</span><span data-lang-en lang="en" hidden>Try File Universe ↗</span></a><a class="button secondary" href="../pdf/"><span data-lang-zh>試用 PDF 擷取器 ↗</span><span data-lang-en lang="en" hidden>Try PDF extraction ↗</span></a></div></div>
+</article>
+  </div></section>
+  <section class="portfolio-section tinted" id="research"><div class="wrap">
+    <div class="section-head"><h2><span data-lang-zh>研究與論文</span><span data-lang-en lang="en" hidden>Research & publications</span></h2><p><span data-lang-zh>更多岩坡工程、電腦視覺和應用機器學習研究。</span><span data-lang-en lang="en" hidden>Further work in geotechnical engineering, computer vision, and applied machine learning.</span></p></div>
+    <ul class="publications">
+      <li><a href="https://doi.org/10.1007/s11042-023-15905-w"><span data-lang-zh>多光譜空拍影像的建物實例分割</span><span data-lang-en lang="en" hidden>Building instance segmentation from multispectral aerial imagery</span> <span>Multimedia Tools and Applications · 2024 ↗</span></a></li>
+      <li><a href="https://doi.org/10.1109/MCE.2022.3174334"><span data-lang-zh>岩坡安全評估的循環神經網路 iOS 應用</span><span data-lang-en lang="en" hidden>Recurrent neural networks for iOS slope assessment</span> <span>IEEE Consumer Electronics Magazine · 2024 ↗</span></a></li>
+      <li><a href="https://doi.org/10.3390/app10062012"><span data-lang-zh>用演化計算改善岩坡反算</span><span data-lang-en lang="en" hidden>Evolutionary computation for rock slope back analysis</span> <span>Applied Sciences · 2020 ↗</span></a></li>
+    </ul>
+    <div class="link-row"><a class="button secondary" href="https://orcid.org/0000-0002-8765-4220">ORCID ↗</a><a class="button secondary" href="https://fatty-bamba.github.io/fatty-bamba.io/"><span data-lang-zh>原有作品集與履歷 ↗</span><span data-lang-en lang="en" hidden>Earlier portfolio and CV ↗</span></a></div>
+  </div></section>
+  <section class="ecosystem" id="contact"><div class="wrap">
+    <div class="section-head"><h2><span data-lang-zh>一起合作</span><span data-lang-en lang="en" hidden>Let’s work together</span></h2><p><span data-lang-zh>研究、產品合作或企業 AI 導入，都可以從這裡開始。</span><span data-lang-en lang="en" hidden>Get in touch about research, product collaborations, or applied AI for your team.</span></p></div>
+    <div class="path-grid">
+      <a href="https://www.linkedin.com/in/fatty-bamba/"><strong><span data-lang-zh>研究與專業合作</span><span data-lang-en lang="en" hidden>Research & collaboration</span></strong><span><span data-lang-zh>在 LinkedIn 與我聯繫。</span><span data-lang-en lang="en" hidden>Connect with me on LinkedIn.</span></span><b aria-hidden="true">↗</b></a>
+      <a href="https://www.primestrideai.com/en"><strong>PrimeStride AI</strong><span><span data-lang-zh>與團隊討論企業 AI 自動化。</span><span data-lang-en lang="en" hidden>Talk with the team about business automation.</span></span><b aria-hidden="true">↗</b></a>
+      <a href="../"><strong>HEINIU Tools</strong><span><span data-lang-zh>探索公開工具與教學。</span><span data-lang-en lang="en" hidden>Explore public tools and tutorials.</span></span><b aria-hidden="true">↗</b></a>
+    </div>
+  </div></section>
+</main>
+<footer class="foot"><div class="wrap footer-inner">
+  <div><strong>HEINIU / 黑牛</strong><p><span data-lang-zh>由 Abdoulie Fatty 在台灣打造。</span><span data-lang-en lang="en" hidden>Built in Taiwan by Abdoulie Fatty.</span></p></div>
+  <div class="link-row"><a class="" href="../"><span data-lang-zh>黑牛工具</span><span data-lang-en lang="en" hidden>HEINIU Tools</span></a>
+    <a href="https://www.youtube.com/@fatty_bamba">YouTube</a><a href="https://www.instagram.com/fatty_bamba">Instagram</a><a href="https://www.primestrideai.com/en">PrimeStride AI ↗</a>
+  </div>
+</div></footer>
+</body>
+</html>
