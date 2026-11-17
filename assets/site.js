@@ -16,7 +16,7 @@ const HEINIU_ITEMS = [
   {
     kind: 'guide',
     title: 'Claude 從零到高手 · 完整攻略',
-    desc: '99% 的人只把 Claude 當聊天機器人。工作和生活都用得上，11 章照做就好：記憶、專案、Skills、連接工具、排程任務，每章都有可以直接複製的指令。',
+    desc: '11 章實作教學，涵蓋記憶、專案、Skills、連接工具與排程任務，並附可直接複製的指令。',
     href: './claude-zerotohero/',
   },
 

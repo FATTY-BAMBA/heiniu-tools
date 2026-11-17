@@ -8,7 +8,7 @@
   --green: #20392e;
   --lime: #eaf39a;
   --mono: ui-monospace, "SFMono-Regular", Consolas, monospace;
-  --sans: "Avenir Next", "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --sans: system-ui, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
 }
 *, *::before, *::after { box-sizing: border-box; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.6 var(--sans); }
@@ -38,7 +38,7 @@ a, button, summary, input { touch-action: manipulation; }
 .hero-inner, .portfolio-intro { display: grid; grid-template-columns: minmax(0, 1.18fr) minmax(0, .82fr); align-items: center; gap: clamp(28px, 7vw, 104px); padding-block: clamp(44px, 6vw, 90px); }
 .kicker { display: flex; align-items: center; gap: 9px; font: 700 .75rem/1.5 var(--mono); letter-spacing: .07em; }
 .kicker i { display: inline-block; width: 10px; height: 10px; background: #476b44; border-radius: 50%; }
-h1 { font-size: clamp(3rem, 7.1vw, 7.1rem); line-height: .99; letter-spacing: -.078em; font-weight: 790; margin-block: 19px 24px; }
+h1 { font-size: clamp(3rem, 7.1vw, 7.1rem); line-height: .99; letter-spacing: -.06em; font-weight: 760; margin-block: 19px 24px; }
 :lang(zh-Hant) h1 { letter-spacing: -.05em; line-height: 1.14; }
 h1 em { color: #43664c; font-style: normal; }
 .lede { max-width: 49ch; color: var(--muted); font-size: clamp(1rem, 1.5vw, 1.2rem); }
@@ -139,7 +139,9 @@ summary { cursor: pointer; padding-block: 10px; font-weight: 720; }
   .nav-links a { padding-inline: 9px; }
   .nav-links a:first-child { margin-left: -9px; }
   .hero-inner, .portfolio-intro, .case { grid-template-columns: 1fr; }
-  .hero-inner, .portfolio-intro { padding-block: 35px; }
+  .hero-inner, .portfolio-intro { padding-block: 28px; }
+  .sort-board { margin-block: 12px; padding-block: 9px; }
+  .feature p { margin-bottom: 7px; }
   .portrait { justify-self: start; max-width: 260px; }
   h1 { font-size: clamp(2.7rem, 11vw, 4.5rem); margin-block: 11px 15px; }
 }
