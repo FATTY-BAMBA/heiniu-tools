@@ -53,7 +53,7 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 #fin .t{font-family:var(--disp);font-stretch:72%;font-weight:900;font-size:var(--ffin);line-height:1;white-space:nowrap}
 #fin .nx{display:inline-block;margin-top:1.4cqh;padding:.8cqh 1.8cqh;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 85%,transparent);font-size:max(12px,1.45cqh);line-height:1.45;color:var(--ink);letter-spacing:.02em;border-radius:1.6cqh}
 #fin .nx:empty,body.rec #fin .nx{display:none}
-#fin .nx b{color:#f5b942}
+#fin .nx b{color:#7ee0a5}
 #fin .d{font-size:calc(var(--ffin)*.36);color:var(--soft);margin-top:.9cqh;letter-spacing:.05em;font-variant-numeric:tabular-nums}
 
 .ui{transition:opacity .35s}
@@ -165,23 +165,23 @@ body.rec #stage{cursor:pointer}
     <nav class="lpn"><a href="../" data-zh="← 黑牛工具" data-en="← Heiniu Tools"></a><span class="lsw" role="group" aria-label="Language"><button type="button" data-l="zh">繁中</button><button type="button" data-l="en">EN</button></span></nav>
     <p class="lpk" data-zh="免費工具 04" data-en="Free tool 04"></p>
     <h1 data-zh="讓 Claude 看內容，整理你的資料夾" data-en="Let Claude sort your folder by what's inside"></h1>
-    <p class="lpl" data-zh="Claude 負責讀檔案和分類，這個頁面負責把結果變成動畫給你看。你需要 Claude 桌面版。" data-en="Claude does the reading and sorting. This page turns the result into an animation you can check. You need the Claude desktop app."></p>
+    <p class="lpl" data-zh="Claude 負責讀檔案、分類、搬進資料夾。這個頁面把它做了什麼變成動畫給你檢查。你需要 Claude 桌面版。" data-en="Claude reads your files, sorts them and moves them into folders. This page shows you what it did so you can check it. You need the Claude desktop app."></p>
     <div class="lpb"><button id="demo" type="button" data-zh="先看示範（不需要 Claude）" data-en="Watch the demo first (no Claude needed)"></button></div>
     <ol class="lps">
-      <li><b data-zh="打開 Claude，連接你要整理的資料夾" data-en="Open Claude and connect the folder you want sorted"></b><span data-zh="在 Claude 桌面版開一個新對話，把資料夾加進去。建議先把資料夾備份一份。" data-en="In the Claude desktop app, start a new chat and add the folder to it. Make a backup copy of the folder first."></span></li>
-      <li><b data-zh="複製這段提示詞，貼給 Claude" data-en="Copy this prompt and send it to Claude"></b><span data-zh="Claude 會打開每個檔案來讀，可能要幾分鐘。這時候它不會動你的檔案。" data-en="Claude opens and reads every file, which can take a few minutes. It will not move anything yet."></span>
+      <li><b data-zh="打開 Claude，連接你要整理的資料夾" data-en="Open Claude and connect the folder you want sorted"></b><span data-zh="在 Claude 桌面版開一個新對話，把資料夾加進去。請先把資料夾備份一份。" data-en="In the Claude desktop app, start a new chat and add the folder to it. Make a backup copy of the folder first."></span></li>
+      <li><b data-zh="複製這段提示詞，貼給 Claude" data-en="Copy this prompt and send it to Claude"></b><span data-zh="Claude 會打開每個檔案來讀，再把它們搬進分類資料夾。可能要幾分鐘。" data-en="Claude opens and reads every file, then moves them into category folders. This can take a few minutes."></span>
         <div class="lpb"><button id="cpMain" type="button" class="pri2"></button><button id="cpAlt" type="button"></button><span id="cpOk"></span></div></li>
-      <li><b data-zh="Claude 會給你一個檔案：classification.json" data-en="Claude gives you one file: classification.json"></b><span data-zh="這是它的整理計畫。把這個檔案拖到下面，就能看到你的檔案怎麼被分類，也可以點進每一類檢查。" data-en="It is Claude's sorting plan. Drop it below to watch how your files get sorted, and click into any category to check it."></span>
+      <li><b data-zh="你的資料夾整理好了" data-en="Your folder is sorted"></b><span data-zh="打開資料夾，裡面會多出各個分類資料夾。Claude 還會留下一個 classification.json，把它拖到下面，就能看整理過程、點進每一類檢查。" data-en="Open it and you will find the new category folders. Claude also leaves one file, classification.json. Drop it below to watch the sort and click into any category to check it."></span>
         <div class="dz"><input id="pick" type="file" accept=".json,application/json"><span data-zh="把 classification.json 拖到這裡，或點一下選擇" data-en="Drop classification.json here, or click to choose it"></span></div>
-        <p class="dzn" data-zh="只要拖 Claude 給你的那個檔案，不是你自己的文件。" data-en="Only the file Claude made, not your own documents."></p><p id="dzErr"></p></li>
-      <li><b data-zh="沒問題？回 Claude 說「批准搬移」" data-en="Looks right? Tell Claude &quot;approve the move&quot;"></b><span data-zh="在你說這句話之前，資料夾不會有任何變化。說了之後，Claude 才會在同一個資料夾裡建立分類資料夾，把檔案搬進去。它不會刪除任何東西。" data-en="Until you say this, nothing in your folder changes. Once you do, Claude creates the category folders inside that same folder and moves your files into them. It never deletes anything."></span></li>
+        <p class="dzn" data-zh="只要拖 Claude 留下的那個檔案，不是你自己的文件。" data-en="Only the file Claude made, not your own documents."></p><p id="dzErr"></p></li>
+      <li><b data-zh="不滿意？回 Claude 說「復原」" data-en="Not happy? Tell Claude &quot;undo the move&quot;"></b><span data-zh="Claude 會把所有檔案搬回原位。整個過程它都不會刪除任何東西。" data-en="Claude puts every file back where it was. It never deletes anything at any point."></span></li>
     </ol>
-    <p class="lpp" data-zh="隱私：classification.json 只在你的瀏覽器裡讀取，不會上傳到任何地方。Claude 可能分錯，批准前請抽查幾個分類。" data-en="Privacy: classification.json is read inside your browser and is not uploaded anywhere. Claude can get files wrong, so spot-check a few categories before you approve."></p>
+    <p class="lpp" data-zh="隱私：classification.json 只在你的瀏覽器裡讀取，不會上傳到任何地方。Claude 可能分錯，所以請先備份，整理完抽查幾個分類。" data-en="Privacy: classification.json is read inside your browser and is not uploaded anywhere. Claude can get files wrong, so back up first and spot-check a few categories afterwards."></p>
   </div>
 </div>
 <script type="text/plain" id="p-zh">請幫我整理我在這個對話連接的資料夾。如果沒有連接資料夾，或連了不只一個，請先問我要整理哪一個，不要自己猜。
 
-## 第一步：全部讀過，什麼都不要動
+## 第一步：先全部讀過
 - 計算檔案數量。只算最上層，除非我說要進子資料夾。略過檔名以點開頭的隱藏檔。
 - 超過 500 個檔案時，先告訴我數量，問我是否全部處理。
 - 打開每個檔案，讀裡面真正的內容。不要只看檔名或副檔名分類。
@@ -189,7 +189,7 @@ body.rec #stage{cursor:pointer}
 - 分類由你根據內容決定，越少越好（通常 5 到 12 個），用繁體中文取簡短好懂的名稱。
 - 檔名和內容矛盾時，以內容為準，並記錄檔名有誤導。
 - 讀不了或沒把握的，放進 `review`（待確認）並寫下原因。
-- 在我批准之前，不要移動、改名、修改或刪除任何東西。
+- 讀的時候不要改名、修改或刪除任何東西。全部讀完、計畫寫好之後才開始搬。
 
 ## 第二步：寫出 classification.json
 存在這個資料夾的最上層，檔名就叫 classification.json。它是你唯一可以新增的檔案，不算在要整理的檔案裡，之後也不要搬動它。請完全照這個格式：
@@ -217,17 +217,24 @@ body.rec #stage{cursor:pointer}
 - `nameType`：`match`（檔名符合內容）、`generic`（檔名沒資訊，例如「未命名」）、`conflict`（檔名指向別的主題）。
 - 寫完自己檢查：`files` 筆數等於資料夾檔案數、沒有重複檔名。
 
-## 第三步：給我看整理計畫，然後等我
-簡短告訴我：找到幾個檔案、幾個讀不了；每個分類的數量和理由；`review` 裡每個檔案的原因；檔名與內容不符的檔案。
-最後告訴我 classification.json 存在哪裡，並請我打開 https://fattybamba.com/sort/ ，把它拖進去看整理動畫。
+## 第三步：把檔案搬進分類資料夾
+classification.json 寫好之後，直接開始整理，不用等我：
+- 在這個資料夾裡，為每個分類建立一個資料夾，用分類名稱命名（已經有同名資料夾就直接用）。
+- 把每個檔案搬進它的分類資料夾。`review` 裡的檔案留在原地不要動。
+- 絕對不可以刪除或覆蓋任何檔案。目的地已經有同名檔案時，那個檔案留在原地，並在報告裡告訴我。
+- 不要碰這個資料夾以外的東西，也不要動原本就在裡面的子資料夾。
+- 搬完重新計數：搬走的加上留在原地的，要等於第一步的檔案數。然後把 classification.json 的 `"moved"` 改成 `true`。
 
-## 第四步：我說「批准搬移」才動檔案
-- 在資料夾裡為每個分類建立一個資料夾，把檔案搬進去。
-- 不可以刪除或覆蓋檔案；有同名衝突就停下來告訴我。不要碰這個資料夾以外的東西。
-- 完成後重新計數核對，把 `"moved"` 改成 `true`，給我一份簡短報告。</script>
+## 第四步：告訴我結果
+簡短告訴我：找到幾個檔案、幾個讀不了；每個分類搬了幾個；哪些檔案留在原地和原因；檔名與內容不符的檔案實際上是什麼。
+最後告訴我 classification.json 存在哪裡，並請我打開 https://fattybamba.com/sort/ ，把它拖進去看整理過程、檢查每一類。
+也請提醒我：如果不滿意，只要說「復原」，你就會把所有檔案搬回原位。
+
+## 如果我說「復原」
+依照 classification.json，把每個檔案從分類資料夾搬回這個資料夾的最上層，同樣不可以刪除或覆蓋任何檔案。空的分類資料夾留著沒關係。把 `"moved"` 改回 `false`，再告訴我結果。</script>
 <script type="text/plain" id="p-en">Please sort the folder I connected to this chat. If no folder is connected, or more than one is, ask me which one before you start. Never guess.
 
-## Step 1. Read everything. Move nothing.
+## Step 1. Read everything first
 - Count the files. Top level only unless I say to go into subfolders. Skip hidden files (names starting with a dot).
 - If there are more than 500 files, tell me the count and ask whether to do all of them.
 - Open each file and read what is actually in it. Do not sort by file name or extension alone.
@@ -235,7 +242,7 @@ body.rec #stage{cursor:pointer}
 - Decide the categories yourself from the content. As few as make sense (usually 5 to 12), with short plain names.
 - If a file's name and content disagree, trust the content and record that the name was misleading.
 - If you can't read a file or aren't confident, put it in `review` with the reason.
-- Until I approve, do not move, rename, edit or delete anything.
+- While reading, do not rename, edit or delete anything. Start moving only after everything is read and the plan is written.
 
 ## Step 2. Write classification.json
 Save it at the top level of that folder, named classification.json. It is the only file you may add. Do not count it as one of the files to sort, and never move it. Use exactly this shape:
@@ -263,14 +270,21 @@ Save it at the top level of that folder, named classification.json. It is the on
 - `nameType`: `match` (name fits the content), `generic` (name says nothing, like "untitled"), `conflict` (name points to a different topic).
 - Check your work: the number of entries equals the number of files, and no name appears twice.
 
-## Step 3. Show me the plan, then wait
-Tell me briefly: how many files and how many unreadable; each category with its count and reason; every file in `review` and why; every file whose name didn't match its content.
-Then tell me where classification.json is saved, and ask me to open https://fattybamba.com/sort/ and drop it on the page to watch the sort.
+## Step 3. Move the files into category folders
+Once classification.json is written, go ahead and sort. Do not wait for me.
+- Inside this folder, create one folder per category, named with the category name. If a folder with that name already exists, use it.
+- Move each file into its category folder. Leave the files in `review` where they are.
+- Never delete or overwrite any file. If the destination already has a file with the same name, leave that file where it is and tell me in the report.
+- Touch nothing outside this folder, and leave any subfolders that were already there alone.
+- Count again when done: files moved plus files left in place must equal the count from step 1. Then set `"moved"` to `true` in classification.json.
 
-## Step 4. Move files only if I say "approve the move"
-- Create one folder per category inside the folder and move each file into it.
-- Never delete or overwrite a file. If two files would collide, stop and tell me. Touch nothing outside this folder.
-- When done, count again to verify, set `"moved"` to `true`, and give me a short report.</script>
+## Step 4. Tell me what you did
+Briefly: how many files you found and how many were unreadable; how many went into each category; which files stayed in place and why; and what the files with misleading names really are.
+Then tell me where classification.json is saved, and ask me to open https://fattybamba.com/sort/ and drop it on the page to watch the sort and check each category.
+Also remind me that if I am not happy, I can say "undo the move" and you will put every file back.
+
+## If I say "undo the move"
+Using classification.json, move every file from its category folder back to the top level of this folder. Never delete or overwrite any file. Leaving the empty category folders behind is fine. Set `"moved"` back to `false` and tell me the result.</script>
 <script>
 const DATA = /*__DATA__*/null;
 </script>
@@ -577,7 +591,7 @@ function applyLang() {
   $('brand').textContent = DATA.brand || '黑牛 Heiniu · File Universe'; $('logo').textContent = '牛';
   $('heroN').textContent = N.toLocaleString('en-US'); $('heroS').textContent = Object.entries(DATA.byType).sort((a, b) => b[1] - a[1]).slice(0, 6).map(e => e[0].toUpperCase()).join(' ') + (SAMPLED ? L(`　每張卡片代表約 ${Math.round(N / TN)} 個檔案`, `   each tile = about ${Math.round(N / TN)} files`) : '');
   $('finD').textContent = L(`${N} 個檔案　${realCats} 個分類` + (reviewN ? `　${reviewN} 個待確認` : ''), `${N} files   ${realCats} categories` + (reviewN ? `   ${reviewN} to review` : ''));
-  $('finN').innerHTML = DATA.demo ? '' : DATA.moved ? L('檔案已經搬進各分類資料夾。', 'Your files have been moved into their folders.') : L('<b>檔案還沒搬移。</b>沒問題的話，回 Claude 說「批准搬移」。', '<b>Nothing has moved yet.</b> If this looks right, go back to Claude and say "approve the move".');
+  $('finN').innerHTML = DATA.demo ? '' : DATA.moved ? L('<b>你的檔案已經搬進分類資料夾。</b>不滿意的話，回 Claude 說「復原」。', '<b>Your files are now in their folders.</b> Not happy? Go back to Claude and say "undo the move".') : L('<b>這是整理計畫，檔案還在原位。</b>', '<b>This is the plan. Your files are still where they were.</b>');
   const b = { start: ['開始整理', 'Sort my files'], bReplay: ['重播', 'Replay'], bOver: ['總覽', 'Overview'], bFull: ['全螢幕', 'Fullscreen'], bRec: ['錄影模式', 'Recording mode'], shX: ['關閉', 'Close'], bTheme: ['淺色', 'Light'], bLang: ['EN', '繁中'] };
   for (const k in b) $(k).textContent = L(b[k][0], b[k][1]);
   $('bSound').textContent = L('音效 開', 'Sound on'); $('recHint').textContent = L('錄影模式：點畫面或按空白鍵播放　按 Esc 離開', 'Recording mode: click or press space to play, Esc to leave');
