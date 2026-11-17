@@ -44,7 +44,7 @@ function boot(){
  const nav=document.querySelector('.site-nav .wrap');
  if(nav&&!nav.querySelector('.language-switch')){
  const s=document.createElement('div');s.className='language-switch';s.setAttribute('role','group');s.setAttribute('aria-label','Language / 語言');
- s.innerHTML='<button type="button" data-lang-choice="zh" aria-label="繁體中文">繁中</button><button type="button" data-lang-choice="en" aria-label="English">EN</button>';
+ s.innerHTML='<button type="button" data-lang-choice="en" aria-label="English">EN</button><button type="button" data-lang-choice="zh" aria-label="繁體中文">繁中</button>';
  const links=nav.querySelector('.nav-links');if(links)nav.insertBefore(s,links);else nav.appendChild(s);
  s.addEventListener('click',e=>{const b=e.target.closest('[data-lang-choice]');if(b)choose(b.dataset.langChoice)});
  }
