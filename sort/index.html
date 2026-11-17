@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 整理資料夾 · File Universe｜黑牛</title>
+<meta name="description" content="讓 Claude 打開每個檔案、看內容分類，再把結果變成一段整理動畫。複製提示詞、拖進 classification.json 就能看。免費，檔案不上傳。">
+<meta property="og:title" content="AI 整理資料夾 · File Universe｜黑牛">
+<meta property="og:description" content="Claude 看內容整理你的資料夾，整理前先給你看計畫。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Instrument+Serif:ital@0;1&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0d10; --panel:#15171c; --line:#2b2e36; --ink:#f2f0ea; --mute:#8f939d; --soft:#c9ccd3; --chip:#23262d;
+  --disp:"Archivo","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --body:"Noto Sans TC","PingFang TC","Microsoft JhengHei","Archivo",sans-serif;
+  --serif:"Noto Serif TC","Songti TC","PMingLiU",serif;
+}
+body.light{--bg:#efece6; --panel:#fbfaf8; --line:#d3cfc5; --ink:#1a1b1e; --mute:#7c7a74; --soft:#4a4a48; --chip:#e9e6de}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:var(--ink);font-family:var(--body);overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000}
+#stage{position:relative;overflow:hidden;background:var(--bg);container-type:size}
+#zoom{position:absolute;inset:0;will-change:transform}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hud{position:absolute;pointer-events:none}
+
+/* header: brand line + editorial title, like a real app page */
+#head{left:var(--padx);top:var(--heady);right:var(--padx);display:flex;align-items:center;gap:1.4cqh}
+#logo{width:var(--logo);height:var(--logo);border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-family:var(--serif);font-weight:900;font-size:calc(var(--logo)*.5);flex:none}
+#brand{font-size:var(--fbrand);color:var(--mute);letter-spacing:.08em}
+#title{font-family:var(--serif);font-weight:900;font-size:var(--ftitle);line-height:1.15;letter-spacing:.01em;white-space:nowrap}
+#title i{font-family:"Instrument Serif",var(--serif);font-weight:400;font-style:italic;color:var(--mute);font-size:1.12em;letter-spacing:0;padding:0 .32em 0 .26em}
+#phase{right:var(--padx);top:calc(var(--heady) + .4cqh);display:flex;gap:1cqh;transition:opacity .4s}
+#phase span{font-family:var(--disp);font-stretch:112%;font-weight:600;font-size:var(--fphase);letter-spacing:.18em;color:var(--mute);opacity:.45;padding-bottom:.45cqh;border-bottom:2px solid transparent;transition:all .35s}
+#phase span.on{opacity:1;color:var(--ink);border-color:var(--ink)}
+#phase span.done{opacity:.8}
+
+#hero{left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;transition:opacity .45s}
+#hero .box{display:inline-block;padding:2.6cqh 5cqh 3cqh;border-radius:3.2cqh;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);box-shadow:0 3cqh 9cqh rgba(0,0,0,.45)}
+#hero .n{font-family:var(--disp);font-stretch:70%;font-weight:900;font-size:var(--fhero);line-height:.84;font-variant-numeric:tabular-nums}
+#hero .w{font-family:var(--disp);font-stretch:125%;font-weight:700;font-size:calc(var(--fhero)*.15);letter-spacing:.5em;margin-right:-.5em;margin-top:1.2cqh}
+#hero .s{font-size:calc(var(--fhero)*.085);color:var(--soft);margin-top:1.3cqh;letter-spacing:.06em}
+
+#cap{left:0;right:0;text-align:center;font-size:var(--fcap);color:var(--soft);letter-spacing:.06em;opacity:0;transition:opacity .35s}
+#cap .pill{display:inline-block;padding:.7cqh 1.8cqh;border-radius:999px;background:color-mix(in srgb,var(--bg) 78%,transparent);border:1px solid var(--line);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#cap b{font-family:var(--disp);font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);margin-right:.6em}
+#fin{left:0;right:0;text-align:center;opacity:0;transform:translateY(1cqh);transition:opacity .6s,transform .8s cubic-bezier(.2,.9,.2,1)}
+#fin.on{opacity:1;transform:none}
+#fin .t{font-family:var(--disp);font-stretch:72%;font-weight:900;font-size:var(--ffin);line-height:1;white-space:nowrap}
+#fin .d{font-size:calc(var(--ffin)*.36);color:var(--soft);margin-top:.9cqh;letter-spacing:.05em;font-variant-numeric:tabular-nums}
+
+.ui{transition:opacity .35s}
+#start{position:absolute;left:50%;transform:translateX(-50%);pointer-events:auto;font-weight:700;font-size:max(15px,2cqh);letter-spacing:.2em;padding:1.4cqh 4cqh 1.4cqh 4.2cqh;color:var(--bg);background:var(--ink);border-radius:999px;box-shadow:0 1.2cqh 5cqh rgba(0,0,0,.55);transition:transform .2s,opacity .35s}
+#start:hover{transform:translateX(-50%) scale(1.04)}
+#bar{position:absolute;left:50%;bottom:2.4cqh;transform:translateX(-50%);display:flex;gap:.5cqh;padding:.5cqh;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:999px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);white-space:nowrap;z-index:4;max-width:96cqw;overflow-x:auto;scrollbar-width:none}
+#bar button{font-size:max(12px,1.3cqh);padding:.8cqh 1.35cqh;border-radius:999px;color:var(--soft);letter-spacing:.04em}
+#bar button:hover{background:var(--chip);color:var(--ink)}
+#bar button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+#recHint{position:absolute;left:50%;top:2cqh;transform:translateX(-50%);font-size:max(12px,1.3cqh);color:var(--soft);background:var(--panel);border:1px solid var(--line);padding:.8cqh 1.6cqh;border-radius:999px;opacity:0;transition:opacity .5s;pointer-events:none;white-space:nowrap;z-index:6}
+body.rec .ui{opacity:0!important;pointer-events:none!important}
+body.rec #stage{cursor:pointer}
+
+#sheet{position:absolute;left:0;right:0;bottom:0;max-height:76%;display:flex;flex-direction:column;background:color-mix(in srgb,var(--panel) 97%,transparent);border-top:1px solid var(--line);border-radius:2cqh 2cqh 0 0;transform:translateY(102%);transition:transform .45s cubic-bezier(.2,.85,.2,1);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);z-index:5}
+#sheet.on{transform:none}
+#sheet header{display:flex;align-items:baseline;gap:12px;padding:20px 22px 12px;border-bottom:1px solid var(--line)}
+#sheet h2{font-size:22px;font-weight:700;display:flex;align-items:center;gap:10px;white-space:nowrap}
+#sheet h2 i{width:12px;height:12px;border-radius:3px;display:inline-block}
+#sheet header .c{font-family:var(--disp);font-stretch:80%;font-weight:800;font-size:26px;font-variant-numeric:tabular-nums}
+#sheet header p{flex:1;font-size:13px;color:var(--mute);line-height:1.5}
+#sheet .x{font-size:14px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:var(--soft);white-space:nowrap}
+#sheet .x:hover{background:var(--chip)}
+#list{overflow:auto;padding:6px 22px 26px;overscroll-behavior:contain;max-width:980px;width:100%;margin:0 auto}
+.row{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:46px 1fr;gap:4px 12px;align-items:start}
+.row .e{font-family:var(--disp);font-stretch:85%;font-weight:700;font-size:11px;letter-spacing:.06em;text-align:center;padding:4px 0;border-radius:4px;background:var(--chip);margin-top:2px}
+.row .f{font-size:15px;font-weight:500;word-break:break-all;line-height:1.4}
+.row .r{grid-column:2;font-size:13px;color:var(--mute);line-height:1.55}
+.row .m{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tag{font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mute)}
+.tag.w{border-color:#b98a2c;color:#c9962b}
+.tag.q{border-color:#8fa0b8;color:var(--ink);background:rgba(148,163,184,.16)}
+.ov{display:grid;grid-template-columns:auto 1fr auto;gap:10px 14px;align-items:center;padding:14px 0 6px}
+.ov button{display:contents}
+.ov .nm{font-size:15px;text-align:left;display:flex;gap:9px;align-items:center}
+.ov .nm i{width:10px;height:10px;border-radius:3px}
+.ov .bar{height:8px;border-radius:4px;background:var(--chip);overflow:hidden}
+.ov .bar b{display:block;height:100%;border-radius:4px}
+.ov .ct{font-family:var(--disp);font-stretch:85%;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums;text-align:right}
+.ov button:hover .nm{text-decoration:underline}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:14px 0 4px}
+.facts div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:12.5px;color:var(--mute);line-height:1.5}
+.facts b{display:block;font-family:var(--disp);font-stretch:82%;font-weight:800;font-size:24px;color:var(--ink);font-variant-numeric:tabular-nums}
+.note{font-size:12.5px;color:var(--mute);line-height:1.6;margin-top:10px}
+#drop{position:fixed;inset:0;z-index:20;overflow:auto;background:#0c0d10;color:#f2f0ea;font-family:var(--body)}
+#drop[hidden]{display:none}
+.lp{max-width:720px;margin:0 auto;padding:28px 22px 64px}
+.lpn{display:flex;justify-content:space-between;align-items:center;margin-bottom:44px;font-size:14px}
+.lpn a{color:#c9ccd3;text-decoration:none}.lpn a:hover{color:#fff}
+.lpn button,.lpb button{font-size:14px;padding:9px 16px;border-radius:999px;border:1px solid #3a3e48;color:#f2f0ea}
+.lpn button:hover,.lpb button:hover{background:#1c1f25}
+.lpb button.pri{background:#f2f0ea;color:#0c0d10;border-color:#f2f0ea;font-weight:700;padding:13px 26px;font-size:16px}
+.lpk{font-size:13px;color:#8f939d;letter-spacing:.08em;margin-bottom:12px}
+.lp h1{font-family:var(--serif);font-weight:900;font-size:clamp(30px,6vw,46px);line-height:1.2}
+.lpl{font-size:17px;line-height:1.75;color:#c9ccd3;margin-top:16px;max-width:60ch}
+.lps{list-style:none;counter-reset:s;margin:34px 0 26px;display:grid;gap:14px}
+.lps li{counter-increment:s;position:relative;padding:20px 20px 20px 64px;border:1px solid #2b2e36;border-radius:16px;background:#15171c}
+.lps li::before{content:counter(s);position:absolute;left:20px;top:18px;width:30px;height:30px;border-radius:50%;background:#f2f0ea;color:#0c0d10;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:15px}
+.lps b{display:block;font-size:17px;margin-bottom:5px}
+.lps span{font-size:14.5px;line-height:1.7;color:#aeb2bb}
+.lpb{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+#cpOk{color:#7ee0a5;font-size:14px}
+.dz{position:relative;margin-top:14px;padding:26px 16px;border:2px dashed #3a3e48;border-radius:14px;text-align:center}
+.dz.over{border-color:#f2f0ea;background:#1c1f25}
+.dz input{position:absolute;inset:0;opacity:0;cursor:pointer}
+#dzErr{color:#ff8a7a;margin-top:8px;font-size:14px}
+.lpp{font-size:13px;line-height:1.7;color:#8f939d;margin-top:26px}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div id="stage">
+    <div id="zoom">
+    <canvas id="cv"></canvas>
+    <div class="hud" id="head"><div id="logo">牛</div><div><div id="brand">黑牛 Heiniu　AI 整理術</div><div id="title">整理我的<i id="src"></i>資料夾</div></div></div>
+    <div class="hud" id="phase"><span data-p="0">CHAOS</span><span data-p="1">SCAN</span><span data-p="2">SORT</span><span data-p="3">RESULT</span></div>
+    </div>
+    <div class="hud" id="cap"><span class="pill"><b id="capN"></b><span id="capT"></span></span></div>
+    <div class="hud" id="hero"><div class="box"><div class="n" id="heroN"></div><div class="w">FILES</div><div class="s" id="heroS"></div></div></div>
+    <div class="hud" id="fin"><div class="t">FILES CLASSIFIED</div><div class="d" id="finD"></div></div>
+
+    <button id="start" class="ui">開始整理</button>
+    <div id="bar" class="ui">
+      <button id="bReplay">重播</button>
+      <button id="bOver">總覽</button>
+      <button id="bSound" aria-pressed="true">音效 開</button>
+      <button id="bTheme" aria-pressed="false">淺色</button>
+      <button id="bLang">EN</button>
+      <button id="bFrame" aria-pressed="false">9:16</button>
+      <button id="bFull">全螢幕</button>
+      <button id="bRec">錄影模式</button>
+    </div>
+    <div id="recHint">錄影模式：點畫面或按空白鍵播放　按 Esc 離開</div>
+
+    <section id="sheet" aria-live="polite">
+      <header><h2 id="shT"></h2><span class="c" id="shC"></span><p id="shP"></p><button class="x" id="shX">關閉</button></header>
+      <div id="list"></div>
+    </section>
+  </div>
+</div>
+
+<div id="drop" hidden>
+  <div class="lp">
+    <nav class="lpn"><a href="../">← 黑牛工具</a><button id="lpLang" type="button">EN</button></nav>
+    <p class="lpk" data-zh="免費工具 04" data-en="Free tool 04"></p>
+    <h1 data-zh="讓 Claude 看內容，整理你的資料夾" data-en="Let Claude sort your folder by what's inside"></h1>
+    <p class="lpl" data-zh="不是看檔名，是打開每個檔案讀過才分類。整理前先給你看計畫，你批准才會搬。" data-en="It opens every file and reads it before deciding, not just the file name. You see the plan first, and nothing moves until you approve."></p>
+    <ol class="lps">
+      <li><b data-zh="複製提示詞" data-en="Copy the prompt"></b><span data-zh="貼到 Claude 桌面版（先連接你的資料夾），第一行填上資料夾路徑。" data-en="Paste it into the Claude desktop app with your folder connected, and put the folder path on the first line."></span>
+        <div class="lpb"><button id="cpZh" type="button">複製提示詞（中文）</button><button id="cpEn" type="button">Copy prompt (English)</button><span id="cpOk"></span></div></li>
+      <li><b data-zh="Claude 讀完會給你 classification.json" data-en="Claude reads the files and gives you classification.json"></b><span data-zh="這時候檔案都還沒動。" data-en="Nothing has moved at this point."></span></li>
+      <li><b data-zh="把 classification.json 拖進這個頁面" data-en="Drop classification.json on this page"></b><span data-zh="看你的檔案自己飛進分類，點任一分類檢查。沒問題再回 Claude 說「批准搬移」。" data-en="Watch your files fly into their categories and click any one to check it. If it looks right, tell Claude &quot;approve the move&quot;."></span>
+        <div class="dz"><input id="pick" type="file" accept=".json,application/json"><span data-zh="拖曳檔案到這裡，或點一下選擇" data-en="Drop the file here, or click to choose"></span></div><p id="dzErr"></p></li>
+    </ol>
+    <div class="lpb"><button id="demo" type="button" class="pri" data-zh="先看示範：300 個檔案" data-en="See the demo: 300 files"></button></div>
+    <p class="lpp" data-zh="隱私：檔案清單只在你的瀏覽器裡讀取，不會上傳到任何地方。Claude 可能分錯，批准搬移前請先備份並抽查。" data-en="Privacy: the file list is read inside your browser and is not uploaded anywhere. Claude can get files wrong, so back up and spot-check before you approve the move."></p>
+  </div>
+</div>
+<script type="text/plain" id="p-zh">要整理的資料夾：`把資料夾路徑貼在這裡`
+
+請幫我整理這個資料夾。如果上面沒有路徑，或你找不到這個資料夾，請停下來問我，不要自己猜其他路徑。
+
+## 第一步：全部讀過，什麼都不要動
+- 計算檔案數量。只算最上層，除非我說要進子資料夾。略過檔名以點開頭的隱藏檔。
+- 超過 500 個檔案時，先告訴我數量，問我是否全部處理。
+- 打開每個檔案，讀裡面真正的內容。不要只看檔名或副檔名分類。
+- 圖片和掃描的 PDF 請實際看內容。讀不了的格式直接說，不要假裝讀過。
+- 分類由你根據內容決定，越少越好（通常 5 到 12 個），用繁體中文取簡短好懂的名稱。
+- 檔名和內容矛盾時，以內容為準，並記錄檔名有誤導。
+- 讀不了或沒把握的，放進 `review`（待確認）並寫下原因。
+- 在我批准之前，不要移動、改名、修改或刪除任何東西。
+
+## 第二步：寫出 classification.json
+存在要整理的資料夾旁邊，不要放進資料夾裡。請完全照這個格式：
+
+```json
+{
+  "source": "資料夾名稱",
+  "lang": "zh",
+  "moved": false,
+  "unreadable": 0,
+  "readMethods": { "全文讀取": 180, "看圖判讀": 40 },
+  "categories": [
+    { "id": "work", "name": "工作", "reason": "一句話說明這類放什麼" },
+    { "id": "review", "name": "待確認", "reason": "讀不了，或沒有把握" }
+  ],
+  "files": [
+    { "name": "完整檔名.pdf", "ext": "pdf", "cat": "work", "topic": "幾個字說明主題",
+      "reason": "一句話：內容是什麼、為什麼放這類", "nameType": "match", "read": "全文讀取", "needsReview": false }
+  ]
+}
+```
+
+- 每個檔案都要出現，而且只出現一次。不可以有不存在的檔案。
+- `cat` 必須是某個分類的 id；不確定的用 `review`。
+- `nameType`：`match`（檔名符合內容）、`generic`（檔名沒資訊，例如「未命名」）、`conflict`（檔名指向別的主題）。
+- 寫完自己檢查：`files` 筆數等於資料夾檔案數、沒有重複檔名。
+
+## 第三步：給我看整理計畫，然後等我
+簡短告訴我：找到幾個檔案、幾個讀不了；每個分類的數量和理由；`review` 裡每個檔案的原因；檔名與內容不符的檔案。
+最後請我打開 https://fattybamba.com/sort/ ，把 classification.json 拖進去看整理動畫。
+
+## 第四步：我說「批准搬移」才動檔案
+- 在資料夾裡為每個分類建立一個資料夾，把檔案搬進去。
+- 不可以刪除或覆蓋檔案；有同名衝突就停下來告訴我。不要碰這個資料夾以外的東西。
+- 完成後重新計數核對，把 `"moved"` 改成 `true`，給我一份簡短報告。</script>
+<script type="text/plain" id="p-en">Folder to sort: `PASTE THE FOLDER PATH HERE`
+
+Please sort this folder for me. If the path above is missing or you can't find the folder, stop and ask me. Never guess a different path.
+
+## Step 1. Read everything. Move nothing.
+- Count the files. Top level only unless I say to go into subfolders. Skip hidden files (names starting with a dot).
+- If there are more than 500 files, tell me the count and ask whether to do all of them.
+- Open each file and read what is actually in it. Do not sort by file name or extension alone.
+- Look at images and scanned PDFs. If you can't read a file type, say so. Never claim to have read something you could not read.
+- Decide the categories yourself from the content. As few as make sense (usually 5 to 12), with short plain names.
+- If a file's name and content disagree, trust the content and record that the name was misleading.
+- If you can't read a file or aren't confident, put it in `review` with the reason.
+- Until I approve, do not move, rename, edit or delete anything.
+
+## Step 2. Write classification.json
+Save it next to the folder being sorted, not inside it. Use exactly this shape:
+
+```json
+{
+  "source": "name of the folder",
+  "lang": "en",
+  "moved": false,
+  "unreadable": 0,
+  "readMethods": { "Full text": 180, "Looked at image": 40 },
+  "categories": [
+    { "id": "work", "name": "Work", "reason": "one line on what belongs here" },
+    { "id": "review", "name": "Needs review", "reason": "could not read, or not confident" }
+  ],
+  "files": [
+    { "name": "exact file name.pdf", "ext": "pdf", "cat": "work", "topic": "2 to 5 words",
+      "reason": "one sentence: what is in it and why it goes here", "nameType": "match", "read": "Full text", "needsReview": false }
+  ]
+}
+```
+
+- Every file appears exactly once. No invented files.
+- `cat` must be a category id. Use `review` for anything unsure.
+- `nameType`: `match` (name fits the content), `generic` (name says nothing, like "untitled"), `conflict` (name points to a different topic).
+- Check your work: the number of entries equals the number of files, and no name appears twice.
+
+## Step 3. Show me the plan, then wait
+Tell me briefly: how many files and how many unreadable; each category with its count and reason; every file in `review` and why; every file whose name didn't match its content.
+Then ask me to open https://fattybamba.com/sort/ and drop classification.json on the page to watch the sort.
+
+## Step 4. Move files only if I say "approve the move"
+- Create one folder per category inside the folder and move each file into it.
+- Never delete or overwrite a file. If two files would collide, stop and tell me. Touch nothing outside this folder.
+- When done, count again to verify, set `"moved"` to `true`, and give me a short report.</script>
+<script>
+const DATA = /*__DATA__*/null;
+</script>
+<script>
+window.__boot = (DATA) => {
+'use strict';
+const $ = id => document.getElementById(id);
+const stage = $('stage'), cv = $('cv'), ctx = cv.getContext('2d');
+const CATS = DATA.categories, ALL = DATA.files, N = ALL.length;
+let EN = DATA.lang === 'en'; const L = (zh, en) => EN ? en : zh;
+// One tile per file up to MAXT; beyond that each tile stands for several files (weight w) so the counters still add up to the real totals.
+const MAXT = 720, FILES = [];
+{ const byCat = {}; ALL.forEach(f => (byCat[f.cat] = byCat[f.cat] || []).push(f));
+  CATS.forEach(c => { const fs = byCat[c.id] || [], keep = Math.min(72, N <= MAXT ? fs.length : Math.max(1, Math.min(fs.length, Math.round(fs.length * MAXT / N))));
+    for (let k = 0; k < keep; k++) { const f = fs[Math.floor(k * fs.length / keep)]; FILES.push(Object.assign({}, f, { w: fs.length / keep })); } }); }
+const TN = FILES.length, SAMPLED = TN < N;
+const catIx = {}; CATS.forEach((c, i) => catIx[c.id] = i);
+// timeline (seconds)
+const T_SCAN = 1.9, T_SORT = 3.6, T_RES = 9.95, T_END = 12.2, FLY0 = 3.65, FLY_SPAN = 5.35;
+const clamp = (x, a = 0, b = 1) => x < a ? a : x > b ? b : x;
+const lerp = (a, b, t) => a + (b - a) * t;
+const eIO = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const eOut = t => 1 - Math.pow(1 - t, 3);
+const eOutBack = t => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
+function rng(seed) { let s = seed >>> 0; return () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const hex = (h, a) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16},${n >> 8 & 255},${n & 255},${a})`; };
+function rr(c, x, y, w, h, r) { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); }
+const hexA = (h, a) => /^#[0-9a-f]{6}$/i.test(h) ? hex(h, a) : `rgba(0,0,0,${a})`;
+const SANS = '"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif', DISP = 'Archivo,"Noto Sans TC",sans-serif';
+let TH = {};
+function readTheme() { const s = getComputedStyle(document.body), g = k => s.getPropertyValue(k).trim(); TH = { bg: g('--bg'), panel: g('--panel'), line: g('--line'), ink: g('--ink'), mute: g('--mute'), soft: g('--soft'), chip: g('--chip'), light: document.body.classList.contains('light') }; }
+
+/* ---------- tiles: one per real file ---------- */
+const R0 = rng(20261117), tiles = [];
+const EXTC = { pdf: '#E5484D', csv: '#2FA36B', xlsx: '#2FA36B', xls: '#2FA36B', numbers: '#2FA36B', json: '#D9912B', js: '#D9912B', py: '#D9912B', html: '#D9912B', md: '#4C7DF0', doc: '#4C7DF0', docx: '#4C7DF0', pages: '#4C7DF0', txt: '#6B7280',
+  ppt: '#F2762E', pptx: '#F2762E', key: '#F2762E', zip: '#8D6E63', dmg: '#8D6E63', mp3: '#D946EF', wav: '#D946EF', m4a: '#D946EF', mp4: '#0EA5E9', mov: '#0EA5E9' };
+const IMG = { png: 1, jpg: 1, jpeg: 1, gif: 1, heic: 1, webp: 1, svg: 1, tiff: 1, bmp: 1 };
+(function () {
+  // departure order: round-robin across categories so every bin fills at once
+  const per = CATS.map((c, i) => FILES.map((f, k) => k).filter(k => catIx[FILES[k].cat] === i).sort(() => R0() - .5));
+  const orderOf = new Array(TN); let k = 0, left = true;
+  const quota = per.map(p => p.length), acc = per.map(() => 0);
+  while (k < TN) { // weighted interleave
+    let best = -1, bv = -1; for (let i = 0; i < per.length; i++) if (per[i].length) { acc[i] += quota[i]; if (acc[i] > bv) { bv = acc[i]; best = i; } }
+    acc[best] -= TN; orderOf[per[best].pop()] = k++;
+  }
+  FILES.forEach((f, i) => {
+    const gy = 1 - (i + .5) * 2 / TN, gr = Math.sqrt(1 - gy * gy), ga = i * 2.39996323;
+    tiles.push({
+      f, i, ci: catIx[f.cat], ord: orderOf[i],
+      sx: Math.cos(ga) * gr, sy: gy, sz: Math.sin(ga) * gr,          // unit sphere
+      ux: R0(), uy: R0(), wrot: (R0() - .5) * 1.1, wsz: .75 + R0() * .7, wz: R0(),  // messy wall
+      ph: R0() * 6.28, r1: R0(), r2: R0(), spin: (R0() < .5 ? -1 : 1) * (1 + R0() * 1.5), side: R0() < .5 ? -1 : 1,
+      gs: 0, gd: 1, dep: 0, dur: 1, scanT: 0, slot: 0, tx: 0, ty: 0, wx: 0, wy: 0,
+      x: 0, y: 0, s: 0, z: 0, state: 0
+    });
+  });
+  // shuffle which file sits where on the ball so categories are mixed
+  const perm = tiles.map((_, i) => i).sort(() => R0() - .5);
+  const pts = tiles.map(t => [t.sx, t.sy, t.sz]);
+  tiles.forEach((t, i) => { [t.sx, t.sy, t.sz] = pts[perm[i]]; });
+  tiles.forEach(t => {
+    t.dep = FLY0 + Math.pow(t.ord / Math.max(1, TN - 1), .92) * FLY_SPAN; t.dur = .78 + t.r1 * .22;
+    t.scanT = T_SCAN + .12 + (1 - t.sy) / 2 * 1.36;
+  });
+  const slotCount = CATS.map(() => 0);
+  tiles.slice().sort((a, b) => a.ord - b.ord).forEach(t => t.slot = slotCount[t.ci]++);
+})();
+const lastLand = Math.max(...tiles.map(t => t.dep + t.dur));
+
+/* ---------- sprites ---------- */
+const TS = 104; let sprites = [], ringSpr = [];
+function wrap2(c, text, maxW) { const out = []; let cur = ''; for (const ch of text) { if (c.measureText(cur + ch).width > maxW && cur) { out.push(cur); cur = ch; if (out.length === 2) break; } else cur += ch; } if (out.length < 2 && cur) out.push(cur); return out; }
+function makeTile(t) {
+  const c = document.createElement('canvas'); c.width = c.height = TS; const x = c.getContext('2d'), f = t.f, m = 5, w = TS - m * 2, col = EXTC[f.ext] || '#777';
+  x.fillStyle = '#ffffff'; rr(x, m, m, w, w, 20); x.fill();
+  x.save(); rr(x, m + 4, m + 4, w - 8, w - 8, 16); x.clip();
+  if (IMG[f.ext]) { // images look like pictures
+    const h1 = (t.ph * 57) % 360, g = x.createLinearGradient(0, m, TS, TS); g.addColorStop(0, `hsl(${h1},46%,72%)`); g.addColorStop(1, `hsl(${(h1 + 50) % 360},42%,46%)`); x.fillStyle = g; x.fillRect(0, 0, TS, TS);
+    x.fillStyle = 'rgba(255,255,255,.9)'; rr(x, 18, 22, TS - 36, TS - 44, 6); x.fill();
+    x.fillStyle = 'rgba(30,32,40,.75)'; x.font = `700 15px ${SANS}`; x.textBaseline = 'top'; wrap2(x, f.topic, TS - 48).forEach((l, i) => x.fillText(l, 24, 30 + i * 19));
+  } else {
+    x.fillStyle = '#F4F2EC'; x.fillRect(0, 0, TS, TS);
+    x.fillStyle = col; x.fillRect(0, 0, TS, 27);
+    x.fillStyle = '#fff'; x.font = `800 14px ${DISP}`; x.textBaseline = 'middle'; x.fillText(String(f.ext).toUpperCase().slice(0, 6), 16, 19);
+    x.fillStyle = '#1c1d22'; x.font = `700 17px ${SANS}`; x.textBaseline = 'top'; const ls = wrap2(x, f.topic, TS - 30); ls.forEach((l, i) => x.fillText(l, 15, 35 + i * 21));
+    x.fillStyle = 'rgba(28,29,34,.2)'; const y0 = 39 + ls.length * 21;
+    if (f.ext === 'csv') { for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) x.fillRect(15 + q * 25, y0 + r * 9, 21, 5); }
+    else if (f.ext === 'xlsx' || f.ext === 'xls') { for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) x.fillRect(15 + q * 25, y0 + r * 9, 21, 5); }
+    else [.9, .65, .8].forEach((k, i) => x.fillRect(15, y0 + i * 9, (TS - 30) * k, 4));
+  }
+  x.restore(); x.strokeStyle = 'rgba(18,20,28,.2)'; x.lineWidth = 1.5; rr(x, m + .75, m + .75, w - 1.5, w - 1.5, 20); x.stroke(); return c;
+}
+function buildSprites() {
+  sprites = tiles.map(makeTile);
+  ringSpr = CATS.map(c => { const k = document.createElement('canvas'); k.width = k.height = TS; const x = k.getContext('2d'); x.strokeStyle = c.color; x.lineWidth = 7; rr(x, 5.5, 5.5, TS - 11, TS - 11, 19); x.stroke(); return k; });
+}
+
+/* ---------- layout ---------- */
+let W = 0, H = 0, DPR = 1, portraitFrame = false, wide = true, qScale = 1, reel = false;
+let ball = { x: 0, y: 0, R: 100, tile: 30 }, bins = [], statR = null, donut = { x: 0, y: 0, r: 80 }, binT = 20, wallTop = 0;
+function layout() {
+  const vw = innerWidth, vh = innerHeight; let w = vw, h = vh;
+  if (portraitFrame && vw / vh > 9 / 16) w = Math.round(vh * 9 / 16);
+  stage.style.width = w + 'px'; stage.style.height = h + 'px';
+  DPR = Math.min(devicePixelRatio || 1, 2, 2600 / Math.max(w, h)) * qScale;
+  W = w; H = h; cv.width = Math.round(w * DPR); cv.height = Math.round(h * DPR); wide = W / H > .85;
+  const st = stage.style, set = (k, v) => st.setProperty(k, v + 'px');
+  let bx0, bx1, by0, by1, cols, rowsL;
+  if (wide) {
+    const pad = Math.round(W * .028); set('--padx', pad); set('--heady', H * .045); set('--logo', H * .062); set('--fbrand', Math.max(11, H * .0165)); set('--ftitle', H * .05); set('--fphase', Math.max(9, H * .0125));
+    set('--fhero', H * .2); set('--fcap', Math.max(12, H * .019)); set('--ffin', H * .052);
+    statR = { x: pad, y: H * .165, w: W - pad * 2, h: H * .088 };
+    ball = { x: W * .5, y: H * .6, R: Math.min(W * .152, H * .3) }; donut = { x: W * .5, y: H * .545, r: Math.min(W * .112, H * .205) };
+    by0 = H * .285; by1 = H * .93; const gap = Math.max(8, W * .008), bw = (W * .352 - pad - gap) / 2, n = CATS.length, nL = Math.ceil(n / 2), rows = Math.ceil(nL / 2), bh = (by1 - by0 - gap * (rows - 1)) / rows;
+    bins = CATS.map((c, i) => { const leftSide = i < nL, k = leftSide ? i : i - nL, col = k % 2, row = Math.floor(k / 2); return { cat: c, i, x: (leftSide ? pad : W - pad - bw * 2 - gap) + col * (bw + gap), y: by0 + row * (bh + gap), w: bw, h: bh, flash: 0 }; });
+    $('cap').style.top = (H * .865) + 'px'; $('fin').style.top = (donut.y + donut.r * 1.2) + 'px'; $('start').style.top = (H * .7) + 'px'; $('start').style.bottom = '';
+    $('phase').style.display = 'flex'; wallTop = H * .2;
+  } else {
+    const pad = Math.round(W * .05); set('--padx', pad); set('--heady', H * .112); set('--logo', H * .04); set('--fbrand', Math.max(10, H * .0118)); set('--ftitle', Math.min(H * .03, W * .0505)); set('--fphase', H * .0095);
+    set('--fhero', H * .15); set('--fcap', Math.max(11, H * .0135)); set('--ffin', Math.min(H * .034, W * .075));
+    statR = { x: pad, y: H * .178, w: W - pad * 2, h: H * .05 };
+    ball = { x: W * .5, y: H * .366, R: Math.min(W * .36, H * .128) }; donut = { x: W * .5, y: H * .34, r: Math.min(W * .24, H * .09) };
+    by0 = H * .528; by1 = H * .872; const gap = Math.max(6, W * .018); cols = 3; const rows = Math.ceil(CATS.length / cols), bw = (W - pad * 2 - gap * (cols - 1)) / cols, bh = (by1 - by0 - gap * (rows - 1)) / rows;
+    bins = CATS.map((c, i) => ({ cat: c, i, x: pad + (i % cols) * (bw + gap), y: by0 + Math.floor(i / cols) * (bh + gap), w: bw, h: bh, flash: 0 }));
+    $('cap').style.top = (ball.y + ball.R * 1.06) + 'px'; $('fin').style.top = (donut.y + donut.r * 1.18) + 'px'; $('start').style.top = (H * .66) + 'px';
+    $('phase').style.display = 'none'; wallTop = H * .2;
+    if (reel) {
+      statR = { x: pad, y: H * .118, w: W - pad * 2, h: H * .05 };
+      ball = { x: W * .5, y: H * .295, R: Math.min(W * .36, H * .118) }; donut = { x: W * .5, y: H * .268, r: Math.min(W * .22, H * .08) };
+      by0 = H * .43; by1 = H * .722; const bh2 = (by1 - by0 - gap * (rows - 1)) / rows;
+      bins = CATS.map((c, i) => ({ cat: c, i, x: pad + (i % cols) * (bw + gap), y: by0 + Math.floor(i / cols) * (bh2 + gap), w: bw, h: bh2, flash: 0 }));
+      $('cap').style.top = '-99px'; $('fin').style.top = (donut.y + donut.r * 1.2) + 'px'; wallTop = H * .1;
+    }
+    $('head').style.display = reel ? 'none' : '';
+  }
+  ball.tile = ball.R * .27;
+  // slot grid: the largest tile that lets the fullest bin hold all its files
+  const maxC = Math.max(1, ...CATS.map((c, i) => tiles.filter(t => t.ci === i).length)), b0 = bins[0], hd = binHead(), ip = Math.max(5, b0.w * .035), iw = b0.w - ip * 2, ih = b0.h - hd - ip;
+  let t = 80; for (; t > 6; t -= .5) if (Math.floor(iw / t) * Math.floor(ih / t) >= maxC) break; binT = t;
+  const nc = Math.floor(iw / t);
+  bins.forEach(b => { b.nc = nc; b.ix = b.x + ip + (iw - nc * t) / 2; b.iy = b.y + hd; });
+  tiles.forEach(tl => { const b = bins[tl.ci]; tl.tx = b.ix + (tl.slot % nc + .5) * t; tl.ty = b.iy + (Math.floor(tl.slot / nc) + .5) * t;
+    tl.wx = lerp(-W * .02, W * 1.02, tl.ux); tl.wy = lerp(wallTop, H * 1.02, tl.uy); });
+  const cols2 = wide ? 24 : 12, rows2 = Math.ceil(TN / cols2); // jittered grid so the mess covers the whole screen
+  tiles.forEach((tl, i) => { const k = (i * 131) % TN, gx = k % cols2, gy = Math.floor(k / cols2); tl.wx = (gx + .5 + (tl.ux - .5) * 1.5) / cols2 * W; tl.wy = wallTop + (gy + .5 + (tl.uy - .5) * 1.5) / rows2 * (H - wallTop);
+    const dx = tl.wx - ball.x, dy = tl.wy - ball.y; tl.gs = .05 + clamp(Math.hypot(dx, dy) / Math.hypot(W, H)) * 1.1 * .55 + tl.r2 * .12; tl.gd = .95 + tl.r1 * .25; });
+}
+const binHead = () => wide ? Math.max(24, H * .038) : Math.max(20, H * .0235);
+
+/* ---------- per-frame tile state ---------- */
+let T = 0, t0 = 0, playing = false, started = false, amb = 0, last = 0, last0 = 0, ema = .016, qAt = 0, seekMode = false, hover = -1, prevT = 0;
+const cnt = { scanned: 0, landed: 0, conflict: 0, review: 0, air: 0, perCat: CATS.map(() => 0) };
+function ballSpin(T) { return .35 * T + 2.1 * eIO(clamp(T / T_SCAN)) + 1.25 * Math.max(0, T - T_SCAN); }
+function sphere(t, T, o) {
+  const a = ballSpin(T) + amb * .12, ca = Math.cos(a), sa = Math.sin(a);
+  let x = t.sx * ca + t.sz * sa, z = -t.sx * sa + t.sz * ca, y = t.sy;
+  const tx = .38, y2 = y * Math.cos(tx) - z * Math.sin(tx), z2 = y * Math.sin(tx) + z * Math.cos(tx);
+  const tz = -.22, x3 = x * Math.cos(tz) - y2 * Math.sin(tz), y3 = x * Math.sin(tz) + y2 * Math.cos(tz);
+  const p = 1 / (1 - .22 * z2); o[0] = ball.x + x3 * R * p; o[1] = ball.y - y3 * R * p; o[2] = z2; o[3] = ball.tile * (.66 + .34 * (z2 + 1) / 2) * p; o[4] = clamp(.5 - .34 * x3 + .42 * y3 + .5 * z2, 0, 1.25);
+}
+let R = 100; const S = [0, 0, 0, 0, 1];
+const REVIEW_I = CATS.findIndex(c => c.id === 'review');
+function update() {
+  for (const k of ['scanned', 'landed']) cnt[k] = 0;
+  // ball shrinks as it empties
+  let rem = 0; for (const t of tiles) if (T < t.dep) rem++;
+  const grow = eOutBack(clamp((T - .25) / 1.5)); R = ball.R * Math.cbrt(Math.max(rem, 0) / TN) * (started ? Math.max(.2, grow) : 1) * (1 + .018 * Math.sin(amb * 1.7));
+  cnt.scanned = cnt.landed = cnt.air = 0; cnt.perCat.fill(0);
+  for (const t of tiles) {
+    if (T >= t.scanT) cnt.scanned += t.f.w;
+    const fu = (T - t.dep) / t.dur;
+    if (fu >= 1) { // landed in its bin
+      const k = clamp((T - t.dep - t.dur) / .34); t.state = 3; t.x = t.tx; t.y = t.ty; t.s = binT * .95 * (1 + .34 * Math.sin(Math.min(1, k * 1.5) * Math.PI) * (1 - k)); t.rot = 0; t.fx = 1; t.z = 0; t.lift = 0; t.lit = 1; t.landK = k;
+      cnt.landed += t.f.w; cnt.perCat[t.ci] += t.f.w;
+      continue;
+    }
+    sphere(t, T, S);
+    if (fu > 0) { // flying: arc from the ball to the slot, tumbling
+      const e = eIO(fu), dx = t.tx - S[0], dy = t.ty - S[1], d = Math.hypot(dx, dy) || 1, ox = S[0] - ball.x, oy = S[1] - ball.y, ol = Math.hypot(ox, oy) || 1;
+      const mx = (S[0] + t.tx) / 2 + ox / ol * d * .22 - dy / d * d * .16 * t.side, my = (S[1] + t.ty) / 2 + oy / ol * d * .22 + dx / d * d * .16 * t.side - d * .12;
+      const m = 1 - e; t.x = m * m * S[0] + 2 * m * e * mx + e * e * t.tx; t.y = m * m * S[1] + 2 * m * e * my + e * e * t.ty;
+      const bump = Math.sin(Math.PI * fu); t.s = lerp(S[3], binT * .95, e) * (1 + .5 * bump); t.rot = (1 - e) * t.spin * 2.4; t.fx = Math.cos((1 - e) * Math.PI * 2 * Math.abs(t.spin)); t.z = 5; t.lift = bump; t.state = 2; t.lit = lerp(S[4], 1, Math.min(1, fu * 3)); cnt.air++;
+      continue;
+    }
+    const g = clamp((T - t.gs) / t.gd);
+    if (!started || g <= 0) { t.state = 0; t.x = t.wx + Math.sin(amb * .5 + t.ph) * 5; t.y = t.wy + Math.cos(amb * .43 + t.ph) * 5; t.s = Math.min(W, H * 1.5) * .062 * t.wsz * (wide ? 1 : 1.25); t.rot = t.wrot + Math.sin(amb * .3 + t.ph) * .03; t.fx = 1; t.z = -2 + t.wz; t.lift = 0; t.lit = 1; continue; }
+    const e = eIO(g);
+    if (g < 1) { // swoop into the ball on a curve
+      const wx = t.wx, wy = t.wy, dx = S[0] - wx, dy = S[1] - wy, bow = Math.sin(Math.PI * e) * .22 * t.side;
+      t.x = wx + dx * e - dy * bow; t.y = wy + dy * e + dx * bow; t.s = lerp(Math.min(W, H * 1.5) * .062 * t.wsz * (wide ? 1 : 1.25), S[3], e); t.rot = t.wrot * (1 - e) + (1 - e) * e * 3 * t.side; t.fx = 1; t.z = lerp(-2 + t.wz, S[2], e); t.lift = Math.sin(Math.PI * g) * .6; t.state = 1; t.lit = lerp(1, S[4], e);
+    } else { t.x = S[0]; t.y = S[1]; t.s = S[3]; t.rot = Math.sin(t.ph) * .14; t.fx = 1; t.z = S[2]; t.lift = 0; t.state = 1; t.lit = S[4]; }
+  }
+  cnt.scanned = Math.round(cnt.scanned); cnt.landed = Math.round(cnt.landed);
+  for (let i = 0; i < cnt.perCat.length; i++) cnt.perCat[i] = Math.round(cnt.perCat[i]);
+  cnt.review = REVIEW_I >= 0 && CATS[REVIEW_I].count === DATA.needsReview ? cnt.perCat[REVIEW_I] : Math.round(DATA.needsReview * cnt.landed / N);
+  cnt.conflict = Math.round(DATA.nameConflicts * cnt.landed / N);
+}
+
+/* ---------- drawing ---------- */
+const order = tiles.map((_, i) => i), zoomEl = $('zoom'); let lastZ = 0;
+function drawTile(t, a) {
+  const k = t.s / TS, cs = Math.cos(t.rot), sn = Math.sin(t.rot), fx = Math.sign(t.fx || 1) * Math.max(.12, Math.abs(t.fx));
+  if (t.lift > .05) { ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.globalAlpha = (TH.light ? .13 : .3) * t.lift * a; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.ellipse(t.x + t.s * .12 * t.lift, t.y + t.s * .42 * t.lift, t.s * .46, t.s * .3, 0, 0, 6.283); ctx.fill(); }
+  ctx.setTransform(DPR * cs * k * fx, DPR * sn * k * fx, -DPR * sn * k, DPR * cs * k, DPR * t.x, DPR * t.y);
+  ctx.globalAlpha = a; ctx.drawImage(sprites[t.i], -TS / 2, -TS / 2);
+  if (t.lit < .97) { ctx.globalAlpha = a * Math.min(.62, (1 - t.lit) * .78); ctx.fillStyle = '#05060a'; rr(ctx, -TS / 2 + 5, -TS / 2 + 5, TS - 10, TS - 10, 20); ctx.fill(); }
+  else if (t.lit > 1.03) { ctx.globalAlpha = a * (t.lit - 1) * .9; ctx.fillStyle = '#fff'; rr(ctx, -TS / 2 + 5, -TS / 2 + 5, TS - 10, TS - 10, 20); ctx.fill(); }
+  const tint = clamp((T - t.scanT) / .3); if (tint > 0) { ctx.globalAlpha = a * tint; ctx.drawImage(ringSpr[t.ci], -TS / 2, -TS / 2); }
+  const hit = T - t.scanT; if (hit > -.05 && hit < .22 && t.state === 1) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = (hit < 0 ? (hit + .05) / .05 : 1 - hit / .22) * .42 * a; ctx.fillStyle = '#fff'; rr(ctx, -TS / 2 + 5, -TS / 2 + 5, TS - 10, TS - 10, 20); ctx.fill(); ctx.globalCompositeOperation = 'source-over'; }
+}
+function render() {
+  update();
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  ctx.fillStyle = TH.bg; ctx.fillRect(0, 0, W, H);
+  const ui = started ? clamp((T - .15) / .9) : .0, dim = TH.light ? .05 : .5;
+  // soft stage light behind the ball
+  const g = ctx.createRadialGradient(ball.x, ball.y, 0, ball.x, ball.y, ball.R * 3.2); g.addColorStop(0, TH.light ? 'rgba(255,255,255,.9)' : 'rgba(60,66,80,.42)'); g.addColorStop(1, TH.light ? 'rgba(255,255,255,0)' : 'rgba(60,66,80,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  drawStats(Math.max(ui, .0)); drawBins(ui);
+  if (started && T > .9 && T < T_RES + .2) { const a = clamp((T - .9) / .7) * clamp(R / ball.R * 1.4), sy = ball.y + ball.R * 1.1, rx = R * 1.05 + 4, sg = ctx.createRadialGradient(ball.x, sy, 0, ball.x, sy, rx); sg.addColorStop(0, `rgba(0,0,0,${(TH.light ? .2 : .55) * a})`); sg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.save(); ctx.translate(0, sy); ctx.scale(1, .16); ctx.translate(0, -sy); ctx.fillStyle = sg; ctx.fillRect(ball.x - rx, sy - rx, rx * 2, rx * 2); ctx.restore(); }
+  // orbit rings around the ball
+  const ringA = clamp((T - .6) / .8) * (1 - clamp((T - T_RES + .5) / .5)) * (started ? 1 : 0);
+  if (ringA > 0) { ctx.strokeStyle = TH.line; ctx.lineWidth = 1; for (const k of [1.2, 1.42]) { ctx.globalAlpha = ringA * (k > 1.3 ? .5 : .9); ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.R * k, 0, 6.283); ctx.stroke(); } ctx.globalAlpha = 1; }
+  // landed, then ball/wall by depth, then tiles in flight on top
+  for (const t of tiles) if (t.state === 3) drawTile(t, 1);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.globalCompositeOperation = TH.light ? 'source-over' : 'lighter';
+  for (const t of tiles) if (t.state === 3 && t.landK < 1) { const k = clamp((T - t.dep - t.dur) / .34); if (k >= 1) continue; ctx.globalAlpha = (1 - k) * .6; ctx.strokeStyle = CATS[t.ci].color; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(t.tx, t.ty, binT * (.5 + eOut(k) * .45), 0, 6.283); ctx.stroke(); }
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  order.sort((a, b) => tiles[a].z - tiles[b].z);
+  for (const i of order) { const t = tiles[i]; if (t.state === 3 || t.state === 2) continue; drawTile(t, 1); }
+  for (const t of tiles) if (t.state === 2) { // short motion ghost, then the tile
+    const fu = (T - t.dep) / t.dur; if (fu > .12 && fu < .9) { const x = t.x, y = t.y, s = t.s; const pu = fu - .09, e = eIO(pu); ctx.globalCompositeOperation = 'lighter'; ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.globalAlpha = .4 * Math.sin(Math.PI * fu); ctx.strokeStyle = CATS[t.ci].color; ctx.lineWidth = Math.max(1.2, s * .07); ctx.lineCap = 'round';
+      sphere(t, T, S); const dx = t.tx - S[0], dy = t.ty - S[1], d = Math.hypot(dx, dy) || 1, ox = S[0] - ball.x, oy = S[1] - ball.y, ol = Math.hypot(ox, oy) || 1, mx = (S[0] + t.tx) / 2 + ox / ol * d * .22 - dy / d * d * .16 * t.side, my = (S[1] + t.ty) / 2 + oy / ol * d * .22 + dx / d * d * .16 * t.side - d * .12, m = 1 - e;
+      ctx.beginPath(); ctx.moveTo(m * m * S[0] + 2 * m * e * mx + e * e * t.tx, m * m * S[1] + 2 * m * e * my + e * e * t.ty); ctx.lineTo(x, y); ctx.stroke(); ctx.globalCompositeOperation = 'source-over'; }
+    drawTile(t, 1);
+  }
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0); ctx.globalAlpha = 1;
+  // scan: a ring of light travelling down the ball
+  if (T > T_SCAN && T < T_SORT + .15) {
+    const k = clamp((T - T_SCAN - .12) / 1.36), a = Math.min(1, (T - T_SCAN) * 7) * (1 - clamp((T - T_SORT + .2) / .3)), yy = 1 - 2 * k, rad = Math.sqrt(Math.max(0, 1 - yy * yy)) * R * 1.06 + R * .08, cy = ball.y - yy * R * Math.cos(.38);
+    ctx.save(); ctx.translate(ball.x, cy); ctx.rotate(.22); ctx.globalCompositeOperation = TH.light ? 'source-over' : 'lighter';
+    ctx.strokeStyle = TH.light ? `rgba(20,22,28,${.85 * a})` : `rgba(255,255,255,${.95 * a})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, rad, rad * .36, 0, 0, 6.283); ctx.stroke();
+    ctx.strokeStyle = TH.light ? `rgba(20,22,28,${.16 * a})` : `rgba(255,255,255,${.2 * a})`; ctx.lineWidth = 9; ctx.beginPath(); ctx.ellipse(0, 0, rad, rad * .36, 0, 0, 6.283); ctx.stroke(); ctx.restore(); ctx.globalCompositeOperation = 'source-over';
+  }
+  if (!started || T < 1.2) { const k = started ? 1 - clamp(T / 1.2) : 1, sg = ctx.createLinearGradient(0, 0, 0, wallTop * 1.25); sg.addColorStop(0, TH.bg); sg.addColorStop(.62, TH.bg); sg.addColorStop(1, hexA(TH.bg, 0)); ctx.globalAlpha = k; ctx.fillStyle = sg; ctx.fillRect(0, 0, W, wallTop * 1.25); ctx.globalAlpha = 1; }
+  drawDonut();
+  const zi = started ? eIO(clamp((T - 1.0) / .95)) - eIO(clamp((T - 3.5) / .8)) : 0, zz = 1 + (wide ? .62 : .42) * zi;
+  if (zz !== lastZ) { lastZ = zz; zoomEl.style.transformOrigin = `${ball.x}px ${ball.y}px`; zoomEl.style.transform = zz > 1.001 ? `scale(${zz.toFixed(4)})` : 'none'; }
+  hud();
+}
+function drawStats(a) {
+  if (a <= 0) return; ctx.globalAlpha = a; const s = statR;
+  const items = EN ? [['Files', N], ['Read', cnt.scanned], ['Sorted', cnt.landed], ['Unsure', cnt.review]] : wide ? [['總檔案', N], ['已讀取內容', cnt.scanned], ['已歸位', cnt.landed], ['檔名與內容不符，依內容改判', cnt.conflict], ['待確認', cnt.review]] : [['總檔案', N], ['已讀取', cnt.scanned], ['已歸位', cnt.landed], ['待確認', cnt.review]];
+  const cw = s.w / items.length, fl = wide ? Math.max(11, H * .0175) : Math.max(9, H * .0112), fn = wide ? H * .042 : H * .027;
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  items.forEach(([l, v], i) => { const x = s.x + i * cw + (i ? cw * .08 : 0);
+    if (i) { ctx.fillStyle = TH.line; ctx.fillRect(s.x + i * cw, s.y + s.h * .08, 1, s.h * .8); }
+    ctx.fillStyle = TH.mute; ctx.font = `500 ${fl}px ${SANS}`; ctx.fillText(l, x, s.y + fl * 1.1);
+    ctx.fillStyle = TH.ink; ctx.font = `700 ${fn}px ${DISP}`; ctx.fillText(String(v), x, s.y + fl * 1.1 + fn * 1.08); });
+  // progress line, coloured by category as files land
+  const y = s.y + s.h + (wide ? H * .012 : H * .008); ctx.fillStyle = TH.line; ctx.fillRect(s.x, y, s.w, 2); let x = s.x;
+  CATS.forEach((c, i) => { const w = cnt.perCat[i] / N * s.w; ctx.fillStyle = c.color; ctx.fillRect(x, y - .5, w, 3); x += w; });
+  ctx.globalAlpha = 1;
+}
+function drawBins(a) {
+  if (a <= 0) return; const hd = binHead(), fn = wide ? Math.max(12, H * .0195) : Math.max(10, H * .0125), r = Math.min(14, bins[0].w * .07);
+  for (const b of bins) {
+    const c = b.cat, n = cnt.perCat[b.i], done = n >= c.count, hov = hover === b.i;
+    ctx.globalAlpha = a; ctx.fillStyle = TH.panel; rr(ctx, b.x, b.y, b.w, b.h, r); ctx.fill();
+    const wave = Math.max(0, 1 - Math.abs(T - (T_RES + .2 + b.i * .055)) / .28);
+    ctx.strokeStyle = hov ? c.color : done ? hex(c.color, .55) : TH.line; ctx.lineWidth = hov ? 1.6 : done ? 1.4 : 1; ctx.stroke();
+    if (done) { ctx.fillStyle = hex(c.color, TH.light ? .05 : .045); ctx.fill(); }
+    if (wave > 0) { ctx.globalAlpha = a * wave; ctx.strokeStyle = c.color; ctx.lineWidth = 3; ctx.stroke(); ctx.fillStyle = hex(c.color, .14); ctx.fill(); ctx.globalAlpha = a; }
+    if (b.flash > .02) { ctx.globalAlpha = a * Math.min(1, b.flash); ctx.strokeStyle = c.color; ctx.lineWidth = 2; ctx.stroke(); ctx.fillStyle = hex(c.color, .08); ctx.fill(); b.flash *= .9; }
+    ctx.globalAlpha = a; const px = b.x + Math.max(8, b.w * .055), ty = b.y + hd * .64;
+    ctx.fillStyle = c.color; rr(ctx, px, ty - fn * .78, fn * .8, fn * .8, fn * .2); ctx.fill();
+    ctx.fillStyle = TH.ink; ctx.font = `700 ${fn}px ${SANS}`; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic'; ctx.fillText(EN && c.en ? c.en : c.name, px + fn * 1.15, ty);
+    ctx.fillStyle = done ? c.color : (b.flash > .3 ? TH.ink : TH.mute); ctx.font = `700 ${fn * (1.08 + Math.min(.5, b.flash * .32))}px ${DISP}`; ctx.textAlign = 'right'; ctx.fillText((done ? '✓ ' : '') + String(n), b.x + b.w - Math.max(8, b.w * .055), ty);
+  }
+  ctx.globalAlpha = 1; ctx.textAlign = 'left';
+}
+function drawDonut() {
+  const k = clamp((T - T_RES) / 1.1); if (k <= 0) return; const e = eOut(k), d = donut, lw = d.r * .2; let a0 = -Math.PI / 2;
+  ctx.lineCap = 'butt'; ctx.strokeStyle = TH.chip; ctx.lineWidth = lw; ctx.globalAlpha = Math.min(1, k * 3); ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 6.283); ctx.stroke();
+  const total = e * Math.PI * 2; let used = 0;
+  CATS.forEach(c => { const seg = c.count / N * Math.PI * 2, draw = Math.min(seg, total - used); if (draw > 0) { ctx.strokeStyle = c.color; ctx.beginPath(); ctx.arc(d.x, d.y, d.r, a0 + used + .012, a0 + used + Math.max(.013, draw - .012)); ctx.stroke(); } used += seg; });
+  ctx.fillStyle = TH.ink; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic'; ctx.font = `800 ${d.r * .62}px ${DISP}`; ctx.fillText(String(Math.round(N * e)), d.x, d.y + d.r * .14);
+  ctx.fillStyle = TH.mute; ctx.font = `500 ${Math.max(10, d.r * .15)}px ${SANS}`; ctx.fillText(L('個檔案已歸位', 'files sorted'), d.x, d.y + d.r * .4); ctx.globalAlpha = 1; ctx.textAlign = 'left';
+}
+
+/* ---------- HUD ---------- */
+const reviewN = DATA.needsReview, realCats = CATS.filter(c => c.id !== 'review').length;
+let lastPhase = -2, finOn = null;
+function applyLang() {
+  $('title').innerHTML = EN ? 'Sorting my<i id="src"></i>folder' : '整理我的<i id="src"></i>資料夾'; $('src').textContent = DATA.title || 'Files';
+  $('brand').textContent = DATA.brand || '黑牛 Heiniu · File Universe'; $('logo').textContent = '牛';
+  $('heroN').textContent = N.toLocaleString('en-US'); $('heroS').textContent = Object.entries(DATA.byType).sort((a, b) => b[1] - a[1]).slice(0, 6).map(e => e[0].toUpperCase()).join(' ') + (SAMPLED ? L(`　每張卡片代表約 ${Math.round(N / TN)} 個檔案`, `   each tile = about ${Math.round(N / TN)} files`) : '');
+  $('finD').textContent = L(`${N} 個檔案　${realCats} 個分類` + (reviewN ? `　${reviewN} 個待確認` : ''), `${N} files   ${realCats} categories` + (reviewN ? `   ${reviewN} to review` : ''));
+  const b = { start: ['開始整理', 'Sort my files'], bReplay: ['重播', 'Replay'], bOver: ['總覽', 'Overview'], bFull: ['全螢幕', 'Fullscreen'], bRec: ['錄影模式', 'Recording mode'], shX: ['關閉', 'Close'], bTheme: ['淺色', 'Light'], bLang: ['EN', '中文'] };
+  for (const k in b) $(k).textContent = L(b[k][0], b[k][1]);
+  $('bSound').textContent = L('音效 開', 'Sound on'); $('recHint').textContent = L('錄影模式：點畫面或按空白鍵播放　按 Esc 離開', 'Recording mode: click or press space to play, Esc to leave');
+}
+applyLang();
+function hud() {
+  const ph = !started ? -1 : T < T_SCAN ? 0 : T < T_SORT ? 1 : T < T_RES ? 2 : 3;
+  if (ph !== lastPhase) { lastPhase = ph; document.querySelectorAll('#phase span').forEach(s => { const p = +s.dataset.p; s.className = p === ph ? 'on' : p < ph ? 'done' : ''; }); }
+  $('hero').style.opacity = started ? 1 - clamp(T / .3) : 1;
+  $('start').style.opacity = started ? 0 : 1; $('start').style.pointerEvents = started ? 'none' : 'auto';
+  const cap = $('cap'), scan = T > T_SCAN && T < T_SORT + .1, sort = T >= T_SORT + .1 && T < T_RES - .2;
+  cap.style.opacity = (scan || sort) ? 1 : 0;
+  if (scan) { $('capN').textContent = `${cnt.scanned} / ${N}`; $('capT').textContent = L('重播已完成的分類結果，非即時分析', 'Replay of a finished sort, not live analysis'); }
+  else if (sort) { $('capN').textContent = `${cnt.landed} / ${N}`; $('capT').textContent = L('依內容歸位', 'sorted by content'); }
+  const fin = T >= T_RES + .55; if (fin !== finOn) { finOn = fin; $('fin').classList.toggle('on', fin); }
+}
+
+/* ---------- audio: synthesised with Web Audio, nothing sampled ---------- */
+const audio = (() => {
+  let ac = null, master = null, on = true, live = [], bed = null, noiseBuf = null, lastTick = 0;
+  function ensure() {
+    if (ac) return; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    ac = new AC(); master = ac.createGain(); master.gain.value = on ? .6 : 0;
+    const comp = ac.createDynamicsCompressor(); comp.threshold.value = -16; comp.ratio.value = 3.5; comp.attack.value = .008; comp.release.value = .22; master.connect(comp); comp.connect(ac.destination);
+    noiseBuf = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate); const d = noiseBuf.getChannelData(0); let b = 0; for (let i = 0; i < d.length; i++) { const w = Math.random() * 2 - 1; b = (b + .04 * w) / 1.04; d[i] = w * .35 + b * 2.2; }
+  }
+  const G = (v = 0) => { const g = ac.createGain(); g.gain.value = v; return g; };
+  const keep = n => (live.push(n), n);
+  function osc(type, f, a, b) { const o = ac.createOscillator(); o.type = type; o.frequency.value = f; o.start(a); o.stop(b); return keep(o); }
+  function noise(a, b) { const s = ac.createBufferSource(); s.buffer = noiseBuf; s.loop = true; s.start(a, Math.random()); s.stop(b); return keep(s); }
+  function stop() { live.forEach(n => { try { n.stop(); } catch (e) { } try { n.disconnect(); } catch (e) { } }); live = []; bed = null; }
+  function play() {
+    ensure(); if (!ac) return; if (ac.state === 'suspended') ac.resume(); stop(); const t = ac.currentTime + .02;
+    // CHAOS: low room tone under everything, fading as order arrives
+    { const g = G(); g.connect(master); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.2, t + .35); g.gain.setValueAtTime(.2, t + T_SORT); g.gain.linearRampToValueAtTime(.07, t + T_RES); g.gain.linearRampToValueAtTime(0, t + T_END + .6);
+      const lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 230; lp.connect(g);
+      [[55, 'sine', .8], [55.6, 'triangle', .38], [82.5, 'sine', .3]].forEach(([f, ty, v]) => { const o = osc(ty, f, t, t + T_END + 1), og = G(v); o.connect(og); og.connect(lp); });
+      const n = noise(t, t + T_END + 1), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 500; bp.Q.value = .6; const ng = G(.03); n.connect(bp); bp.connect(ng); ng.connect(g); }
+    // gather: one rising whoosh as the files swoop into the ball
+    { const n = noise(t, t + 2), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.3; bp.frequency.setValueAtTime(220, t); bp.frequency.exponentialRampToValueAtTime(2400, t + 1.35); bp.frequency.exponentialRampToValueAtTime(500, t + 1.85);
+      const g = G(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.42, t + 1.15); g.gain.exponentialRampToValueAtTime(.001, t + 1.9); n.connect(bp); bp.connect(g); g.connect(master);
+      const th = osc('sine', 130, t + 1.55, t + 2.1); th.frequency.exponentialRampToValueAtTime(52, t + 1.95); const tg = G(); tg.gain.setValueAtTime(.0001, t + 1.55); tg.gain.linearRampToValueAtTime(.4, t + 1.58); tg.gain.exponentialRampToValueAtTime(.001, t + 2.08); th.connect(tg); tg.connect(master); }
+    // SCAN: low, restrained sweep that follows the ring
+    { const s = t + T_SCAN + .1, g = G(); g.connect(master); g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(.3, s + .2); g.gain.setValueAtTime(.3, s + 1.2); g.gain.exponentialRampToValueAtTime(.001, s + 1.6);
+      const o = osc('sine', 68, s, s + 1.7); o.frequency.exponentialRampToValueAtTime(104, s + 1.45); const og = G(.55); o.connect(og); og.connect(g);
+      const n = noise(s, s + 1.7), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 9; bp.frequency.setValueAtTime(420, s); bp.frequency.exponentialRampToValueAtTime(2200, s + 1.45); const ng = G(.2); n.connect(bp); bp.connect(ng); ng.connect(g);
+      for (let i = 0; i < 22; i++) { const tt = s + .05 + i * .064, tk = osc('sine', 1800 + Math.random() * 1400, tt, tt + .05), tg = G(); tg.gain.setValueAtTime(.04, tt); tg.gain.exponentialRampToValueAtTime(.0005, tt + .04); tk.connect(tg); tg.connect(master); } }
+    // SORT: whoosh bed, driven every frame by how many files are in the air
+    { const s = t + T_SORT - .05, e = t + T_RES + .5, n = noise(s, e), bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1; bp.frequency.value = 320; const g = G(0); n.connect(bp); bp.connect(g); g.connect(master); bed = { g, bp, end: e }; }
+    // RESULT: soft impact and a settled open chord
+    { const s = t + T_RES + .5, th = osc('sine', 118, s, s + .9); th.frequency.exponentialRampToValueAtTime(46, s + .5); const tg = G(); tg.gain.setValueAtTime(.55, s); tg.gain.exponentialRampToValueAtTime(.001, s + .8); th.connect(tg); tg.connect(master);
+      [196, 293.66, 392, 493.88, 587.33].forEach((f, i) => { const o = osc('sine', f, s, s + 2.2), g = G(); g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(.085 - i * .008, s + .02); g.gain.exponentialRampToValueAtTime(.0006, s + 2); o.connect(g); g.connect(master); });
+      const c = noise(s, s + .05), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 2500; const cg = G(); cg.gain.setValueAtTime(.22, s); cg.gain.exponentialRampToValueAtTime(.001, s + .04); c.connect(hp); hp.connect(cg); cg.connect(master); }
+  }
+  const scale = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24];
+  return {
+    play, stop,
+    air(share) { if (!bed || !ac) return; const t = ac.currentTime; if (t > bed.end) return; const k = Math.min(1, share * 9); bed.g.gain.setTargetAtTime(k * .26, t, .08); bed.bp.frequency.setTargetAtTime(300 + k * 1500, t, .1); },
+    land(ci, complete) { // a file drops into its bin: tiny click; the last one in a bin rings
+      if (!ac || ac.state !== 'running') return; const t = ac.currentTime; if (!complete && t - lastTick < .038) return; lastTick = t; const f = 523.25 * Math.pow(2, scale[ci % scale.length] / 12);
+      const o = osc('sine', complete ? f : f * 2, t, t + (complete ? .6 : .09)), g = G(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(complete ? .17 : .05, t + .004); g.gain.exponentialRampToValueAtTime(.0006, t + (complete ? .5 : .07)); o.connect(g); g.connect(master);
+      const c = noise(t, t + .02), hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 3800; const cg = G(); cg.gain.setValueAtTime(complete ? .12 : .045, t); cg.gain.exponentialRampToValueAtTime(.001, t + .016); c.connect(hp); hp.connect(cg); cg.connect(master);
+      if (live.length > 400) live = live.slice(-200);
+    },
+    toggle() { on = !on; if (master) master.gain.setTargetAtTime(on ? .6 : 0, ac.currentTime, .03); return on; },
+    get state() { return ac ? ac.state : 'none'; }
+  };
+})();
+
+/* ---------- loop ---------- */
+function frame(now) {
+  const raw = (now - last0) / 1000 || 0; last0 = now; const dt = Math.min(.05, raw);
+  if (!seekMode) { amb += dt; if (playing) { T = (now - t0) / 1000; if (T >= T_END) { T = T_END; playing = false; } } }
+  if (raw < .2) ema = ema * .95 + raw * .05; if (ema > .045 && qScale > .75 && now > 4000 && now - qAt > 3000) { qScale -= .25; qAt = now; ema = .016; layout(); } // only a genuinely slow device loses resolution
+  render();
+  if (playing) { // landing events since the previous frame
+    for (const t of tiles) { const l = t.dep + t.dur; if (l > prevT && l <= T) { bins[t.ci].flash = cnt.perCat[t.ci] >= CATS[t.ci].count ? 1.8 : 1; audio.land(t.ci, cnt.perCat[t.ci] >= CATS[t.ci].count); } }
+    audio.air(cnt.air / TN);
+  }
+  prevT = T; requestAnimationFrame(frame);
+}
+
+/* ---------- controls ---------- */
+function start() { closeSheet(); T = 0; prevT = 0; t0 = performance.now(); playing = true; started = true; bins.forEach(b => b.flash = 0); try { audio.play(); } catch (e) { console.warn('audio unavailable', e); } }
+function openCat(i) {
+  const c = CATS[i];
+  $('shT').innerHTML = `<i style="background:${c.color}"></i>${esc(EN && c.en ? c.en : c.name)}`; $('shC').textContent = c.count; $('shC').style.color = c.color; $('shP').textContent = c.reason;
+  $('list').innerHTML = ALL.filter(f => f.cat === c.id).sort((a, b) => (b.nameType === 'conflict') - (a.nameType === 'conflict') || a.name.localeCompare(b.name, 'zh-Hant')).slice(0, 400).map(f => {
+    const tags = f.read ? [`<span class="tag">${esc(f.read)}</span>`] : [];
+    if (f.nameType === 'conflict') tags.push(`<span class="tag w">${L('檔名與內容不符，依內容分類', 'Name does not match content: sorted by content')}</span>`);
+    if (f.nameType === 'generic') tags.push(`<span class="tag">${L('檔名無資訊', 'Uninformative name')}</span>`);
+    tags.push(f.needsReview ? `<span class="tag q">${L('需要人工確認', 'Needs your review')}</span>` : `<span class="tag">${L('不需人工確認', 'No review needed')}</span>`);
+    return `<div class="row"><span class="e">${esc(String(f.ext).toUpperCase().slice(0, 5))}</span><span class="f">${esc(f.name)}</span><span class="r">${esc(f.reason)}</span><span class="m">${tags.join('')}</span></div>`;
+  }).join('') + (c.count > 400 ? `<p class="note">${L('只顯示前 400 個；完整清單在 classification.json。', 'Showing the first 400; the full list is in classification.json.')}</p>` : '');
+  $('list').scrollTop = 0; $('sheet').classList.add('on');
+}
+function openOverview() {
+  $('shT').textContent = L('分類總覽', 'Overview'); $('shC').textContent = N; $('shC').style.color = ''; $('shP').textContent = L(`來源 ${DATA.source}`, `Source: ${DATA.source}`) + (DATA.analyzedAt ? L('，分析於 ', ', analysed ') + String(DATA.analyzedAt).slice(0, 16).replace('T', ' ') : '');
+  const max = Math.max(...CATS.map(c => c.count));
+  $('list').innerHTML = `<div class="facts"><div><b>${N}</b>${L('實際掃描到的檔案', 'files scanned')}</div><div><b>${realCats}</b>${L('自動發現的分類', 'categories found')}</div><div><b>${reviewN}</b>${L('需要人工確認', 'need your review')}</div><div><b>${DATA.nameConflicts}</b>${L('檔名與內容不符，已依內容分類', 'names that did not match content')}</div><div><b>${DATA.genericNames}</b>${L('檔名無資訊（未命名、scan…）', 'uninformative names (untitled, scan…)')}</div><div><b>${DATA.unreadable}</b>${L('無法讀取', 'unreadable')}</div></div>
+    <div class="ov">${CATS.map((c, i) => `<button data-i="${i}"><span class="nm"><i style="background:${c.color}"></i>${esc(EN && c.en ? c.en : c.name)}</span><span class="bar"><b style="width:${c.count / max * 100}%;background:${c.color}"></b></span><span class="ct">${c.count}</span></button>`).join('')}</div>
+    <p class="note">${Object.keys(DATA.readMethods).length ? L('讀取方式：', 'How files were read: ') + Object.entries(DATA.readMethods).map(([k, v]) => `${esc(k)} ${v}`).join(L('、', ', ')) + L('。', '. ') : ''}${L('畫面上的掃描動畫是重播已完成的分類結果。', 'The scan on screen replays a finished sort. ')}${DATA.moved ? L('檔案已搬移。', 'Files have been moved.') : L('檔案尚未移動。', 'No files have been moved yet.')}</p>
+    <p class="note">File Universe by 黑牛 Heiniu @fatty_bamba</p>`;
+  $('list').querySelectorAll('button').forEach(b => b.onclick = () => openCat(+b.dataset.i));
+  $('list').scrollTop = 0; $('sheet').classList.add('on');
+}
+function closeSheet() { $('sheet').classList.remove('on'); }
+function setRec(v) { document.body.classList.toggle('rec', v); closeSheet(); if (v) { const h = $('recHint'); h.style.opacity = 1; setTimeout(() => h.style.opacity = 0, 2600); } }
+const isRec = () => document.body.classList.contains('rec');
+function pick(ev) { if (!started || T < T_SORT) return -1; const r = stage.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; for (const b of bins) if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) return b.i; return -1; }
+$('start').onclick = start; $('bReplay').onclick = start; $('bOver').onclick = openOverview; $('shX').onclick = closeSheet;
+$('bSound').onclick = e => { const v = audio.toggle(); e.currentTarget.textContent = v ? L('音效 開', 'Sound on') : L('音效 關', 'Sound off'); e.currentTarget.setAttribute('aria-pressed', v); };
+$('bTheme').onclick = e => { const v = document.body.classList.toggle('light'); e.currentTarget.setAttribute('aria-pressed', v); readTheme(); };
+$('bFrame').onclick = e => { portraitFrame = !portraitFrame; e.currentTarget.setAttribute('aria-pressed', portraitFrame); layout(); };
+$('bFull').onclick = () => { try { (document.fullscreenElement ? document.exitFullscreen() : $('wrap').requestFullscreen()).catch(() => { }); } catch (e) { } };
+$('bRec').onclick = () => setRec(true);
+$('bLang').onclick = () => { EN = !EN; applyLang(); };
+cv.addEventListener('mousemove', e => { const h = isRec() ? -1 : pick(e); if (h !== hover) { hover = h; cv.style.cursor = h >= 0 ? 'pointer' : ''; } });
+cv.addEventListener('click', e => { if (isRec()) { start(); return; } const h = pick(e); if (h >= 0) openCat(h); else closeSheet(); });
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (isRec()) setRec(false); else closeSheet(); }
+  else if (e.key === ' ' || e.key === 'Enter') { if (document.activeElement && document.activeElement.tagName === 'BUTTON' && !isRec()) return; e.preventDefault(); start(); }
+  else if (e.key === 'r' || e.key === 'R') setRec(!isRec());
+  else if (e.key === 'f' || e.key === 'F') $('bFull').click();
+  else if (e.key === 'm' || e.key === 'M') $('bSound').click();
+  else if (e.key === 't' || e.key === 'T') $('bTheme').click();
+});
+addEventListener('resize', layout);
+
+/* ---------- boot ---------- */
+readTheme(); portraitFrame = false; layout(); buildSprites();
+if (document.fonts && document.fonts.load) Promise.race([Promise.all([document.fonts.load('800 20px Archivo'), document.fonts.load('700 20px "Noto Sans TC"', '工作與專案檔')]), new Promise(r => setTimeout(r, 2500))]).then(buildSprites).catch(() => { });
+window.__lang = l => { EN = l === 'en'; applyLang(); };
+window.__reel = v => { reel = !!v; portraitFrame = true; layout(); };
+window.__seek = t => { seekMode = t != null; if (seekMode) { T = t; amb = 3 + t; started = t > 0; playing = false; } };
+window.__state = () => ({ T, playing, started, N, W, H, DPR, qScale, wide, audio: audio.state, cnt: { ...cnt, perCat: [...cnt.perCat] }, lastLand, binT, bins: bins.map(b => [b.cat.name, b.cat.count]) });
+requestAnimationFrame(t => { last0 = t; requestAnimationFrame(frame); });
+};
+</script>
+<script>
+// Accepts whatever a sort produced and fills in anything missing, so the numbers on screen always come from the file list itself.
+function normalize(d) {
+  if (!d || !Array.isArray(d.files) || !d.files.length) throw new Error('classification.json needs a non-empty "files" array');
+  const PAL = ['#5B8CFF', '#9B7BFF', '#FF5D8F', '#2DD4BF', '#38BDF8', '#34D399', '#FB923C', '#FBBF24', '#A3E635', '#E879F9', '#F87171', '#60A5FA', '#C084FC', '#4ADE80'];
+  let cats = (Array.isArray(d.categories) ? d.categories : []).map(c => Object.assign({}, c, { id: String(c.id != null ? c.id : c.name) }));
+  const byId = {}, byName = {}; cats.forEach(c => { byId[c.id] = c; if (c.name) byName[c.name] = c; });
+  const files = d.files.map(f => {
+    const name = String(f.name || f.file || f.filename || 'untitled'), m = /\.([A-Za-z0-9]{1,8})$/.exec(name);
+    let cat = f.cat != null ? String(f.cat) : f.category != null ? String(f.category) : f.catName != null ? String(f.catName) : 'review';
+    if (!byId[cat] && byName[cat]) cat = byName[cat].id;
+    const needsReview = !!f.needsReview || cat === 'review';
+    if (!byId[cat]) { const c = { id: cat, name: cat === 'review' ? '待確認' : cat, en: cat === 'review' ? 'Review' : undefined }; cats.push(c); byId[cat] = c; }
+    return { name, ext: String(f.ext || (m ? m[1] : 'file')).toLowerCase(), cat, topic: String(f.topic || name.replace(/\.[^.]+$/, '')), summary: f.summary || '', reason: String(f.reason || ''),
+      nameType: ['conflict', 'generic'].includes(f.nameType) ? f.nameType : 'match', read: f.read || '', needsReview };
+  });
+  cats.forEach(c => { const fs = files.filter(f => f.cat === c.id); c.count = fs.length;
+    c.name = String(c.name || c.id); c.reason = String(c.reason || '');
+    if (!Array.isArray(c.topics) || !c.topics.length) { const seen = {}; fs.forEach(f => seen[f.topic] = (seen[f.topic] || 0) + 1); c.topics = Object.keys(seen).sort((a, b) => seen[b] - seen[a]).slice(0, 8); } });
+  cats = cats.filter(c => c.count > 0); const rv = cats.findIndex(c => c.id === 'review'); if (rv >= 0) cats.push(cats.splice(rv, 1)[0]);
+  cats.forEach((c, i) => { if (!/^#[0-9a-fA-F]{6}$/.test(c.color || '')) c.color = c.id === 'review' ? '#94A3B8' : PAL[i % PAL.length]; });
+  const byType = {}; files.forEach(f => byType[f.ext] = (byType[f.ext] || 0) + 1);
+  return { source: String(d.source || 'Files'), title: d.title, brand: d.brand, lang: d.lang || (/^zh/i.test(navigator.language || '') ? 'zh' : 'en'), analyzedAt: d.analyzedAt || '', moved: !!d.moved,
+    totalFiles: files.length, byType, readMethods: d.readMethods && typeof d.readMethods === 'object' ? d.readMethods : {}, unreadable: +d.unreadable || 0,
+    nameConflicts: files.filter(f => f.nameType === 'conflict').length, genericNames: files.filter(f => f.nameType === 'generic').length, needsReview: files.filter(f => f.needsReview).length,
+    categories: cats, files };
+}
+(function () {
+  const $ = id => document.getElementById(id), drop = $('drop'), dz = drop.querySelector('.dz'), err = $('dzErr');
+  let en = !/^zh/i.test(navigator.language || 'zh');
+  const lang = () => { drop.querySelectorAll('[data-zh]').forEach(e => e.textContent = e.dataset[en ? 'en' : 'zh']); $('lpLang').textContent = en ? '中文' : 'EN'; document.documentElement.lang = en ? 'en' : 'zh-Hant'; };
+  const go = raw => { try { const d = normalize(raw); drop.hidden = true; window.__boot(d); } catch (e) { drop.hidden = false; err.textContent = e.message; } };
+  if (DATA) return go(DATA);
+  lang(); drop.hidden = false;
+  $('lpLang').onclick = () => { en = !en; lang(); };
+  const read = f => f && f.text().then(t => go(JSON.parse(t))).catch(e => { err.textContent = (en ? 'Could not read that file: ' : '讀不了這個檔案：') + e.message; });
+  $('pick').onchange = e => read(e.target.files[0]);
+  addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); }); addEventListener('dragleave', () => dz.classList.remove('over'));
+  addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); read(e.dataTransfer.files[0]); });
+  $('demo').onclick = () => fetch('demo.json').then(r => r.json()).then(d => { d.lang = en ? 'en' : 'zh'; go(d); }).catch(() => { err.textContent = en ? 'Could not load the demo.' : '示範資料載入失敗。'; });
+  const copy = id => { const t = $(id).textContent.replace(/<\\\//g, '</'); const ok = () => { $('cpOk').textContent = en ? 'Copied. Paste it into Claude.' : '已複製，貼到 Claude 吧。'; };
+    (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(ok).catch(() => { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); try { document.execCommand('copy'); ok(); } catch (e) { $('cpOk').textContent = en ? 'Copy failed. Select the text manually.' : '複製失敗，請手動選取。'; } a.remove(); }); };
+  $('cpZh').onclick = () => copy('p-zh'); $('cpEn').onclick = () => copy('p-en');
+})();
+</script>
+</body>
+</html>

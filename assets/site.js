@@ -42,6 +42,14 @@ const HEINIU_ITEMS = [
   },
   {
     kind: 'tool',
+    num: '04',
+    title: 'AI 整理資料夾 · File Universe',
+    desc: '讓 Claude 打開每個檔案、看內容分類，不是看檔名。複製提示詞 → 把結果拖進來 → 看你的檔案自己飛進分類。檔案不上傳。',
+    href: './sort/',
+    date: '2026-11-17',
+  },
+  {
+    kind: 'tool',
     num: '01',
     title: '薪水實拿計算機',
     desc: '輸入月薪 → 產生你的薪資明細表：扣完勞健保實拿多少，還有老闆偷偷幫你付的錢。',
@@ -101,6 +109,7 @@ const HEINIU_ITEMS = [
     '薪水實拿計算機': { tone: 'violet', label: '每月實領 · 估算', value: 'NT$ 57,924' },
     '錢去哪了 · AI 花費健檢': { tone: 'mint', label: '每月花費 · 分類圖', bars: true },
     'PDF 只取需要的頁': { tone: 'blue', label: 'PDF → 文字', value: '01 — 05' },
+    'AI 整理資料夾 · File Universe': { tone: 'violet', label: '看內容分類', value: '300 FILES' },
     '黑牛 AI 剪輯 · 跟 AI 聊天剪影片': { tone: 'violet', label: '剪輯工作流', value: '▶ 00:38' },
     '黑牛茶鋪 · ASTRA 實作': { tone: 'peach', label: 'AI 實作練習', value: 'ASTRA / 04' },
     '省 token 三招': { tone: 'blue', label: 'AI 效率筆記', value: '− 45%' },
