@@ -127,8 +127,8 @@ body.rec #stage{cursor:pointer}
 .lps{margin-top:22px!important}
 .lpp{font-size:13px;line-height:1.7;color:#8f939d;margin-top:26px}
 </style>
-</head>
-<body>
+<link rel="stylesheet" href="../assets/heiniu-shell.css"><link rel="stylesheet" href="../assets/interior.css"><script src="../assets/site-shell.js" defer></script></head>
+<body class="file-universe-page">
 <div id="wrap">
   <div id="stage">
     <div id="zoom">
@@ -142,6 +142,7 @@ body.rec #stage{cursor:pointer}
 
     <button id="start" class="ui">開始整理</button>
     <div id="bar" class="ui">
+      <a class="viewer-home" href="../#tools" aria-label="HEINIU Tools">HEINIU</a>
       <button id="bReplay">重播</button>
       <button id="bOver">總覽</button>
       <button id="bSound" aria-pressed="true">音效 開</button>
@@ -162,8 +163,8 @@ body.rec #stage{cursor:pointer}
 
 <div id="drop" hidden>
   <div class="lp">
-    <nav class="lpn"><a href="../" data-zh="← 黑牛工具" data-en="← Heiniu Tools"></a><span class="lsw" role="group" aria-label="Language"><button type="button" data-l="zh">繁中</button><button type="button" data-l="en">EN</button></span></nav>
-    <p class="lpk" data-zh="免費工具 04" data-en="Free tool 04"></p>
+    <header class="heiniu-shell"><div class="shell-inner"><a class="wordmark shell-brand" href="../" aria-label="HEINIU"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#233b31"/><path d="M8 10q2 6 8 6t8-6" fill="none" stroke="#ebf59a" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="21" r="3" fill="#ebf59a"/></svg><span>HEINIU</span></a><nav class="shell-nav" aria-label="HEINIU"><a href="../#tools" aria-current="location"><span data-lang-zh>工具</span><span data-lang-en lang="en" hidden>Tools</span></a><a href="../#work"><span data-lang-zh>作品集</span><span data-lang-en lang="en" hidden>Portfolio</span></a><a href="../#guides"><span data-lang-zh>教學</span><span data-lang-en lang="en" hidden>Lessons</span></a></nav><div class="shell-languages lsw" role="group" aria-label="Language / 語言"><button type="button" data-lang-choice="zh" data-l="zh" aria-pressed="true">繁中</button><button type="button" data-lang-choice="en" data-l="en" aria-pressed="false">EN</button></div></div></header>
+    <p class="lpk" data-zh="黑牛工具 · File Universe" data-en="HEINIU Tools · File Universe"></p>
     <h1 data-zh="讓 Claude 看內容，整理你的資料夾" data-en="Let Claude sort your folder by what's inside"></h1>
     <p class="lpl" data-zh="Claude 負責讀檔案、分類、搬進資料夾。這個頁面把它做了什麼變成動畫給你檢查。你需要 Claude 桌面版。" data-en="Claude reads your files, sorts them and moves them into folders. This page shows you what it did so you can check it. You need the Claude desktop app."></p>
     <div class="lpb"><button id="demo" type="button" data-zh="先看示範（不需要 Claude）" data-en="Watch the demo first (no Claude needed)"></button></div>

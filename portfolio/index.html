@@ -3,104 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Abdoulie Fatty, PhD｜AI 工程與研究</title>
-  <meta name="description" content="Abdoulie Fatty’s AI engineering and research portfolio, including StrideBrain, EduSense, computer vision research, published machine learning studies, and HEINIU Tools.">
-  <meta property="og:title" content="Abdoulie Fatty, PhD｜AI 工程與研究">
-  <meta property="og:description" content="Abdoulie Fatty’s AI engineering and research portfolio, with applied computer vision, mobile machine learning, and HEINIU Tools.">
+  <title>Abdoulie Fatty, PhD｜AI 應用與研究</title>
+  <meta name="description" content="Abdoulie Fatty’s AI applications and research portfolio, including StrideBrain, EduSense, computer vision research, published machine learning studies, and HEINIU Tools.">
+  <meta property="og:title" content="Abdoulie Fatty, PhD｜AI 應用與研究">
+  <meta property="og:description" content="Abdoulie Fatty’s AI applications and research portfolio, with applied computer vision, mobile machine learning, and HEINIU Tools.">
   <link rel="stylesheet" href="../assets/studio.css">
   <script src="../assets/language.js" defer></script>
-<style>
-/* Portfolio-specific art direction: restrained, editorial, engineering-led. */
-.portfolio { --paper:#f5f3ec; --ink:#14221e; --muted:#52645b; }
-.portfolio-hero {background:#e9ebdf;}
-.portfolio-intro {padding-block:clamp(72px,9vw,140px);gap:clamp(25px,5vw,80px);}
-.portfolio-hero h1 {font-size:clamp(2.65rem,5.8vw,5.6rem);letter-spacing:-.045em;line-height:1.04;margin-block:14px 18px;text-wrap:balance;}
-.portfolio-hero h1 span {font-size:.37em;letter-spacing:0;white-space:nowrap;}
-.hero-credentials {display:flex;gap:9px;flex-wrap:wrap;margin-top:25px;}
-.hero-credentials span {font:700 .66rem/1.3 var(--mono);padding:9px 11px;border:1px solid #a7b3a9;border-radius:3px;letter-spacing:.045em;}
-.flagship-work {background:#edece4;padding:clamp(34px,5vw,68px) 0;}
-.flagship-top {display:flex;justify-content:space-between;gap:30px;align-items:start;margin-bottom:28px;border-top:1px solid #aab4a9;padding-top:19px;}
-.flagship-top>p:last-child{max-width:47ch;color:#52645b;}
-.flagship-card {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.83fr);margin-bottom:24px;min-height:565px;overflow:hidden;}
-.flagship-dark{background:#13231e;color:#edf2e6;}
-.flagship-light{background:#e2e9df;color:#182a20;border:1px solid #c3cfc4;}
-.flagship-copy{padding:clamp(26px,4vw,58px);display:flex;flex-direction:column;align-items:flex-start;}
-.flagship-meta{display:flex;justify-content:space-between;gap:15px;width:100%;font:700 .63rem var(--mono);letter-spacing:.1em;opacity:.7;margin-bottom:60px;}
-.flagship-copy h3{font-size:clamp(3rem,5vw,5.7rem);letter-spacing:-.075em;line-height:1;margin:0 0 14px;}
-.flagship-period{color:#bedc75;}
-.flagship-tagline{font-weight:760;font-size:clamp(1.4rem,2.2vw,2.35rem);line-height:1.19;letter-spacing:-.04em;margin-bottom:19px;max-width:23ch;}
-.flagship-copy>p:not(.flagship-tagline){max-width:60ch;line-height:1.76;}
-.flagship-small{font-size:.76rem;opacity:.7;margin-top:18px;}
-.flagship-links{display:flex;flex-wrap:wrap;gap:18px;margin-top:auto;padding-top:34px;}
-.flagship-links a{font-size:.85rem;font-weight:750;text-decoration:none;border-bottom:1px solid currentColor;padding-bottom:5px;}
-.flagship-steps{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:30px;}
-.flagship-steps span{font:700 .75rem var(--mono);border:1px solid #6a8a76;padding:9px 11px;}
-.flagship-steps b{font-weight:500;opacity:.6;}
-.system-visual{background:#203a2d;color:#ecf2e2;padding:clamp(25px,3.3vw,48px);display:flex;flex-direction:column;justify-content:space-between;position:relative;isolation:isolate;}
-.system-visual:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 98%,#ffffff08 99%),linear-gradient(transparent 98%,#ffffff08 99%);background-size:28px 28px;z-index:-1;}
-.sys-eyebrow,.sys-footer{font:700 .66rem var(--mono);letter-spacing:.12em;opacity:.7;}
-.sys-nodes{display:grid;gap:14px;margin:30px 0;}
-.sys-nodes>div{display:grid;gap:6px;padding:18px 20px;background:#294939;border:1px solid #547461;position:relative;}
-.sys-nodes>div:not(:last-child):after{content:"↓";position:absolute;bottom:-18px;left:50%;color:#d9ecb3;z-index:2;}
-.sys-nodes small{font:700 .64rem var(--mono);color:#cde59d;}
-.sys-nodes strong{font-size:clamp(1rem,1.3vw,1.3rem);letter-spacing:-.03em;}
-.sys-nodes em{font-size:.72rem;font-style:normal;opacity:.65;}
-.sys-footer{display:flex;justify-content:space-between;gap:14px;align-items:center;}
-.sys-footer strong{font-size:.9rem;letter-spacing:0;}
-.feature-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:23px;}
-.feature-tags span{font:.68rem var(--mono);border:1px solid #97ad9a;padding:8px 10px;}
-.learning-visual{background:#cfddd2;padding:clamp(24px,3.5vw,49px);display:flex;flex-direction:column;justify-content:center;gap:14px;min-width:0;}
-.learning-header,.learning-foot{display:flex;justify-content:space-between;font:700 .65rem var(--mono);letter-spacing:.07em;color:#365744;gap:12px;}
-.learning-video{min-height:210px;background:#152d24;color:#e4f3df;padding:26px;display:flex;align-items:end;justify-content:space-between;}
-.play-triangle{width:60px;height:60px;border:1px solid #93bd9a;display:grid;place-items:center;border-radius:50%;font-size:20px;}
-.learning-video div:last-child{display:grid;gap:4px;text-align:right;}
-.learning-video small{font:.65rem var(--mono);opacity:.6;}
-.learning-video strong{font:1.5rem var(--mono);}
-.learning-progress{height:4px;background:#9caf9f;}
-.learning-progress i{display:block;width:65%;height:4px;background:#275d43;}
-.learning-output{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
-.learning-output>div{min-height:106px;padding:16px;background:#e8eee5;border:1px solid #b3c5b6;display:grid;align-content:space-between;gap:16px;}
-.learning-output small{font:700 .63rem var(--mono);color:#63816a;}
-.learning-output strong{font-size:1rem;letter-spacing:-.02em;}
-.portfolio-section .case{scroll-margin-top:35px;}
-@media(max-width:900px){.flagship-card{grid-template-columns:1fr;}.flagship-meta{margin-bottom:35px;}.system-visual,.learning-visual{min-height:420px;}.portfolio-hero h1{font-size:clamp(2.65rem,8vw,4.75rem);}}
-@media(max-width:600px){.flagship-top{display:block;}.flagship-top>p:last-child{margin-top:12px;}.flagship-copy{padding:27px 22px;}.flagship-steps{gap:5px}.flagship-steps span{padding:8px 7px;font-size:.64rem;}.system-visual,.learning-visual{padding:22px;}.learning-output{grid-template-columns:1fr 1fr;}.portfolio-intro{padding-block:55px;}}
-
-.portfolio-hero .portfolio-intro {padding-block:clamp(30px,4.5vw,66px);gap:clamp(22px,5vw,70px);}
-.portfolio-hero .portrait {width:min(100%,290px);}
-#systems-title {font-size:clamp(1.7rem,3.5vw,3rem);line-height:1.08;letter-spacing:-.045em;}
-.sales-case {border-radius:14px;min-height:0;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);}
-.sales-case .flagship-meta {margin-bottom:22px;color:#dae9a8;opacity:1;}
-.sales-case h3 {font-size:clamp(2rem,4vw,4.2rem);letter-spacing:-.045em;}
-.sales-case .flagship-tagline {font-size:clamp(1.12rem,2vw,1.6rem);}
-.sales-case .flagship-copy > p {color:#e0ebdf;}
-.sales-case .link-row {margin-top:20px;}
-.sales-case .button {color:#15251e;background:#eaf39a;}
-.sales-flow {background:#203a2e;padding:clamp(22px,4vw,46px);}
-.sales-flow ol {margin:12px 0 0;padding-left:22px;}
-.sales-flow li {padding:10px 0;border-top:1px solid #688674;}
-.sales-flow li p {font-size:.9rem;color:#dce8dd;}
-.sales-flow .kicker {color:#eaf39a;}
-.sales-details {margin:0 0 28px;padding:0 clamp(17px,3vw,30px);border:1px solid #aab7a7;border-radius:10px;background:#f8f8ee;}
-.sales-details[open] {padding-bottom:18px;}
-.sales-details dl {display:grid;gap:14px;}
-.sales-details dt {font-weight:760;}
-.sales-details dd {color:var(--muted);}
-@media(max-width:900px){.sales-case{grid-template-columns:1fr;}}
-@media(max-width:700px){.portfolio-hero .portrait{width:150px;}.portfolio-hero .portfolio-intro{padding-block:26px;}}
-</style>
+<link rel="stylesheet" href="./portfolio.css">
+  <link rel="stylesheet" href="../assets/heiniu-shell.css">
+  <script src="../assets/site-shell.js" defer></script>
 </head>
-<body class="portfolio" data-english-title="Abdoulie Fatty, PhD | AI Engineering & Research">
+<body class="portfolio" data-english-title="Abdoulie Fatty, PhD | AI Applications & Research">
 <a class="skip" href="#main"><span data-lang-zh>跳到主要內容</span><span data-lang-en lang="en" hidden>Skip to content</span></a>
-<nav class="site-nav"><div class="wrap nav-inner">
-  <a class="wordmark" href="../"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#233b31"/><path d="M8 10q2 6 8 6t8-6" fill="none" stroke="#ebf59a" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="21" r="3" fill="#ebf59a"/></svg><span>HEINIU<span class="brand-light"> STUDIO</span></span></a>
-  <div class="nav-links"><a class="" href="#stridebrain"><span data-lang-zh>案例</span><span data-lang-en lang="en" hidden>Case studies</span></a><a class="" href="#research"><span data-lang-zh>研究</span><span data-lang-en lang="en" hidden>Research</span></a><a class="" href="#contact"><span data-lang-zh>聯絡</span><span data-lang-en lang="en" hidden>Contact</span></a></div>
-</div></nav>
-<main id="main">
+<header class="heiniu-shell"><div class="shell-inner"><a data-home href="../" class="wordmark shell-brand" aria-label="HEINIU"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#233b31"/><path d="M8 10q2 6 8 6t8-6" fill="none" stroke="#ebf59a" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="21" r="3" fill="#ebf59a"/></svg><span>HEINIU</span></a><nav class="shell-nav" aria-label="HEINIU"><a data-home href="../#tools"><span data-lang-zh>工具</span><span data-lang-en lang="en" hidden>Tools</span></a><a href="#main" aria-current="page"><span data-lang-zh>作品集</span><span data-lang-en lang="en" hidden>Portfolio</span></a><a data-home href="../#methods"><span data-lang-zh>教學</span><span data-lang-en lang="en" hidden>Lessons</span></a></nav><div class="shell-languages" role="group" aria-label="Language / 語言"><button type="button" data-lang-choice="zh" aria-pressed="true">繁中</button><button type="button" data-lang-choice="en" aria-pressed="false">EN</button></div></div></header>
+<main id="main" tabindex="-1">
   <header class="portfolio-hero"><div class="wrap portfolio-intro">
     <div>
       <p class="kicker"><i></i><span data-lang-zh>AI 工程師 · 研究者 · 創辦人</span><span data-lang-en lang="en" hidden>AI ENGINEER · RESEARCHER · FOUNDER</span></p>
-      <h1>Abdoulie Fatty<span>, PhD</span></h1>
+      <h1><span data-lang-zh>AI 應用與研究</span><span data-lang-en lang="en" hidden>AI Applications &amp; Research</span></h1><p class="portfolio-author">Abdoulie Fatty, PhD</p>
       <p class="lede"><span data-lang-zh>從電腦視覺研究到企業知識系統與 AI 學習產品，將嚴謹研究轉化為真正可用的技術。</span><span data-lang-en lang="en" hidden>I connect rigorous research with systems people can actually use—from computer vision and AI knowledge workflows to multimodal learning products.</span></p>
       <div class="link-row"><a class="button primary" href="#systems"><span data-lang-zh>看案例 ↓</span><span data-lang-en lang="en" hidden>Explore case studies ↓</span></a><a class="button secondary" href="#contact"><span data-lang-zh>聯絡我</span><span data-lang-en lang="en" hidden>Get in touch</span></a></div>
     </div>
@@ -114,12 +34,12 @@
 <div class="flagship-meta"><span>01 — MULTIMODAL LEARNING</span><span>AI PRODUCT ENGINEERING</span></div>
 <h3>EduSense<span class="flagship-period">.</span></h3>
 <p class="flagship-tagline"><span data-lang-zh>從冗長的課程錄影，到可以探索、複習與驗證的學習內容。</span><span data-lang-en lang="en" hidden>From hours of lecture recordings to learning you can search, revisit, and verify.</span></p>
-<p><span data-lang-zh>將長篇課程影片轉為章節、筆記、測驗與可追溯來源的問答體驗。這個案例聚焦在多階段內容處理、檢索、答案引用與學生可用性。</span><span data-lang-en lang="en" hidden>An AI-assisted learning workflow that turns long-form lecture video into chapters, notes, quizzes, and source-grounded answers. The engineering story spans content processing, retrieval, citation design, and the student experience.</span></p>
+<p><span data-lang-zh>EduSense 是可實際使用的學習工具，可將長篇課程影片轉為章節、筆記、測驗與附來源的問答。這個案例聚焦在多階段內容處理、檢索、答案引用與學生可用性。</span><span data-lang-en lang="en" hidden>EduSense is a working learning tool that turns long-form lecture video into chapters, notes, quizzes, and source-grounded answers. The engineering story spans content processing, retrieval, citation design, and the student experience.</span></p>
 <div class="feature-tags"><span>Video understanding</span><span>Retrieval & citations</span><span>Quiz generation</span><span>Learning UX</span></div>
-<p class="flagship-small"><span data-lang-zh>此處為產品流程的概念視覺化；真實產品截圖、部署狀態與效能數據需經確認後加入。</span><span data-lang-en lang="en" hidden>The adjacent visualization is conceptual. Actual screenshots, deployment status, and performance metrics should be added only after verification.</span></p>
+<p class="flagship-small"><span data-lang-zh>圖中呈現 EduSense 的學習工作流程。</span><span data-lang-en lang="en" hidden>The illustration shows the EduSense learning workflow.</span></p>
 <div class="flagship-links"><a href="#contact"><span data-lang-zh>詢問產品案例 ↗</span><span data-lang-en lang="en" hidden>Request a product walkthrough ↗</span></a></div>
 </div>
-<div class="learning-visual" aria-label="Conceptual educational AI workflow, not a real product screenshot">
+<div class="learning-visual" aria-label="EduSense learning workflow illustration">
 <div class="learning-header"><span>EDUSENSE / LEARNING PIPELINE</span><span>◉ SOURCE-AWARE</span></div>
 <div class="learning-video"><div class="play-triangle">▶</div><div><small>LECTURE INPUT</small><strong>01:28:43</strong></div></div>
 <div class="learning-progress"><i></i></div>
@@ -177,8 +97,8 @@
 </details></div>
 </article>
     <article class="case" id="slope">
-  <div class="case-heading"><p class="kicker">MOBILE MACHINE LEARNING</p><h3><span data-lang-zh>行動岩坡安全評估</span><span data-lang-en lang="en" hidden>Mobile rock slope assessment</span></h3><p><span data-lang-zh>把岩坡穩定性研究帶到 iOS，支援兩種不同的初步評估情境。</span><span data-lang-en lang="en" hidden>Our research brought preliminary rock slope assessment to iOS for two distinct engineering scenarios.</span></p></div>
-  <div class="case-detail"><dl><div><dt><span data-lang-zh>方法</span><span data-lang-en lang="en" hidden>Method</span></dt><dd><span data-lang-zh>研究團隊以循環神經網路建立兩款 iOS 原型，分別處理地震與孔隙水壓對岩坡穩定性的影響。</span><span data-lang-en lang="en" hidden>We developed two recurrent neural network–based iOS prototypes. One models the effect of earthquakes and the other models pore-water pressure.</span></dd></div><div><dt><span data-lang-zh>研究結果</span><span data-lang-en lang="en" hidden>Finding</span></dt><dd><span data-lang-zh>在三個未納入訓練的地震案例中，模型預測的穩定數與數值分析結果相比，誤差為 2.08% 至 4.84%（論文表 VI）。這些原型用於初步篩查，現場安全決策仍需專業評估。</span><span data-lang-en lang="en" hidden>Across three earthquake cases outside training, the predicted stability numbers differed from numerical-analysis results by 2.08% to 4.84% (paper, Table VI). The prototypes support preliminary screening. Site safety decisions require professional assessment.</span></dd></div></dl><div class="link-row"><a class="button secondary" href="https://doi.org/10.1109/MCE.2022.3174334"><span data-lang-zh>閱讀 IEEE 論文 ↗</span><span data-lang-en lang="en" hidden>Read the IEEE paper ↗</span></a></div></div>
+  <div class="case-heading"><p class="kicker">MOBILE MACHINE LEARNING</p><h3><span data-lang-zh>運用 AI 行動應用程式進行邊坡災害防減</span><span data-lang-en lang="en" hidden>Slope Disaster Mitigation Using AI-Based Mobile Applications</span></h3><p><span data-lang-zh>研究團隊已完成兩款取得專利、可供使用的 iOS 應用程式，分別評估地震與孔隙水壓對岩坡穩定性的影響。</span><span data-lang-en lang="en" hidden>Our team’s two patented iOS applications are complete and ready to use. They assess rock slope stability under earthquake loading and changes in pore-water pressure.</span></p></div>
+  <div class="case-detail"><dl><div><dt><span data-lang-zh>方法</span><span data-lang-en lang="en" hidden>Method</span></dt><dd><span data-lang-zh>研究團隊以循環神經網路建立兩款 iOS 應用程式，分別處理地震與孔隙水壓對岩坡穩定性的影響。</span><span data-lang-en lang="en" hidden>We developed two iOS applications using recurrent neural networks. One models the effect of earthquakes and the other models pore-water pressure.</span></dd></div><div><dt><span data-lang-zh>研究結果</span><span data-lang-en lang="en" hidden>Finding</span></dt><dd><span data-lang-zh>在三個未納入訓練的地震案例中，模型預測的穩定數與數值分析結果相比，誤差為 2.08% 至 4.84%（論文表 VI）。這些應用程式用於初步篩查，現場安全決策仍需專業評估。</span><span data-lang-en lang="en" hidden>Across three earthquake cases outside training, the predicted stability numbers differed from numerical-analysis results by 2.08% to 4.84% (paper, Table VI). The applications support preliminary screening. Site safety decisions require professional assessment.</span></dd></div></dl><div class="link-row"><a class="button secondary" href="https://doi.org/10.1109/MCE.2022.3174334"><span data-lang-zh>閱讀 IEEE 論文 ↗</span><span data-lang-en lang="en" hidden>Read the IEEE paper ↗</span></a></div></div>
 </article>
     <article class="case" id="heiniu">
   <div class="case-heading"><p class="kicker">PRODUCT ENGINEERING</p><h3><span data-lang-zh>把工作流程做成小工具</span><span data-lang-en lang="en" hidden>Turning workflows into web tools</span></h3><p><span data-lang-zh>黑牛工具把教學中的做法，做成可直接操作的瀏覽器工具。</span><span data-lang-en lang="en" hidden>HEINIU Tools turns workflows from my tutorials into browser utilities people can try firsthand.</span></p></div>
@@ -199,13 +119,13 @@
     <div class="path-grid">
       <a href="https://www.linkedin.com/in/fatty-bamba/"><strong><span data-lang-zh>研究與專業合作</span><span data-lang-en lang="en" hidden>Research & collaboration</span></strong><span><span data-lang-zh>在 LinkedIn 與我聯繫。</span><span data-lang-en lang="en" hidden>Connect with me on LinkedIn.</span></span><b aria-hidden="true">↗</b></a>
       <a href="https://www.primestrideai.com/en"><strong>PrimeStride AI</strong><span><span data-lang-zh>與團隊討論企業 AI 自動化。</span><span data-lang-en lang="en" hidden>Talk with the team about business automation.</span></span><b aria-hidden="true">↗</b></a>
-      <a href="../"><strong>HEINIU Tools</strong><span><span data-lang-zh>探索公開工具與教學。</span><span data-lang-en lang="en" hidden>Explore public tools and tutorials.</span></span><b aria-hidden="true">↗</b></a>
+      <a data-home href="../"><strong>HEINIU</strong><span><span data-lang-zh>探索公開工具、作品與實作教學。</span><span data-lang-en lang="en" hidden>Explore public tools, portfolio work and lessons.</span></span><b aria-hidden="true">↗</b></a>
     </div>
   </div></section>
 </main>
 <footer class="foot"><div class="wrap footer-inner">
   <div><strong>HEINIU / 黑牛</strong><p><span data-lang-zh>由 Abdoulie Fatty 在台灣打造。</span><span data-lang-en lang="en" hidden>Built in Taiwan by Abdoulie Fatty.</span></p></div>
-  <div class="link-row"><a class="" href="../"><span data-lang-zh>黑牛工具</span><span data-lang-en lang="en" hidden>HEINIU Tools</span></a>
+  <div class="link-row"><a class="" data-home href="../"><span data-lang-zh>黑牛首頁</span><span data-lang-en lang="en" hidden>HEINIU home</span></a>
     <a href="https://www.youtube.com/@fatty_bamba">YouTube</a><a href="https://www.instagram.com/fatty_bamba">Instagram</a><a href="https://www.primestrideai.com/en">PrimeStride AI ↗</a>
   </div>
 </div></footer>

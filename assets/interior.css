@@ -1,0 +1,78 @@
+/* Local product controls and published lesson content remain native to each route. */
+body.heiniu-interior {
+  --bg:var(--heiniu-paper);--bg-soft:#f3f5f3;--surface:#fff;--surface2:#eaf0ee;
+  --ink:var(--heiniu-ink);--ink2:#48585b;--muted:#5a6868;--line:#d2d9d7;--line2:#bac8c6;
+  --hi:#344f48;--hi-strong:#203c35;--hi-bright:#486c60;--hi-soft:#e7efea;--fix:#34584e;
+  --dark:#142124;--dark2:#101b1e;--dark-card:#243337;--dark-acc:#d8e6bd;
+  --display:var(--heiniu-font);--cjk:var(--heiniu-font);--num:var(--heiniu-font);
+  --mono:"SFMono-Regular",Menlo,Consolas,monospace;
+  padding-top:5.8rem;background:linear-gradient(to bottom,var(--heiniu-graphite) 0 5.8rem,var(--heiniu-paper) 5.8rem);
+  color:var(--ink);font-family:var(--heiniu-font);
+}
+.heiniu-interior .heiniu-shell {font-synthesis:none;box-shadow:none}
+.heiniu-interior :is(h1,h2,h3,h4){font-family:var(--heiniu-font)}
+.heiniu-interior :is(.tool-head,.radar-head,.hero,.course-hero,.soon) h1 {
+  font-family:var(--heiniu-font);font-size:clamp(2.6rem,4.7vw,5rem);font-weight:440;line-height:1.1;letter-spacing:-.045em;word-spacing:.035em;
+}
+.heiniu-interior :is(.tool-head,.radar-head,.hero,.course-hero,.soon) .acc {color:var(--hi)}
+.heiniu-interior :is(.tool-head,.radar-head,.hero,.course-hero,.soon) .lede {color:var(--ink2);line-height:1.6}
+.heiniu-interior .experience-crumb {background:#eef2f1;border-bottom:1px solid var(--line)}
+.heiniu-interior .experience-crumb .wrap {color:#50605e;min-height:2.6rem;font-size:.72rem;letter-spacing:.015em}
+.heiniu-interior .experience-crumb .wrap a,.heiniu-interior .experience-crumb .wrap .crumb-current {color:#374b49}
+.heiniu-interior :is(.wrap,.wrap-narrow){width:100%}
+.heiniu-interior :is(.btn,.guide-link,.orientation-action,.copy,.chip,.related-link){border-radius:99px;box-shadow:none;font-weight:550}
+.heiniu-interior .btn-hi,.heiniu-interior .btn-fix{background:var(--heiniu-graphite);border-color:var(--heiniu-graphite);color:white}
+.heiniu-interior :is(.card,.ctrl,.gcard,.slip,.prompt,.outro,.week label,.rung,.note-box,.learning-orientation,.guide-includes,.guide-includes-foot){box-shadow:none}
+.heiniu-interior :is(.card,.ctrl,.gcard,.slip,.prompt,.outro,.week label,.rung,.learning-orientation){border-radius:15px}
+.heiniu-interior :is(.tool-head,.radar-head,.soon){padding-top:clamp(2.2rem,4.5vw,4.8rem)}
+.heiniu-interior :is(.site-foot,.experience-related){border-color:var(--line)}
+.heiniu-interior .site-foot{background:var(--heiniu-graphite);color:#f3f6f0}
+.heiniu-interior .site-foot :is(.who,.who b,.links a){color:#f3f6f0}
+.heiniu-interior .site-foot :is(.fine,.desc){color:#c4d2cd}
+.heiniu-interior .site-foot .links a{background:transparent;border-color:#657673}
+.heiniu-interior .eyebrow{color:#47615a;letter-spacing:.07em}
+.heiniu-interior :is(.prompt,.outro){background:var(--heiniu-surface);color:#f0f4ef;border-color:#435553}
+.heiniu-interior .note-box,.heiniu-interior .learning-orientation{background:#eaf0ed;color:#33453d}
+.heiniu-interior :focus-visible{outline:3px solid #a16419;outline-offset:3px}
+.heiniu-course .course-cover{
+  display:grid;grid-template-columns:minmax(0,1.28fr) minmax(0,.72fr);align-items:center;
+  gap:clamp(1.7rem,4.25vw,4.5rem);padding:clamp(1.5rem,4.3vw,4.5rem);border-radius:20px;background:var(--heiniu-graphite);color:#f5f7f2
+}
+.heiniu-course .course-cover :is(h1,.acc,.guide-link,.hero-copy h1,.guide-includes h2){color:white}
+.heiniu-course .course-cover h1{font-size:clamp(3rem,5.7vw,6rem);font-weight:400;line-height:1.04;max-width:13ch}
+.heiniu-course .course-cover :is(.lead,.lede,.hero-meta,.hero-meta span,.hero-meta b,.hero-meta span b,.guide-promise,.course-note,.eyebrow){color:#d2dcd7}
+.heiniu-course .course-cover .btn-hi{background:#f6f8f2;color:#132023;border-color:transparent}
+.heiniu-course .course-cover .btn-ghost,.heiniu-course .course-cover .guide-link{background:#243337;color:#f0f5ee;border:1px solid #71817c;border-radius:99px;padding:.62rem 1rem}
+.heiniu-course .course-cover .course-actions,.heiniu-course .course-cover .guide-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem}
+.heiniu-course .course-cover-index,.heiniu-course .guide-includes{background:#203136;color:#e9f0eb;padding:clamp(1.1rem,2.25vw,2.4rem);border:1px solid #4c605d;border-radius:15px;box-shadow:none}
+.heiniu-course .course-cover-index{display:grid;gap:.3rem}.course-cover-index>span{font:500 .77rem var(--mono);color:#c7d5cc;margin-bottom:.45rem}
+.course-cover-index a{display:flex;align-items:center;text-decoration:none;min-height:44px;padding:.45rem 0;border-top:1px solid #50635d;color:#eef5ec}
+.heiniu-course .guide-includes :is(.guide-includes-head,.guide-includes-big,.guide-includes-big span,.guide-includes-edition,.guide-includes-foot,li,li span){color:#e1eadc}
+.heiniu-course .guide-includes .guide-includes-foot,.heiniu-course .guide-includes .guide-includes-edition{background:none}
+.heiniu-course .week input{accent-color:#385e51}.heiniu-course .toc a.on{color:#294c42}
+.heiniu-course .course-hero,.heiniu-course .hero{padding-block:clamp(1.6rem,3vw,3rem)}
+.heiniu-course .ch h2{font:480 clamp(1.8rem,3.1vw,3.25rem)/1.14 var(--display);letter-spacing:-.045em}
+.heiniu-course .ch .tldr{background:#edf2ee;color:#25372e;border-color:#718879}
+.heiniu-course .ch-num,.heiniu-course .learn-kicker,.heiniu-course .path-heading{color:#4c6459}
+.file-universe-page #drop{background:var(--heiniu-paper);color:var(--heiniu-ink);font-family:var(--heiniu-font)}
+.file-universe-page #drop .lp{padding-top:7rem}
+.file-universe-page #drop .lpk,.file-universe-page #drop .lpl,.file-universe-page #drop .lps span,.file-universe-page #drop .dzn,.file-universe-page #drop .lpp{color:#495c5c}
+.file-universe-page #drop h1{font:440 clamp(2.3rem,4.5vw,4.2rem)/1.08 var(--heiniu-font);letter-spacing:-.045em}
+.file-universe-page #drop .lps li{background:#fff;border-color:#c6d2cc}.file-universe-page #drop .lps li:before{background:#203235;color:white}
+.file-universe-page #drop :is(#demo,.lpb button){border-radius:99px;background:var(--heiniu-graphite);color:white;min-height:44px;font-family:var(--heiniu-font)}
+.file-universe-page #drop .dz{background:#eef2f0;border-color:#82958d}.file-universe-page #drop #cpOk{color:#305847}
+.file-universe-page #drop .lsw{border-radius:99px;gap:0;padding:2px}
+.file-universe-page #drop .lsw button{color:#34443e!important;border-radius:99px!important;padding:.36rem .55rem!important}
+.file-universe-page #drop .lsw button[aria-pressed=true]{color:#fff!important;background:#18232c}
+.file-universe-page .viewer-home{color:var(--soft);display:inline-flex;align-items:center;padding:0 .75em;font:650 max(10px,1.15cqh) var(--body);text-decoration:none}
+@media(max-width:850px){.heiniu-course .course-cover{grid-template-columns:1fr}.heiniu-course .course-cover-index{display:none}.heiniu-course .toc a.on{background:var(--heiniu-graphite);color:white}.heiniu-course .toc{top:0}}
+@media(max-width:720px){
+  body.heiniu-interior{padding-top:4.8rem;background:linear-gradient(to bottom,var(--heiniu-graphite) 0 4.8rem,var(--heiniu-paper) 4.8rem)}
+  .heiniu-interior :is(.tool-head,.radar-head,.hero,.course-hero,.soon) h1{font-size:clamp(2.15rem,8.7vw,3.5rem)}
+  .heiniu-course .course-cover{padding:1.15rem;border-radius:15px;gap:1rem}
+  .heiniu-course .course-cover .btn{flex:none;min-height:44px}
+  .heiniu-course .course-cover .guide-includes{min-width:0}
+  .heiniu-interior :is(.btn,.copy,.related-link){min-height:44px}
+  .file-universe-page #drop .lp{padding-top:5.7rem}
+}
+@media(prefers-reduced-motion:reduce){.heiniu-interior{scroll-behavior:auto}.heiniu-interior .rise{animation:none!important;opacity:1!important;transform:none!important}}
