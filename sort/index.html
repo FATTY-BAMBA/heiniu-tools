@@ -713,8 +713,14 @@ $('bLang').onclick = () => { EN = !EN; if (window.__siteLang) window.__siteLang(
 cv.addEventListener('mousemove', e => { const h = isRec() ? -1 : pick(e); if (h !== hover) { hover = h; cv.style.cursor = h >= 0 ? 'pointer' : ''; } });
 cv.addEventListener('click', e => { if (isRec()) { start(); return; } const h = pick(e); if (h >= 0) openCat(h); else closeSheet(); });
 addEventListener('keydown', e => {
+  // Keyboard shortcuts must never steal Space/Enter or character input from
+  // buttons, links, form fields, dialogs or editable elements.
+  if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.isComposing || e.repeat) return;
+  const focused = e.target instanceof Element ? e.target : document.activeElement;
+  const interactive = focused?.closest('button, a, input, select, textarea, summary, [contenteditable], [role="button"], [role="textbox"], [role="dialog"]');
+  if (interactive) return;
   if (e.key === 'Escape') { if (isRec()) setRec(false); else closeSheet(); }
-  else if (e.key === ' ' || e.key === 'Enter') { if (document.activeElement && document.activeElement.tagName === 'BUTTON' && !isRec()) return; e.preventDefault(); start(); }
+  else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); start(); }
   else if (e.key === 'r' || e.key === 'R') setRec(!isRec());
   else if (e.key === 'f' || e.key === 'F') $('bFull').click();
   else if (e.key === 'm' || e.key === 'M') $('bSound').click();
