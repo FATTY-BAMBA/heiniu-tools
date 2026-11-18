@@ -1,0 +1,56 @@
+/* Shared navigation and design tokens for the public HEINIU site. */
+:root {
+  --heiniu-paper: #f9f9f7;
+  --heiniu-ink: #202421;
+  --heiniu-graphite: #142124;
+  --heiniu-surface: #1c2a2d;
+  --heiniu-line: #cdd5d9;
+  --heiniu-font: "Helvetica Neue","PingFang TC",Helvetica,Arial,sans-serif;
+  --heiniu-pad: clamp(1.2rem,5.6vw,6rem);
+}
+.heiniu-shell {
+  position:absolute; z-index:6; top:.75rem; left:0; right:0;
+  width:min(calc(100% - var(--heiniu-pad)*2),1350px); margin-inline:auto;
+  border:1px solid #ffffffa1; border-radius:18px;
+  background:rgb(250 251 248/.86); color:var(--heiniu-ink);
+  backdrop-filter:blur(16px); font-family:var(--heiniu-font);
+}
+.heiniu-shell .shell-inner {
+  display:flex; align-items:center; gap:clamp(.75rem,3.4vw,4rem); width:100%;
+  padding:0 clamp(.9rem,1.9vw,1.8rem); min-height:62px; margin:0;
+}
+.heiniu-shell .shell-brand {
+  display:inline-flex; align-items:center; gap:.53rem; flex:none; width:auto;
+  color:var(--heiniu-ink); font:650 1.4rem/1 var(--heiniu-font);
+  letter-spacing:-.055em; text-decoration:none;
+}
+.heiniu-shell .shell-brand svg { display:block; width:34px; height:34px; }
+.heiniu-shell .shell-nav { display:flex; align-items:center; margin-left:auto; gap:1.7rem; }
+.heiniu-shell .shell-nav a {display:inline-flex;align-items:center;color:inherit;font-size:.92rem;font-weight:450;text-decoration:none;padding:.65rem 0}
+.heiniu-shell .shell-nav a:hover,.heiniu-shell .shell-nav a[aria-current=page] { text-decoration:underline; text-underline-offset:4px; }
+.heiniu-shell .shell-languages { display:flex; padding:2px; border:1px solid #c6cbc6; border-radius:99px; background:#f4f5f2; }
+.heiniu-shell .shell-languages button { font:600 .76rem var(--heiniu-font); border:0; border-radius:99px; background:transparent; color:#48544c; padding:.36rem .55rem; cursor:pointer; }
+.heiniu-shell .shell-languages button[aria-pressed=true] { color:white; background:#18232c; }
+.heiniu-shell :focus-visible { outline:3px solid #a16419; outline-offset:3px; }
+@media(max-width:720px){
+  .heiniu-shell {top:.64rem; width:calc(100% - 1.3rem);border-radius:12px}
+  .heiniu-shell .shell-inner {min-height:52px;padding:0 .58rem;gap:.6rem}
+  .heiniu-shell .shell-brand {font-size:1.05rem;gap:.35rem}
+  .heiniu-shell .shell-brand svg {width:27px;height:27px}
+  .heiniu-shell .shell-nav {gap:.4rem}
+  .heiniu-shell .shell-nav a {min-width:44px;min-height:44px;justify-content:center;font-size:.79rem}
+  .heiniu-shell .shell-languages button {min-width:44px;min-height:44px;padding:.35rem .4rem}
+}
+@media(max-width:365px){
+  .heiniu-shell .shell-inner {gap:.25rem}
+  .heiniu-shell .shell-nav {gap:0}
+  .heiniu-shell .shell-nav a {font-size:.75rem}
+  .heiniu-shell .shell-brand span {position:absolute;clip-path:inset(50%);width:1px;height:1px}
+  .heiniu-shell .shell-nav {display:flex}
+}
+
+.heiniu-shell [data-lang-en]{display:none}
+html[lang="en"] .heiniu-shell [data-lang-zh]{display:none!important}
+html[lang="en"] .heiniu-shell [data-lang-en]{display:inline!important}
+
+@media(max-width:720px){.heiniu-shell .shell-brand{min-width:44px;min-height:44px}}
