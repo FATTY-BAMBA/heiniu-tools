@@ -128,7 +128,7 @@
 <main class="wrap-narrow page-body">
   <div class="card pad input-card rise">
     <label for="stmt">貼上明細（複製你的帳單就好，卡號姓名可先刪掉）</label>
-    <textarea id="stmt" placeholder="例如：&#10;3/01  UBER EATS  312&#10;3/02  50嵐  65&#10;3/03  蝦皮購物  1290&#10;3/12  房租  18000&#10;NETFLIX  390 ..."></textarea>
+    <textarea id="stmt" aria-describedby="inputError" placeholder="例如：&#10;3/01  UBER EATS  312&#10;3/02  50嵐  65&#10;3/03  蝦皮購物  1290&#10;3/12  房租  18000&#10;NETFLIX  390 ..."></textarea>
     <div class="actions">
       <button class="btn btn-fix btn-primary" id="analyze">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3Z"/><path d="M19 3v4M21 5h-4"/></svg>
@@ -138,6 +138,7 @@
     </div>
   </div>
 
+  <p id="inputError" role="alert" hidden></p>
   <div class="results" id="results">
     <div class="period">
       <span class="lab">
@@ -169,7 +170,7 @@
 
     <div class="sec-h">
       <span class="t">分類明細（一年）</span>
-      <button class="link" id="toggleEdit">分錯了？手動調整</button>
+      <button class="link" id="toggleEdit" aria-expanded="false" aria-controls="edit">分錯了？手動調整</button>
     </div>
     <div class="brk card pad" id="brk"></div>
 
@@ -183,7 +184,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
         想要 AI 給你省錢建議？複製這段
       </div>
-      <textarea id="promptBox" readonly></textarea>
+      <textarea id="promptBox" aria-label="消費分析指令" readonly></textarea>
       <button class="btn btn-fix" id="copyBtn" style="margin-top:12px;width:100%">複製 Prompt</button>
     </div>
 
@@ -223,7 +224,10 @@ const CATS = [
   {key:'subs',     nm:'訂閱', waste:true, color:'#7c8bb8', kw:['netflix','spotify','youtube premium','youtubepremium','disney','apple.com','icloud','google storage','google one','chatgpt','openai','notion','adobe','canva','訂閱','patreon','hbo','kkbox']},
   {key:'other',    nm:'其他', need:false, color:'#4a5468', kw:[]},
 ];
-const byKey = Object.fromEntries(CATS.map(c=>[c.key,c]));
+const englishNames = {rent:'Rent', transit:'Transport', delivery:'Delivery', drinks:'Drinks',
+  shopping:'Shopping', eatout:'Dining', fun:'Entertainment', subs:'Subscriptions', other:'Other'};
+const english = () => document.documentElement.lang === 'en';
+const nameOf = c => english() ? englishNames[c.key] : c.nm;
 
 function fmt(n){return Math.round(n).toLocaleString('en-US');}
 
@@ -253,33 +257,59 @@ function categorise(line){
 }
 
 function monthsFromDates(text){
-  const ds=[...text.matchAll(/(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/g)].map(m=>new Date(+m[1],+m[2]-1,+m[3]));
-  if(ds.length>=2){
-    const min=Math.min(...ds), max=Math.max(...ds);
-    const mo=(max-min)/(1000*60*60*24*30.4);
-    return Math.max(1, Math.round(mo)||1);
+  const months = [];
+  for (const match of text.matchAll(/(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})/g)) {
+    const [, year, month, day] = match.map(Number);
+    if (month >= 1 && month <= 12 && day >= 1 && day <= new Date(year, month, 0).getDate()) {
+      months.push(year * 12 + month - 1);
+    }
   }
-  return 0;
+  return months.length ? Math.max(...months) - Math.min(...months) + 1 : 0;
 }
 
-let periodTotals={}, detectedMonths=1, editMode=false;
+let periodTotals={}, detectedMonths=0, editMode=false;
 
+function periodLabel() {
+  const custom = document.querySelector('#periodSel option[data-detected]');
+  const duration = english() ? detectedMonths + (detectedMonths === 1 ? ' month' : ' months') : detectedMonths + ' 個月';
+  if (custom) custom.textContent = duration;
+  document.getElementById('periodLabel').textContent = detectedMonths
+    ? (english() ? 'Detected period: ' + duration : '偵測到的期間：' + duration)
+    : (english() ? 'No dates found. Using one month.' : '沒抓到日期，預設當 1 個月');
+}
 function analyse(text){
-  const totals={}; CATS.forEach(c=>totals[c.key]=0);
-  text.split(/\n+/).forEach(line=>{
-    if(!line.trim()) return;
-    const amt=parseLineAmount(line);
-    if(amt<=0) return;
-    totals[categorise(line)] += amt;
-  });
-  periodTotals=totals;
-  const dm=monthsFromDates(text);
-  detectedMonths = dm || 1;
-  document.getElementById('periodSel').value = String([1,3,6,12].includes(detectedMonths)?detectedMonths:1);
-  document.getElementById('periodLabel').textContent = dm ? `偵測到約 ${detectedMonths} 個月的明細` : '沒抓到日期，預設當 1 個月';
+  const totals = Object.fromEntries(CATS.map(c => [c.key, 0]));
+  for (const line of text.split(/\n+/)) {
+    const amount = parseLineAmount(line);
+    if (amount > 0) totals[categorise(line)] += amount;
+  }
+  const error = document.getElementById('inputError');
+  const results = document.getElementById('results');
+  if (!Object.values(totals).some(n => n > 0)) {
+    error.textContent = text.trim() ? '找不到有效的消費金額，請檢查明細。' : '請貼上至少一筆含金額的消費明細。';
+    error.hidden = false;
+    results.classList.remove('show');
+    document.getElementById('stmt').setAttribute('aria-invalid','true');
+    document.getElementById('stmt').focus();
+    return false;
+  }
+  error.hidden = true;
+  document.getElementById('stmt').removeAttribute('aria-invalid');
+  periodTotals = totals;
+  detectedMonths = monthsFromDates(text);
+  const select = document.getElementById('periodSel');
+  select.querySelector('[data-detected]')?.remove();
+  if (detectedMonths && ![1,3,6,12].includes(detectedMonths)) {
+    const option = new Option('', String(detectedMonths));
+    option.dataset.detected = '';
+    select.add(option);
+  }
+  select.value = String(detectedMonths || 1);
+  periodLabel();
   buildEdit();
   render();
-  document.getElementById('results').classList.add('show');
+  results.classList.add('show');
+  return true;
 }
 
 function annualFactor(){ return 12 / (+document.getElementById('periodSel').value || 1); }
@@ -305,27 +335,36 @@ function render(){
   const combo=ann.delivery+ann.drinks;
 
   const v=document.getElementById('verdict');
-  if(waste>rent && rent>0){
-    v.className='verdict over';
-    v.innerHTML=`<div class="eyebrow2">結果</div>
-      <div class="headline">你「亂花」的一年 <span class="hot num">${fmt(waste)}</span>，比房租還多 <span class="hot num">${fmt(waste-rent)}</span>。</div>
-      <div class="sub">最大錢坑是${topWaste?topWaste.nm:'—'}（一年 <b class="num">${fmt(topWaste?topWaste.y:0)}</b>）；光手搖＋外送就 <b class="num">${fmt(combo)}</b>。</div>`;
-  }else{
-    v.className='verdict';
-    v.innerHTML=`<div class="eyebrow2">結果</div>
-      <div class="headline">房租 <span class="hot num">${fmt(rent)}</span> 還是你最大的開銷。</div>
-      <div class="sub">亂花一年 <b class="num">${fmt(waste)}</b>，有守住 — 你最肥的一類是${topWaste?topWaste.nm:'—'}（<b class="num">${fmt(topWaste?topWaste.y:0)}</b>）。</div>`;
+  const en = english();
+  const over = waste > rent && rent > 0;
+  const amount = n => '<span class="hot num">' + fmt(n) + '</span>';
+  let headline;
+  if (rent === 0) {
+    headline = en ? 'No rent was recorded in this statement.' : '這份明細沒有房租支出。';
+  } else if (over) {
+    headline = en ? 'Discretionary spending exceeds rent by ' + amount(waste-rent) + ' a year.'
+      : '一年非必要支出比房租多 ' + amount(waste-rent) + '。';
+  } else {
+    headline = en ? 'Annual rent is ' + amount(rent) + '. Annual discretionary spending is ' + amount(waste) + '.'
+      : '一年房租為 ' + amount(rent) + '，非必要支出為 ' + amount(waste) + '。';
   }
+  const detail = topWaste
+    ? (en ? 'Largest discretionary category: ' + nameOf(topWaste) + ' (' + fmt(topWaste.y) + ' per year). Delivery and drinks: ' + fmt(combo) + '.'
+          : '非必要支出最高類別為' + nameOf(topWaste) + '（一年 ' + fmt(topWaste.y) + '）。手搖飲與外送合計 ' + fmt(combo) + '。')
+    : (en ? 'No discretionary spending was recorded.' : '沒有非必要支出。');
+  v.className = over ? 'verdict over' : 'verdict';
+  v.innerHTML = '<div class="eyebrow2">' + (en ? 'Result' : '結果') + '</div><div class="headline">' + headline + '</div><div class="sub">' + detail + '</div>';
   const bscale=Math.max(...items.map(i=>i.y),1);
   document.getElementById('brk').innerHTML = items.map(c=>`
     <div class="item${c===top?' top':''}">
-      <div class="name"><span class="dot" style="background:${c.color}"></span>${c.nm}${c===top?' <span class="maxtag">最大</span>':''}</div>
+      <div class="name"><span class="dot" style="background:${c.color}"></span>${nameOf(c)}${c===top?' <span class="maxtag">最大</span>':''}</div>
       <div class="btrack"><div class="bfill" style="background:${c.color};width:${c.y/bscale*100}%"></div></div>
       <div class="amt num">${fmt(c.y)}</div>
-    </div>`).join('') || '<div class="ehint">沒有偵測到花費，貼上明細再試一次。</div>';
+    </div>`).join('') || '<div class="ehint">沒有其他分類的花費。</div>';
 
-  document.getElementById('promptBox').value =
-`你是理財分析師。下面是我的消費明細（卡號、姓名已刪除）。請幫我：
+  document.getElementById('promptBox').value = en
+    ? 'Group these anonymized transactions by category, estimate the annual totals, compare discretionary spending with rent, and suggest two practical ways to save. Include the statement period and explain any assumptions.'
+    : `你是理財分析師。下面是我的消費明細（卡號、姓名已刪除）。請幫我：
 1. 分類：房租/外送/手搖飲/網購/餐飲/交通/娛樂/訂閱/其他
 2. 算出每一類「一年」的總額
 3. 找出我的「最大錢坑」
@@ -336,12 +375,12 @@ function render(){
 
 function buildEdit(){
   document.getElementById('editRows').innerHTML = CATS.map(c=>`
-    <div class="erow"><span class="en">${c.nm}</span>
-      <input inputmode="numeric" data-k="${c.key}" value="${Math.round(periodTotals[c.key]||0)}"></div>`).join('');
+    <div class="erow"><label class="en" for="amount-${c.key}">${nameOf(c)}</label>
+      <input type="number" min="0" step="0.01" inputmode="decimal" id="amount-${c.key}" data-k="${c.key}" value="${periodTotals[c.key] || 0}"></div>`).join('');
   document.querySelectorAll('#editRows input').forEach(inp=>{
     inp.addEventListener('input',e=>{
-      const val=parseInt(e.target.value.replace(/[^0-9]/g,''),10);
-      periodTotals[e.target.dataset.k]=isNaN(val)?0:val;
+      if (!e.target.validity.valid) { e.target.reportValidity(); return; }
+      periodTotals[e.target.dataset.k] = e.target.valueAsNumber || 0;
       render();
     });
   });
@@ -389,14 +428,14 @@ document.getElementById('sample').addEventListener('click',()=>{
 });
 document.getElementById('analyze').addEventListener('click',()=>{
   const t=document.getElementById('stmt').value.trim();
-  if(!t){document.getElementById('stmt').focus();return;}
-  analyse(t);
+  if (!analyse(t)) return;
   document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
 });
 document.getElementById('periodSel').addEventListener('change',render);
 document.getElementById('toggleEdit').addEventListener('click',()=>{
   editMode=!editMode;
   document.getElementById('edit').classList.toggle('show',editMode);
+  document.getElementById('toggleEdit').setAttribute('aria-expanded',editMode);
   document.getElementById('toggleEdit').textContent=editMode?'收起調整':'分錯了？手動調整';
 });
 document.getElementById('copyBtn').addEventListener('click',()=>{
@@ -404,6 +443,12 @@ document.getElementById('copyBtn').addEventListener('click',()=>{
   navigator.clipboard?.writeText(t.value).then(()=>{
     const b=document.getElementById('copyBtn');b.textContent='已複製 ✓';setTimeout(()=>b.textContent='複製 Prompt',1600);
   }).catch(()=>{});
+});
+
+document.addEventListener('heiniu:languagechange', () => {
+  periodLabel();
+  buildEdit();
+  render();
 });
 
 // preload sample so the page shows value immediately

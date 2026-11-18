@@ -130,7 +130,7 @@ body.rec #stage{cursor:pointer}
 <link rel="stylesheet" href="../assets/heiniu-shell.css"><link rel="stylesheet" href="../assets/interior.css"><script src="../assets/site-shell.js" defer></script></head>
 <body class="file-universe-page">
 <div id="wrap">
-  <div id="stage">
+  <div id="stage" inert tabindex="-1">
     <div id="zoom">
     <canvas id="cv"></canvas>
     <div class="hud" id="head"><div id="logo">牛</div><div><div id="brand">黑牛 Heiniu　AI 整理術</div><div id="title">整理我的<i id="src"></i>資料夾</div></div></div>
@@ -154,7 +154,7 @@ body.rec #stage{cursor:pointer}
     </div>
     <div id="recHint">錄影模式：點畫面或按空白鍵播放　按 Esc 離開</div>
 
-    <section id="sheet" aria-live="polite">
+    <section id="sheet" inert role="region" aria-labelledby="shT">
       <header><h2 id="shT"></h2><span class="c" id="shC"></span><p id="shP"></p><button class="x" id="shX">關閉</button></header>
       <div id="list"></div>
     </section>
@@ -588,20 +588,21 @@ function drawDonut() {
 const reviewN = DATA.needsReview, realCats = CATS.filter(c => c.id !== 'review').length;
 let lastPhase = -2, finOn = null;
 function applyLang() {
-  $('title').innerHTML = EN ? 'Sorting my<i id="src"></i>folder' : '整理我的<i id="src"></i>資料夾'; $('src').textContent = DATA.title || 'Files';
+  $('title').innerHTML = EN ? 'Sorting my <i id="src"></i> folder' : '整理我的<i id="src"></i>資料夾'; $('src').textContent = DATA.title || 'Files';
   $('brand').textContent = DATA.brand || '黑牛 Heiniu · File Universe'; $('logo').textContent = '牛';
   $('heroN').textContent = N.toLocaleString('en-US'); $('heroS').textContent = Object.entries(DATA.byType).sort((a, b) => b[1] - a[1]).slice(0, 6).map(e => e[0].toUpperCase()).join(' ') + (SAMPLED ? L(`　每張卡片代表約 ${Math.round(N / TN)} 個檔案`, `   each tile = about ${Math.round(N / TN)} files`) : '');
   $('finD').textContent = L(`${N} 個檔案　${realCats} 個分類` + (reviewN ? `　${reviewN} 個待確認` : ''), `${N} files   ${realCats} categories` + (reviewN ? `   ${reviewN} to review` : ''));
   $('finN').innerHTML = DATA.demo ? '' : DATA.moved ? L('<b>你的檔案已經搬進分類資料夾。</b>不滿意的話，回 Claude 說「復原」。', '<b>Your files are now in their folders.</b> Not happy? Go back to Claude and say "undo the move".') : L('<b>這是整理計畫，檔案還在原位。</b>', '<b>This is the plan. Your files are still where they were.</b>');
   const b = { start: ['開始整理', 'Sort my files'], bReplay: ['重播', 'Replay'], bOver: ['總覽', 'Overview'], bFull: ['全螢幕', 'Fullscreen'], bRec: ['錄影模式', 'Recording mode'], shX: ['關閉', 'Close'], bTheme: ['淺色', 'Light'], bLang: ['EN', '繁中'] };
   for (const k in b) $(k).textContent = L(b[k][0], b[k][1]);
-  $('bSound').textContent = L('音效 開', 'Sound on'); $('recHint').textContent = L('錄影模式：點畫面或按空白鍵播放　按 Esc 離開', 'Recording mode: click or press space to play, Esc to leave');
+  $('bSound').textContent = $('bSound').getAttribute('aria-pressed') === 'true' ? L('音效 開', 'Sound on') : L('音效 關', 'Sound off'); $('recHint').textContent = L('錄影模式：點畫面或按空白鍵播放　按 Esc 離開', 'Recording mode: click or press space to play, Esc to leave');
 }
 applyLang();
 function hud() {
   const ph = !started ? -1 : T < T_SCAN ? 0 : T < T_SORT ? 1 : T < T_RES ? 2 : 3;
   if (ph !== lastPhase) { lastPhase = ph; document.querySelectorAll('#phase span').forEach(s => { const p = +s.dataset.p; s.className = p === ph ? 'on' : p < ph ? 'done' : ''; }); }
   $('hero').style.opacity = started ? 1 - clamp(T / .3) : 1;
+  $('start').inert = started;
   $('start').style.opacity = started ? 0 : 1; $('start').style.pointerEvents = started ? 'none' : 'auto';
   const cap = $('cap'), scan = T > T_SCAN && T < T_SORT + .1, sort = T >= T_SORT + .1 && T < T_RES - .2;
   cap.style.opacity = (scan || sort) ? 1 : 0;
@@ -687,7 +688,7 @@ function openCat(i) {
     tags.push(f.needsReview ? `<span class="tag q">${L('需要人工確認', 'Needs your review')}</span>` : `<span class="tag">${L('不需人工確認', 'No review needed')}</span>`);
     return `<div class="row"><span class="e">${esc(String(f.ext).toUpperCase().slice(0, 5))}</span><span class="f">${esc(f.name)}</span><span class="r">${esc(f.reason)}</span><span class="m">${tags.join('')}</span></div>`;
   }).join('') + (c.count > 400 ? `<p class="note">${L('只顯示前 400 個；完整清單在 classification.json。', 'Showing the first 400; the full list is in classification.json.')}</p>` : '');
-  $('list').scrollTop = 0; $('sheet').classList.add('on');
+  $('list').scrollTop = 0; $('sheet').inert = false; $('sheet').classList.add('on'); $('shX').focus();
 }
 function openOverview() {
   $('shT').textContent = L('分類總覽', 'Overview'); $('shC').textContent = N; $('shC').style.color = ''; $('shP').textContent = L(`來源 ${DATA.source}`, `Source: ${DATA.source}`) + (DATA.analyzedAt ? L('，分析於 ', ', analysed ') + String(DATA.analyzedAt).slice(0, 16).replace('T', ' ') : '');
@@ -697,10 +698,13 @@ function openOverview() {
     <p class="note">${Object.keys(DATA.readMethods).length ? L('讀取方式：', 'How files were read: ') + Object.entries(DATA.readMethods).map(([k, v]) => `${esc(k)} ${v}`).join(L('、', ', ')) + L('。', '. ') : ''}${L('畫面上的掃描動畫是重播已完成的分類結果。', 'The scan on screen replays a finished sort. ')}${DATA.moved ? L('檔案已搬移。', 'Files have been moved.') : L('檔案尚未移動。', 'No files have been moved yet.')}</p>
     <p class="note">File Universe by 黑牛 Heiniu @fatty_bamba</p>`;
   $('list').querySelectorAll('button').forEach(b => b.onclick = () => openCat(+b.dataset.i));
-  $('list').scrollTop = 0; $('sheet').classList.add('on');
+  $('list').scrollTop = 0; $('sheet').inert = false; $('sheet').classList.add('on'); $('shX').focus();
 }
-function closeSheet() { $('sheet').classList.remove('on'); }
-function setRec(v) { document.body.classList.toggle('rec', v); closeSheet(); if (v) { const h = $('recHint'); h.style.opacity = 1; setTimeout(() => h.style.opacity = 0, 2600); } }
+function closeSheet() {
+  if ($('sheet').contains(document.activeElement)) $('bOver').focus();
+  $('sheet').classList.remove('on'); $('sheet').inert = true;
+}
+function setRec(v) { document.body.classList.toggle('rec', v); closeSheet(); if (v) { $('stage').focus(); const h = $('recHint'); h.style.opacity = 1; setTimeout(() => h.style.opacity = 0, 2600); } }
 const isRec = () => document.body.classList.contains('rec');
 function pick(ev) { if (!started || T < T_SORT) return -1; const r = stage.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top; for (const b of bins) if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) return b.i; return -1; }
 $('start').onclick = start; $('bReplay').onclick = start; $('bOver').onclick = openOverview; $('shX').onclick = closeSheet;
@@ -709,7 +713,7 @@ $('bTheme').onclick = e => { const v = document.body.classList.toggle('light'); 
 $('bFrame').onclick = e => { portraitFrame = !portraitFrame; e.currentTarget.setAttribute('aria-pressed', portraitFrame); layout(); };
 $('bFull').onclick = () => { try { (document.fullscreenElement ? document.exitFullscreen() : $('wrap').requestFullscreen()).catch(() => { }); } catch (e) { } };
 $('bRec').onclick = () => setRec(true);
-$('bLang').onclick = () => { EN = !EN; if (window.__siteLang) window.__siteLang(EN); applyLang(); };
+$('bLang').onclick = () => { EN = !EN; window.__siteLang(EN); applyLang(); closeSheet(); };
 cv.addEventListener('mousemove', e => { const h = isRec() ? -1 : pick(e); if (h !== hover) { hover = h; cv.style.cursor = h >= 0 ? 'pointer' : ''; } });
 cv.addEventListener('click', e => { if (isRec()) { start(); return; } const h = pick(e); if (h >= 0) openCat(h); else closeSheet(); });
 addEventListener('keydown', e => {
@@ -741,8 +745,10 @@ requestAnimationFrame(t => { last0 = t; requestAnimationFrame(frame); });
 </script>
 <script>
 // Accepts whatever a sort produced and fills in anything missing, so the numbers on screen always come from the file list itself.
-function normalize(d) {
-  if (!d || !Array.isArray(d.files) || !d.files.length) throw new Error('classification.json needs a non-empty "files" array');
+function normalize(d, en) {
+  if (!d || !Array.isArray(d.files) || !d.files.length) {
+    throw new Error(en ? 'Choose a JSON file with a non-empty files array.' : '請選擇含有非空白 files 陣列的 JSON 檔案。');
+  }
   const PAL = ['#5B8CFF', '#9B7BFF', '#FF5D8F', '#2DD4BF', '#38BDF8', '#34D399', '#FB923C', '#FBBF24', '#A3E635', '#E879F9', '#F87171', '#60A5FA', '#C084FC', '#4ADE80'];
   let cats = (Array.isArray(d.categories) ? d.categories : []).map(c => Object.assign({}, c, { id: String(c.id != null ? c.id : c.name) }));
   const byId = {}, byName = {}; cats.forEach(c => { byId[c.id] = c; if (c.name) byName[c.name] = c; });
@@ -771,17 +777,38 @@ function normalize(d) {
   // Same language choice as the rest of the site: ?lang= first, then the saved toggle, Chinese by default.
   const KEY = 'heiniu-language'; let en = false;
   try { const q = new URLSearchParams(location.search).get('lang'); en = q === 'en' || (q !== 'zh' && localStorage.getItem(KEY) === 'en'); } catch (e) { }
-  window.__siteLang = v => { if (v != null) { en = !!v; try { localStorage.setItem(KEY, en ? 'en' : 'zh'); } catch (e) { } } return en; };
+  window.__siteLang = value => {
+    en = !!value;
+    const language = en ? 'en' : 'zh';
+    try { localStorage.setItem(KEY, language); } catch (_) {}
+    const url = new URL(location.href); url.searchParams.set('lang', language);
+    history.replaceState(null, '', url);
+    lang();
+  };
   const lang = () => { drop.querySelectorAll('[data-zh]').forEach(e => e.textContent = e.dataset[en ? 'en' : 'zh']);
     drop.querySelectorAll('.lsw button').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.l === 'en') === en)));
     $('cpMain').textContent = en ? 'Copy the prompt' : '複製提示詞'; $('cpAlt').textContent = en ? '中文版提示詞' : 'English prompt'; $('cpOk').textContent = '';
     document.documentElement.lang = en ? 'en' : 'zh-Hant'; document.title = en ? 'AI Folder Sorter · File Universe | Heiniu' : 'AI 整理資料夾 · File Universe｜黑牛'; };
-  const go = raw => { try { raw.lang = en ? 'en' : 'zh'; const d = normalize(raw); drop.hidden = true; window.__boot(d); } catch (e) { drop.hidden = false; err.textContent = e.message; } };
-  if (DATA) return go(DATA);
-  lang(); drop.hidden = false;
-  drop.querySelectorAll('.lsw button').forEach(b => b.onclick = () => { window.__siteLang(b.dataset.l === 'en'); lang(); });
+  const go = raw => {
+    try {
+      const data = normalize(raw, en);
+      data.lang = en ? 'en' : 'zh';
+      err.textContent = '';
+      drop.hidden = true;
+      $('stage').inert = false;
+      window.__boot(data);
+      $('stage').focus();
+    } catch (error) {
+      $('stage').inert = true;
+      drop.hidden = false;
+      err.textContent = error.message;
+    }
+  };
+  lang();
+  if (DATA) return go(DATA); drop.hidden = false;
+  drop.querySelectorAll('.lsw button').forEach(b => b.onclick = () => { window.__siteLang(b.dataset.l === 'en'); });
   const read = f => f && f.text().then(t => go(JSON.parse(t))).catch(e => { err.textContent = (en ? 'Could not read that file: ' : '讀不了這個檔案：') + e.message; });
-  $('pick').onchange = e => read(e.target.files[0]);
+  $('pick').onchange = e => { read(e.target.files[0]); e.target.value = ''; };
   addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); }); addEventListener('dragleave', () => dz.classList.remove('over'));
   addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('over'); read(e.dataTransfer.files[0]); });
   $('demo').onclick = () => fetch('demo.json').then(r => r.json()).then(d => { d.demo = true; if (en) { d.source = 'Demo: 300 test files'; d.brand = 'Heiniu · File Universe'; } go(d); }).catch(() => { err.textContent = en ? 'Could not load the demo.' : '示範資料載入失敗。'; });

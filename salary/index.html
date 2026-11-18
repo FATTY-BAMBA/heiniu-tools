@@ -146,11 +146,11 @@
       <div class="slip-title">薪資明細表</div>
       <div class="slip-sub">SALARY STATEMENT<br>每月 · 2026 費率</div>
     </div>
-    <div class="slip-meta"><span>投保上限 45,800</span><span>台灣 · 勞健保 + 勞退</span></div>
+    <div class="slip-meta"><span id="capText" data-localized></span><span>台灣 · 勞健保 + 勞退</span></div>
 
     <div class="lrow"><span class="lbl">應發月薪</span><span class="fig" id="r_gross">60,000</span></div>
-    <div class="lrow"><span class="lbl">勞保自付 <em>11.5%+1% × 20%</em></span><span class="fig neg" id="r_labor">−1,145</span></div>
-    <div class="lrow"><span class="lbl">健保自付 <em>5.17% × 30% ×(本人+眷)</em></span><span class="fig neg" id="r_nhi">−931</span></div>
+    <div class="lrow"><span class="lbl">勞保自付 <em><span id="laborRateText" data-localized></span></em></span><span class="fig neg" id="r_labor">−1,145</span></div>
+    <div class="lrow"><span class="lbl">健保自付 <em><span id="nhiRateText" data-localized></span></em></span><span class="fig neg" id="r_nhi">−931</span></div>
     <div class="lrow" id="row_self"><span class="lbl">勞退自提 <em>可省稅</em></span><span class="fig neg" id="r_self">−0</span></div>
 
     <div class="net">
@@ -175,7 +175,7 @@
       <div class="slip-sub">ANNUAL TAKE-HOME<br>月實領 × 12 + 年終</div>
     </div>
     <div class="lrow"><span class="lbl">月實領 × 12</span><span class="fig" id="a_base">695,088</span></div>
-    <div class="lrow"><span class="lbl">年終獎金 <em id="a_bm">1 個月</em></span><span class="fig" id="a_bonus">+60,000</span></div>
+    <div class="lrow"><span class="lbl">年終獎金 <em id="a_bm" data-localized>1 個月</em></span><span class="fig" id="a_bonus">+60,000</span></div>
 
     <div class="net">
       <div class="net-l">一年真正拿到<small>REAL ANNUAL</small></div>
@@ -196,10 +196,10 @@
   <details>
     <summary>進階：自訂費率 / 級距（預設 2026）</summary>
     <div class="adv">
-      <div><label>勞保費率 %（普通+就業）</label><input id="rate_labor" type="number" step="0.1" value="12.5"></div>
-      <div><label>健保費率 %</label><input id="rate_nhi" type="number" step="0.01" value="5.17"></div>
-      <div><label>勞保投保上限</label><input id="cap_labor" type="number" value="45800"></div>
-      <div><label>健保投保上限</label><input id="cap_nhi" type="number" value="219500"></div>
+      <div><label for="rate_labor">勞保費率 %（普通+就業）</label><input id="rate_labor" min="0" type="number" step="0.1" value="12.5"></div>
+      <div><label for="rate_nhi">健保費率 %</label><input id="rate_nhi" min="0" type="number" step="0.01" value="5.17"></div>
+      <div><label for="cap_labor">勞保投保上限</label><input id="cap_labor" min="0" type="number" value="45800"></div>
+      <div><label for="cap_nhi">健保投保上限</label><input id="cap_nhi" min="0" type="number" value="219500"></div>
     </div>
   </details>
   <p class="fine">※ 本工具為<b>估算</b>：以月薪直接套用費率，實際金額依勞保局／健保署公告之「投保薪資／金額分級表」四捨五入，可能小幅差異。「一年實拿」＝月實領×12＋年終，年終以整月月薪估算、未扣所得稅與補充保費。不含個人所得稅（年度結算另計）。費率以 2026 年（民國115年）為準。</p>
@@ -231,12 +231,20 @@ const fmt=n=>Math.round(n).toLocaleString('en-US');
 const SMIN=28000, SMAX=200000;
 let dep=0, self=0, bonusM=1;
 
+function setting(id, fallback) {
+  const value = $(id).valueAsNumber;
+  return Number.isFinite(value) && value >= 0 ? value : fallback;
+}
 function calc(){
+  const en = document.documentElement.lang === 'en';
   const gross=digits($('salary').value);
-  const rLabor=(parseFloat($('rate_labor').value)||12.5)/100;
-  const rNhi=(parseFloat($('rate_nhi').value)||5.17)/100;
-  const capL=parseInt($('cap_labor').value)||45800;
-  const capN=parseInt($('cap_nhi').value)||219500;
+  const rLabor=setting('rate_labor',12.5)/100;
+  const rNhi=setting('rate_nhi',5.17)/100;
+  const capL=setting('cap_labor',45800);
+  const capN=setting('cap_nhi',219500);
+  $('capText').textContent=(en?'Labor insurance cap ':'勞保投保上限 ')+fmt(capL);
+  $('laborRateText').textContent=setting('rate_labor',12.5)+'% × 20%';
+  $('nhiRateText').textContent=setting('rate_nhi',5.17)+'% × 30% × '+(1+dep);
   const capP=150000;
   const insL=Math.min(gross,capL), insN=Math.min(gross,capN), insP=Math.min(gross,capP);
   const labor=insL*rLabor*0.20, nhi=insN*rNhi*0.30*(1+dep), selfPen=insP*(self/100);
@@ -254,7 +262,7 @@ function calc(){
   const pn=gross>0?Math.round(net/gross*100):0;
   $('barnet').style.width=pn+'%';
   $('pctnet').textContent=pn+'%';
-  $('pctcut').textContent=(100-pn)+'%';
+  $('pctcut').textContent=(gross ? 100-pn : 0)+'%';
   // annual
   const annualBase=net*12;
   const bonus=gross*bonusM;
@@ -262,7 +270,7 @@ function calc(){
   const annualCut=(labor+nhi+selfPen)*12;
   $('a_base').textContent=fmt(annualBase);
   $('a_bonus').textContent='+'+fmt(bonus);
-  $('a_bm').textContent=(bonusM%1===0?bonusM:bonusM.toFixed(1))+' 個月';
+  $('a_bm').textContent=bonusM + (en ? (bonusM === 1 ? ' month' : ' months') : ' 個月');
   $('anet').textContent=fmt(annualNet);
   $('a_cut').textContent='−'+fmt(annualCut);
 }
@@ -272,10 +280,28 @@ $('salary').addEventListener('focus',()=>{ const v=digits($('salary').value); $(
 $('salary').addEventListener('blur',()=>{ const v=digits($('salary').value); $('salary').value=v?v.toLocaleString('en-US'):''; });
 $('slider').addEventListener('input',()=>{ $('salary').value=parseInt($('slider').value).toLocaleString('en-US'); calc(); });
 ['rate_labor','rate_nhi','cap_labor','cap_nhi'].forEach(id=>$(id).addEventListener('input',calc));
-$('dep').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('dep').children].forEach(x=>x.classList.remove('on'));b.classList.add('on');dep=+b.dataset.v;calc();});
-$('self').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('self').children].forEach(x=>x.classList.remove('on'));b.classList.add('on');self=+b.dataset.v;calc();});
-$('bonus').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$('bonus').children].forEach(x=>x.classList.remove('on'));b.classList.add('on');bonusM=+b.dataset.v;calc();});
-
+for (const id of ['dep', 'self', 'bonus']) {
+  const group = $(id);
+  const label = group.previousElementSibling;
+  label.id = id + '-label';
+  group.setAttribute('role', 'group');
+  group.setAttribute('aria-labelledby', label.id);
+  for (const button of group.children) button.setAttribute('aria-pressed', button.classList.contains('on'));
+  group.addEventListener('click', event => {
+    const selected = event.target.closest('button');
+    if (!selected) return;
+    for (const button of group.children) {
+      button.classList.toggle('on', button === selected);
+      button.setAttribute('aria-pressed', button === selected);
+    }
+    const value = Number(selected.dataset.v);
+    if (id === 'dep') dep = value;
+    if (id === 'self') self = value;
+    if (id === 'bonus') bonusM = value;
+    calc();
+  });
+}
+document.addEventListener('heiniu:languagechange', calc);
 let toastT;
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
 $('cp').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);toast('已複製連結 ✓');}catch(e){toast('複製失敗');}});
