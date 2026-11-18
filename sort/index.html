@@ -716,11 +716,12 @@ addEventListener('keydown', e => {
   // Keyboard shortcuts must never steal Space/Enter or character input from
   // buttons, links, form fields, dialogs or editable elements.
   if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.isComposing || e.repeat) return;
+  // Escape remains available to close a sheet or exit recording even when a control has focus.
+  if (e.key === 'Escape') { if (isRec()) setRec(false); else closeSheet(); return; }
   const focused = e.target instanceof Element ? e.target : document.activeElement;
   const interactive = focused?.closest('button, a, input, select, textarea, summary, [contenteditable], [role="button"], [role="textbox"], [role="dialog"]');
   if (interactive) return;
-  if (e.key === 'Escape') { if (isRec()) setRec(false); else closeSheet(); }
-  else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); start(); }
+  if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); start(); }
   else if (e.key === 'r' || e.key === 'R') setRec(!isRec());
   else if (e.key === 'f' || e.key === 'F') $('bFull').click();
   else if (e.key === 'm' || e.key === 'M') $('bSound').click();
