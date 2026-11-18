@@ -17,9 +17,9 @@
 | Issue | Resolution |
 | --- | --- |
 | Conflicting StrideBrain loops in flagship and case study | Standardized public flagship copy and four-node conceptual diagram to the **product constitution's `KNOW → THINK → DO → LEARN`**. Removed the public-facing explanation comparing the two competing diagrams. Kept evidence verification and approval as engineering principles before consequential actions. |
-| Public EduSense link to a **private** repository (`FATTY-BAMBA/LC-ai-tutor-api`) | Removed link and private-repository exposition from the public EduSense page. Replaced with a clear request for approved deployment/implementation evidence. Public PrimeStride overview remains as the public product-description source. |
+| Public EduSense link to a **private** repository (a non-public AI Tutor repository) | Removed link and private-repository exposition from the public EduSense page. Replaced with a clear request for approved deployment/implementation evidence. Public PrimeStride overview remains as the public product-description source. |
 
-These issues were found by comparing the Stage 3 draft against the accessible source-repository visibility and StrideBrain's `docs/product/PRODUCT_CONSTITUTION.md`. The StrideBrain repository itself is public; `LC-ai-tutor-api` and `classgenius-handover-lccnet` are private. Private client materials are not approved public references.
+These issues were found by comparing the Stage 3 draft against the accessible source-repository visibility and StrideBrain's `docs/product/PRODUCT_CONSTITUTION.md`. The StrideBrain repository itself is public; related private repositories and other client handover repositories are private. Private client materials are not approved public references.
 
 ## Remaining substantive issues
 
