@@ -10,6 +10,16 @@ Source hierarchy: published papers and attributable work; project source/technic
 - Restored one scholarly proceedings entry missing from the current portfolio: *Back Analysis Algorithm Based on Particle Swarm Optimization* (Abdoulie Fatty, A. J. Li), China–Europe Conference on Geotechnical Engineering, Springer proceedings, 2018, https://doi.org/10.1007/978-3-319-97115-5_125.
 - Added existing public profile links (GitHub, ResearchGate, ORCID).
 
+## EduSense deep-dive status (Stage 3, first full case-study pass)
+
+A bilingual, dedicated, editorial case-study route now exists at `/portfolio/edusense/`. The original portfolio links to it.
+
+**Included and grounded:** learner problem, four product-experience entry points (chaptering, notes, practice questions, source-aware answers), conservative engineering considerations, and a comparison of source types. The four-step visual is an explanatory model, not an application trace. Source links use the public PrimeStride product listing and a separately documented AI Tutor API README.
+
+**Not yet asserted:** that the AI Tutor API implements EduSense as a whole; the full marketed nine-stage implementation as independently verified; learner analytics, dropout prediction, quantified performance, institutional adoption, proprietary data isolation, or detailed personal contribution. The public marketing site describes some of these, but independent product-run evidence is required.
+
+**Pending design/evidence approval:** actual interface screenshots with permission, confirmed architectural diagram, scoped production release status, verified role and contribution, measurable test results, and bilingual visual/accessibility browser QA. No client data, NDA handover content, or unverified figures were copied.
+
 ## Evidence and next assets
 
 | Area | Current public presentation | Source to consult | Evidence/approval still required |
