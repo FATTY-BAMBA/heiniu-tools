@@ -127,5 +127,77 @@ Help me turn this into a reusable Skill. Ask any questions first, then draft ins
 <section class="ch" id="schedule"><div class="ch-num">CHAPTER 09</div><h2>Scheduled tasks: automate a recurring workflow</h2><p class="tldr">Run a task successfully once before scheduling it.</p><p>When scheduled tasks are available, you can request recurring briefings or reports. Examples include an 8 AM weekday calendar-and-email summary, a Monday Taiwan industry-news scan, a Friday work report, or Sunday family schedule planning.</p><p>Confirm the recurrence, time zone, permissions, and whether connected sources are available. Don't assume tasks requiring local files or approvals can finish unattended. Keep your schedule small enough that you actually read the results.</p><h3>8 AM briefing</h3><div class="prompt"><div class="prompt-head"><span>8 AM briefing</span><button type="button" class="copy">Copy</button></div><pre>Every weekday at 8 AM, prepare a three-minute briefing of my connected calendar, customer emails needing replies, and three priorities. Provide source references and do not send emails.</pre></div><h3>Monday Taiwan industry scan</h3><div class="prompt"><div class="prompt-head"><span>Monday Taiwan industry scan</span><button type="button" class="copy">Copy</button></div><pre>Every Monday at 9 AM, find the past week's important Taiwan [industry] news and competitor updates. Summarize five developments with source links and possible business impact.</pre></div><h3>Friday status report</h3><div class="prompt"><div class="prompt-head"><span>Friday status report</span><button type="button" class="copy">Copy</button></div><pre>Every Friday at 4 PM, review this week's updated files in my connected [folder] and draft a weekly report covering completed work, blockers, and next week's priorities. Do not send it.</pre></div><h3>Sunday family plan</h3><div class="prompt"><div class="prompt-head"><span>Sunday family plan</span><button type="button" class="copy">Copy</button></div><pre>Every Sunday at 8 PM, summarize next week's connected family calendar events, bill reminders, and weather in [city]. Keep it concise and distinguish verified facts from guesses.</pre></div><div class="note-box"><b>Try it:</b> Complete one real task using this chapter's technique before moving on.</div></section><section class="ch" id="week"><div class="ch-num">CHAPTER 10</div><h2>Your 7-day practice plan</h2><p class="tldr">One practical step a day. Spend up to 20 minutes building the habit.</p><ul class="week" id="weekList"><li><label><input type="checkbox" data-k="d1"><span class="d">DAY 1</span><span class="w"><b>Enable memory</b><span>Introduce yourself and review the memory settings.</span></span></label></li><li><label><input type="checkbox" data-k="d2"><span class="d">DAY 2</span><span class="w"><b>Write a better prompt</b><span>Use context, task, and format on a real problem.</span></span></label></li><li><label><input type="checkbox" data-k="d3"><span class="d">DAY 3</span><span class="w"><b>Make your first Project</b><span>Add useful reference material and test one workflow.</span></span></label></li><li><label><input type="checkbox" data-k="d4"><span class="d">DAY 4</span><span class="w"><b>Connect a service</b><span>Review permissions and try a read-only request.</span></span></label></li><li><label><input type="checkbox" data-k="d5"><span class="d">DAY 5</span><span class="w"><b>Create one deliverable</b><span>Request and inspect a real file or artifact.</span></span></label></li><li><label><input type="checkbox" data-k="d6"><span class="d">DAY 6</span><span class="w"><b>Make a Skill</b><span>Document and test a repeatable process.</span></span></label></li><li><label><input type="checkbox" data-k="d7"><span class="d">DAY 7</span><span class="w"><b>Try a scheduled task</b><span>Test manually, then schedule if your plan supports it.</span></span></label></li></ul><p class="week-done" id="weekDone">Completed <b>0</b> / 7</p><div class="outro"><h2>Keep learning with HEINIU</h2><p>I turn the workflows I use into practical tools and guides. Explore the other tools or tell me which lesson you'd like to see in the next video.</p><p><a class="btn btn-hi" href="../../">Explore HEINIU Tools →</a></p></div><p>Features and plan availability change. Refer to <a href="https://claude.com/pricing" target="_blank" rel="noopener">Claude pricing</a> and official help documentation for current details.</p></section></main></div>
 <footer class="site-foot"><div class="wrap"><div><div class="who">HEINIU — Engineer · AI PhD · Founder</div><p class="desc">Practical AI tools and real workflows for work and everyday life.</p></div><div class="links"><a href="../../">All tools</a><a href="https://www.instagram.com/fatty_bamba" target="_blank" rel="noopener">Instagram</a><a href="https://www.youtube.com/@fatty_bamba" target="_blank" rel="noopener">YouTube</a></div></div></footer>
 <script>
-(()=>{document.querySelectorAll('.prompt').forEach(box=>{const btn=box.querySelector('.copy'),pre=box.querySelector('pre');btn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(pre.textContent.trim());btn.textContent='Copied ✓';setTimeout(()=>btn.textContent='Copy',1700)}catch(e){btn.textContent='Select text to copy'}})});const links=[...document.querySelectorAll('#toc a')],sections=links.map(a=>document.querySelector(a.getAttribute('href'))),prog=document.getElementById('prog');function scroll(){let n=0;sections.forEach((s,i)=>{if(s&&s.getBoundingClientRect().top<170)n=i});links.forEach((a,i)=>a.classList.toggle('on',i===n));if(prog){const d=document.documentElement;prog.style.width=(100*scrollY/Math.max(1,d.scrollHeight-innerHeight))+'%'}}addEventListener('scroll',scroll,{passive:true});scroll();const KEY='heiniu-claude-week';let state={};try{state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){}const boxes=[...document.querySelectorAll('#weekList input')],out=document.querySelector('#weekDone b');function count(){out.textContent=boxes.filter(b=>b.checked).length}boxes.forEach(b=>{b.checked=!!state[b.dataset.k];b.addEventListener('change',()=>{state[b.dataset.k]=b.checked;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}count()})});count()})();
+(() => {
+  // Copy buttons announce the result to assistive technology and offer a
+  // selectable fallback when clipboard permission is unavailable.
+  document.querySelectorAll('.prompt').forEach(box => {
+    const btn = box.querySelector('.copy');
+    const pre = box.querySelector('pre');
+    if (!btn || !pre) return;
+    btn.setAttribute('aria-label', 'Copy prompt');
+    btn.addEventListener('click', async () => {
+      try {
+        if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
+        await navigator.clipboard.writeText(pre.textContent.trim());
+        btn.textContent = 'Copied ✓';
+        btn.setAttribute('aria-label', 'Prompt copied');
+        window.setTimeout(() => {
+          btn.textContent = 'Copy';
+          btn.setAttribute('aria-label', 'Copy prompt');
+        }, 1700);
+      } catch (_) {
+        const range = document.createRange();
+        range.selectNodeContents(pre);
+        const selection = window.getSelection();
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+        btn.textContent = 'Selected — press Ctrl/Cmd+C';
+        btn.setAttribute('aria-label', 'Prompt selected. Press Control or Command and C to copy');
+      }
+    });
+  });
+
+  const links = [...document.querySelectorAll('#toc a')];
+  const sections = links.map(a => document.querySelector(a.getAttribute('href')));
+  const prog = document.getElementById('prog');
+  function updateReadingPosition() {
+    let current = 0;
+    sections.forEach((section, index) => {
+      if (section && section.getBoundingClientRect().top < 170) current = index;
+    });
+    links.forEach((link, index) => {
+      link.classList.toggle('on', index === current);
+      if (index === current) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    if (prog) {
+      const root = document.documentElement;
+      const max = Math.max(1, root.scrollHeight - innerHeight);
+      prog.style.width = Math.max(0, Math.min(100, 100 * scrollY / max)) + '%';
+    }
+  }
+  addEventListener('scroll', updateReadingPosition, { passive: true });
+  updateReadingPosition();
+
+  const KEY = 'heiniu-claude-week';
+  let state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (_) {}
+  const boxes = [...document.querySelectorAll('#weekList input')];
+  const counter = document.querySelector('#weekDone b');
+  const status = document.getElementById('weekDone');
+  status?.setAttribute('role', 'status');
+  status?.setAttribute('aria-live', 'polite');
+  function updateCount() {
+    if (counter) counter.textContent = boxes.filter(input => input.checked).length;
+  }
+  boxes.forEach(input => {
+    input.checked = !!state[input.dataset.k];
+    input.addEventListener('change', () => {
+      state[input.dataset.k] = input.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {}
+      updateCount();
+    });
+  });
+  updateCount();
+})();
 </script><script src="../../assets/language.js" defer></script></body></html>
