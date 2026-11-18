@@ -378,3 +378,16 @@ html[lang="zh-Hant"] .portfolio-hero h1 { letter-spacing: -.015em; line-height: 
   .learning-output small { font-size: .61rem; }
   .learning-output strong { font-size: .91rem; }
 }
+
+/* Stage 3: professional narrative, without changing the approved visual system. */
+.portfolio-about{background:#f4f5f0;border-top:1px solid var(--line)}
+.about-layout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:clamp(2rem,6vw,7rem);align-items:start}
+.portfolio .about-label h2{font-size:clamp(2.3rem,4vw,4.3rem);line-height:1.12;letter-spacing:-.055em;margin-top:.85rem;max-width:14ch}
+.about-label .kicker{color:#4d6a5d}
+.about-story{max-width:65ch}
+.about-story p{font-size:clamp(1rem,1.3vw,1.18rem);line-height:1.82;color:#3e5149}
+.about-story p+p{margin-top:1.2rem}
+.about-links{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.9rem}
+.about-links a{display:inline-flex;min-height:44px;align-items:center;border:1px solid #9eafa5;border-radius:999px;padding:.6rem 1rem;text-decoration:none;font-size:.88rem;font-weight:550}
+.about-links a:hover{background:#e3ebe2}
+@media(max-width:760px){.about-layout{grid-template-columns:1fr;gap:1.5rem}.portfolio .about-label h2{max-width:22ch}.about-story p{font-size:1rem}}
