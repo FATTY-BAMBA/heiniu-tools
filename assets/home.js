@@ -5,7 +5,9 @@ function selectRecord(index) {
   if (!record) return;
   const languageIndex = document.documentElement.lang === 'en' ? 1 : 0;
   for (const element of document.querySelectorAll('[data-field]')) {
-    element.textContent = record[element.dataset.field][languageIndex];
+    const translations = record[element.dataset.field];
+    if (!Array.isArray(translations)) continue;
+    element.textContent = translations[languageIndex] ?? translations[0] ?? '';
   }
 }
 function selectLanguage(language) {
