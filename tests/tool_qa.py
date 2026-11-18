@@ -34,6 +34,7 @@ def pdf_fixture(pages):
 def pdf(page, origin, out):
     page.goto(origin + "/pdf/?lang=en")
     q = page.locator
+    expect(q(".lede")).to_contain_text("can use up tokens quickly. Choose specific pages to extract plain text and copy")
     expect(q("#p2")).to_have_attribute("inert", "")
     q("#file").set_input_files(pdf_fixture(["ALPHA first page", "BRAVO second page", "CHARLIE third page"]))
     expect(q("#fpg")).to_have_text("3 pages")
@@ -145,6 +146,62 @@ def courses(page, origin, out):
         expect(q("#weekDone b")).to_have_text("6")
 
 
+def salary(page, origin, out):
+    page.goto(origin + "/salary/?lang=en")
+    q = page.locator
+    cases = [(60000, 0, 0, 1, "57,924", "755,093"),
+             (28000, 1, 3, 0, "25,591", "307,097"),
+             (250000, 3, 6, 1.5, "226,237", "3,089,847"),
+             (0, 0, 0, 0, "0", "0")]
+    for gross, dependents, voluntary, bonus, monthly, annual in cases:
+        q("#salary").click()
+        q("#salary").fill(str(gross))
+        for group, value in [("dep", dependents), ("self", voluntary), ("bonus", bonus)]:
+            selected = q(f"#{group} [data-v='{value}']")
+            selected.click()
+            expect(selected).to_have_attribute("aria-pressed","true")
+        expect(q("#net")).to_have_text(monthly)
+        expect(q("#anet")).to_have_text(annual)
+    q("#salary").click()
+    q("#salary").fill("60000")
+    q("summary").click()
+    q("#rate_labor").fill("0")
+    q("#cap_nhi").fill("10000")
+    expect(q("#net")).to_have_text("59,845")
+    page.get_by_role("button",name="繁中").click()
+    expect(q("#net")).to_have_text("59,845")
+    expect(q("#rate_labor")).to_have_value("0")
+
+
+def spending(page, origin, out):
+    page.goto(origin + "/spending/?lang=en")
+    q = page.locator
+    q("#sample").click()
+    expect(q("#rentV")).to_have_text("NT$ 216,000")
+    expect(q("#wasteV")).to_have_text("NT$ 228,072")
+    q("#stmt").fill("2026/01/01 UBER EATS 100\n2026/01/02 NETFLIX 200")
+    q("#analyze").click()
+    expect(q("#verdict")).to_contain_text("No rent")
+    expect(q("#wasteV")).to_have_text("NT$ 3,600")
+    q("#toggleEdit").click()
+    q("#amount-delivery").fill("12.50")
+    expect(q("#wasteV")).to_have_text("NT$ 2,550")
+    q("#stmt").fill("2026/01/31 UBER EATS 100\n2026/02/01 NETFLIX 200")
+    q("#analyze").click()
+    expect(q("#periodSel")).to_have_value("2")
+    expect(q("#wasteV")).to_have_text("NT$ 1,800")
+    q("#periodSel").select_option("12")
+    expect(q("#wasteV")).to_have_text("NT$ 300")
+    for text in ["", "no transaction amount"]:
+        q("#stmt").fill(text)
+        q("#analyze").click()
+        expect(q("#results")).not_to_be_visible()
+        expect(page.get_by_role("alert")).to_be_visible()
+    q("#sample").click()
+    expect(q("#results")).to_be_visible()
+    expect(q("#inputError")).not_to_be_visible()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
@@ -153,7 +210,7 @@ def main():
     args.out.mkdir(parents=True, exist_ok=True)
     with serve(args.root) as origin, sync_playwright() as pw:
         browser = pw.chromium.launch(executable_path=shutil.which("google-chrome") or shutil.which("chromium"))
-        for test in (pdf, universe, courses):
+        for test in (pdf, universe, courses, salary, spending):
             context = browser.new_context(permissions=["clipboard-read","clipboard-write"], reduced_motion="reduce")
             page = context.new_page()
             errors = []
