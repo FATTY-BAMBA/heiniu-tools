@@ -20,6 +20,18 @@ A bilingual, dedicated, editorial case-study route now exists at `/portfolio/edu
 
 **Pending design/evidence approval:** actual interface screenshots with permission, confirmed architectural diagram, scoped production release status, verified role and contribution, measurable test results, and bilingual visual/accessibility browser QA. No client data, NDA handover content, or unverified figures were copied.
 
+## StrideBrain deep-dive status (Stage 3, second case-study pass)
+
+A dedicated bilingual case study exists at `/portfolio/stridebrain/`, linked from the main StrideBrain flagship.
+
+**Source-grounded:** public product constitution, v0.1 decision pack, technical architecture, and implementation-candidate documentation. Focus is Comparable Project Intelligence for Taiwan design/renovation teams: structured historical comparison, evidence authority, optional explanation, bounded internal review, and a controlled-demo boundary.
+
+**Important reconciliation:** the canonical product constitution describes the overall `KNOW → THINK → DO → LEARN` product loop. The existing portfolio's `KNOW → THINK → VERIFY → DO` illustrates verification before action. The new deep dive explicitly distinguishes these two levels without silently rewriting the existing graphic. Confirm with the product owner which visual should ultimately become canonical across all pages.
+
+**Not asserted:** production general availability, real-customer deployment, tested performance figures or validated customer outcomes. The v0.1 documents describe L1 controlled-demo release gating, and some implementation pages carry candidate status. Successful implementation or passing tests do not by themselves grant production release.
+
+**Still needed:** authorized real screenshots from the exact accepted build; release-gate and deployment evidence; personal contribution and team role; approved architecture diagram; current validated evaluation results; bilingual visual and accessibility QA.
+
 ## Evidence and next assets
 
 | Area | Current public presentation | Source to consult | Evidence/approval still required |
