@@ -1,0 +1,47 @@
+# Stage 3 — Portfolio evidence register and editorial release gate
+
+Status: **Working draft. Not a claim-verification certificate.**
+Scope: Abdoulie Fatty's public portfolio at `/portfolio/`.
+Source hierarchy: published papers and attributable work; project source/technical documentation; public company product pages; existing portfolio claims. Marketing copy alone is not independent performance evidence.
+
+## Current Stage 3 changes
+
+- Added a short English/Traditional Chinese professional narrative that connects geotechnical engineering, AI research, PrimeStride AI, and HEINIU. This is deliberately high-level and preserves the existing visual identity.
+- Restored one scholarly proceedings entry missing from the current portfolio: *Back Analysis Algorithm Based on Particle Swarm Optimization* (Abdoulie Fatty, A. J. Li), China–Europe Conference on Geotechnical Engineering, Springer proceedings, 2018, https://doi.org/10.1007/978-3-319-97115-5_125.
+- Added existing public profile links (GitHub, ResearchGate, ORCID).
+
+## Evidence and next assets
+
+| Area | Current public presentation | Source to consult | Evidence/approval still required |
+| --- | --- | --- | --- |
+| Professional background | Engineer, PhD researcher, founder | Earlier portfolio `FATTY-BAMBA/fatty-bamba.io/index.html`, current portfolio and public company site | Confirm degree wording, preferred personal-brand identity, current title, biography and whether to publish a CV |
+| EduSense | Lecture-to-chapters, notes, quizzes and source-grounded answers | `FATTY-BAMBA/primestride-web/src/content/products.ts`; related project implementation and public demo | Original application screenshots, actual feature coverage, user's contribution, approved customer reference, demo availability; do not conflate broader marketed roadmap (analytics, dropout risk) with verified deployed scope |
+| StrideBrain | Knowledge/evidence/review workflow; v0.1 vertical slice | `FATTY-BAMBA/StrideBrain/README.md` and current versioned product/quality docs | Current release gate and demo status; resolve loop naming discrepancy (repository says KNOW → THINK → DO → LEARN, portfolio says KNOW → THINK → VERIFY → DO); approved system screenshots, tests, architecture and evidence. README may lag ongoing implementation |
+| Consultation Coach | AI advisor preparation and coaching, presented as in production | Existing portfolio and system repos, subject to any client confidentiality agreement | Get written approval for customer identity, architecture, implementation, handover and metrics before publishing more. Do not reproduce NDA-marked source materials or client records |
+| Building instance segmentation | Mask R-CNN + PointRend and transfer learning | https://doi.org/10.1007/s11042-023-15905-w | Actual aerial input, masks, evaluation values, data rights, and a clear statement of specific author contribution; no fabricated performance numbers |
+| iOS slope applications | RNN-based assessment, published research | https://doi.org/10.1109/MCE.2022.3174334 | Approved app screenshots, documented evaluation metrics and scope of patent claims |
+| Rock slope back analysis | 2020 paper + 2018 proceeding | https://doi.org/10.3390/app10062012 ; https://doi.org/10.1007/978-3-319-97115-5_125 | Figures with reproduction permission or new original diagrams |
+
+## Claim discipline
+
+- Distinguish **published result**, **demonstrated prototype**, **pilot**, **production deployment**, and **planned feature** explicitly.
+- Never infer accuracy, adoption, latency, cost savings, or security outcomes from marketing claims alone.
+- Any percentages or test counts need attributable report/commit/date/context before publication.
+- Use anonymized screenshots for client systems; scrub names, internal documents, confidential architecture, customer data and access tokens.
+- Do not describe conceptual portfolio diagrams as working software screenshots.
+- Verify researcher publication metadata and direct contributions before adding quantitative claims.
+- Do not expose non-public connected repository URLs or implementation specifics on the public website unless expressly approved.
+
+## Next reviewable increments
+
+1. Obtain approved real screenshots/media for EduSense, StrideBrain and research outputs.
+2. Confirm exact deployed scope of each flagship project and distinguish it from marketing roadmap.
+3. Build one substantial case-study page with Problem → Role → Architecture → Decisions → Validation → Results → Limitations, using only verified evidence.
+4. Expand the publication list and downloadable CV only after checking authenticity, public rights and completeness.
+5. Perform bilingual factual review, visual screenshot QA and accessibility review before merging Stage 3.
+
+## Release safety
+
+- Development branch: `codex/stage3-portfolio-evidence`
+- Base: currently deployed `main`
+- Stage 3 PR remains draft; no production merge or rollout without approval.
