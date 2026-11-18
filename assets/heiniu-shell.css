@@ -27,7 +27,7 @@
 .heiniu-shell .shell-brand svg { display:block; width:34px; height:34px; }
 .heiniu-shell .shell-nav { display:flex; align-items:center; margin-left:auto; gap:1.7rem; }
 .heiniu-shell .shell-nav a {display:inline-flex;align-items:center;color:inherit;font-size:.92rem;font-weight:450;text-decoration:none;padding:.65rem 0}
-.heiniu-shell .shell-nav a:hover,.heiniu-shell .shell-nav a[aria-current=page] { text-decoration:underline; text-underline-offset:4px; }
+.heiniu-shell .shell-nav a:hover,.heiniu-shell .shell-nav a[aria-current=page],.heiniu-shell .shell-nav a[aria-current=location] { text-decoration:underline; text-underline-offset:4px; }
 .heiniu-shell .shell-languages { display:flex; padding:2px; border:1px solid #c6cbc6; border-radius:99px; background:#f4f5f2; }
 .heiniu-shell .shell-languages button { font:600 .76rem var(--heiniu-font); border:0; border-radius:99px; background:transparent; color:#48544c; padding:.36rem .55rem; cursor:pointer; }
 .heiniu-shell .shell-languages button[aria-pressed=true] { color:white; background:#18232c; }

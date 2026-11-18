@@ -795,11 +795,13 @@
     secs.forEach(function (s, i) { if (s && s.offsetTop <= y) idx = i; });
     links.forEach(function (a, i) {
       var on = i === idx;
+      if (on) a.setAttribute('aria-current', 'location');
+      else a.removeAttribute('aria-current');
       if (on !== a.classList.contains('on')) {
         a.classList.toggle('on', on);
         if (on && window.innerWidth <= 900) {
           var ol = a.closest('ol');
-          ol.scrollTo({ left: a.parentNode.offsetLeft - 24, behavior: 'smooth' });
+          ol.scrollTo({ left: a.parentNode.offsetLeft - 24, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
         }
       }
     });
@@ -816,6 +818,11 @@
   try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
   var boxes = document.querySelectorAll('#weekList input');
   var doneEl = document.querySelector('#weekDone b');
+  var weekStatus = document.getElementById('weekDone');
+  if (weekStatus) {
+    weekStatus.setAttribute('role', 'status');
+    weekStatus.setAttribute('aria-live', 'polite');
+  }
   function count() {
     var n = 0; boxes.forEach(function (b) { if (b.checked) n++; });
     doneEl.textContent = n;

@@ -4,20 +4,97 @@
  */
 (()=>{'use strict';
 const translations={"11 章實作教學，涵蓋記憶、專案、Skills、連接工具與排程任務，並附可直接複製的指令。":"Eleven practical chapters on memory, projects, Skills, connected tools, and scheduled tasks, with prompts you can copy.","用 Claude 依內容整理資料夾，再到瀏覽器查看分類結果。也可以直接載入範例。":"Sort a folder with Claude by file contents, then inspect the results in your browser. You can also load sample data.","貼上信用卡明細，用關鍵字在瀏覽器分類，找出花費最多的項目。":"Paste your card transactions to group them by keyword in your browser and see your biggest expenses.","AI 整理資料夾 · File Universe":"AI Folder Sorter · File Universe","讓 Claude 打開每個檔案、看內容分類，不是看檔名。複製提示詞 → 把結果拖進來 → 看你的檔案自己飛進分類。檔案不上傳。":"Claude opens every file and sorts by what's inside, not by file name. Copy the prompt, drop in the result, and watch your files fly into their categories. Nothing is uploaded.","看內容分類":"Sorted by content","工具":"Tools","完整做法":"Step-by-step guides","RADAR":"Radar","追蹤黑牛":"Follow Heiniu","← 全部工具":"← All tools","全部工具":"All tools","HEINIU STUDIO":"HEINIU STUDIO","AI × 生活 × 實作":"AI × LIFE × MAKING","讓 AI 真正":"Make AI useful","走進你的日常。":"in everyday life.","把複雜的技術，變成簡單好用的日常工具。從薪水、花費到 AI 工作流，":"Transform complex technology into everyday tools. From paychecks and spending to AI workflows, ","每一個作品都能直接體驗。":"everything here is ready to try.","探索免費工具":"Explore free tools","觀看完整教學":"Explore guides","不用註冊":"No sign-up","免費使用":"Free to use","隱私優先":"Privacy-first","立即試用 ↗":"Try it ↗","薪水實拿計算機":"Take-home Pay Calculator","每月實領 · 估算":"Monthly take-home estimate","預估每月實領薪水":"Estimated monthly take-home pay","應發月薪":"Gross monthly salary","勞保 / 健保自付":"Labor & health insurance","薪水去哪了，一眼就知道。":"Understand your paycheck at a glance.","互動工具 · 免費體驗 ↗":"Interactive and free to try ↗","01 — EXPLORE":"01 — EXPLORE","UTILITY COLLECTION / 2026":"TOOLS / 2026","從這裡開始，解決一件小事。":"A little less friction, every day.","真正實用的免費工具 · 開啟即用":"Useful, free tools. Ready when you are.","為真實問題打造的小工具。沒有繁瑣設定，選一個需要的，打開就能開始。":"Practical tools built for real situations. No account, no setup. Just pick one and begin.","02 — LEARN":"02 — LEARN","GUIDES & WORKFLOWS":"GUIDES & WORKFLOWS","從看懂，到自己做出來。":"From curious to capable.","影片留言領取的完整版，都收在這裡":"The complete guides from my videos, all in one place.","不只是看完影片。每一篇都整理成清楚的步驟，讓你真正學會、動手做。":"Go beyond watching. Clear, practical steps you can follow and put to work.","接下來 »":"UP NEXT »","順序依你們在影片留言點的做":"Your comments help decide what gets built next","03 — DISCOVER":"03 — DISCOVER","RESEARCH NOTES":"RESEARCH NOTES","值得你花時間了解的 AI。":"AI worth your attention.","每支 RADAR 影片的懶人包＋連結，都收在這裡":"Notes and links from every AI Radar episode.","有觀點的 AI 專案筆記，幫你把注意力留給真正值得研究的事。":"Thoughtful notes on AI projects that deserve a closer look.","嗨，我是黑牛。":"Hi, I'm Heiniu.","工程師、AI 博士，也是把想法做成產品的創業者。這裡的每個工具，都從一個日常問題開始。我的目標很簡單：讓 AI 真的幫到你。":"I'm an engineer, AI PhD, and founder who turns ideas into products. Each tool starts with an everyday problem. My goal is simple: make AI genuinely useful.","在 YouTube 認識我 ↗":"Meet me on YouTube ↗","你的公司也想用 AI？":"Want to bring AI to your team?","上面的工具是個人版。要幫":"These are tools for individuals. To help ","整間公司":"your whole company","導入 AI 自動化 —— 客服、報價、知識庫 —— 看看我做的 PrimeStride AI。":"adopt AI automation—from support to quotes and knowledge bases—explore PrimeStride AI.","看 PrimeStride AI":"Explore PrimeStride AI","我是 ":"I'm ","黑牛":"Heiniu"," — 工程師出身、AI 博士、AI 公司創辦人":" — Engineer, AI PhD & founder","這裡每個東西都是我叫 AI 做的。想看下一個做什麼？到影片留言告訴我，點越多次越早做。":"I build everything here with AI. Want to suggest what's next? Leave a comment on my videos.","© 2026 黑牛 @fatty_bamba · 工具皆為教育示範，不構成專業建議":"© 2026 Heiniu @fatty_bamba · Educational demos, not professional advice","可用":"Tool","完整版":"Guide","懶人包":"Notes","開啟工具":"Open tool","開啟內容":"Read guide","錢去哪了 · AI 花費健檢":"Where Did My Money Go? · AI Spending Check","PDF 只取需要的頁":"PDF Page Extractor","黑牛 AI 剪輯 · 跟 AI 聊天剪影片":"Heiniu AI Video Editor","黑牛茶鋪 · ASTRA 實作":"Heiniu Tea Shop · ASTRA Tutorial","省 token 三招":"3 ways to save tokens","值得搞懂的 3 個 AI 專案":"3 AI Projects Worth Knowing","輸入月薪 → 產生你的薪資明細表：扣完勞健保實拿多少，還有老闆偷偷幫你付的錢。":"Enter your monthly salary to see your real take-home pay after insurance—and what your employer pays, too.","把信用卡明細貼進來 → AI 自動分類、抓出你最大的錢坑，看「亂花」有沒有比房租多。":"Paste your card transactions. AI categorizes expenses and helps spot your biggest spending leaks.","整份 PDF 太肥？拖進來、選你要的頁，直接抽出純文字複製給 AI——省 token、答更準。檔案不上傳，全在你的瀏覽器裡跑。":"Drop in a PDF, select just the pages you need, and extract text for AI. Everything runs in your browser.","免費 Claude 技能：丟原始素材 → 看分鏡 → 一句話修改，拿到有字幕、封面和留言結尾的短影音。附三步安裝。":"A free Claude skill to turn raw footage into short videos with captions, covers, and easy conversational edits.","先玩 60 秒接客挑戰，再複製四階段提示詞，做一間自己的珍奶小店。":"Try a 60-second tea-shop challenge, then follow four prompt stages to build your own.","3 個超浪費 AI 額度的習慣，跟正確做法：只給需要的部分、開新對話、需要才開功能。":"Three habits that waste your AI quota, and simple ways to use it more efficiently.","影片裡三個專案的連結，加上我判斷「值不值得看」的三個問題（三問）。不是又一個聊天功能。":"Links to three interesting AI projects, plus three questions to decide whether they're worth exploring.","104 職缺分析器":"104 Job Analyzer","信用卡帳單分析":"Credit Card Statement Analysis","AI 外掛 / 自動化 完整做法":"AI Plugins & Automation Guide","AI Agent 真正該有的用法（AGENT）":"What AI Agents Should Actually Do","AI 圖的 8 個元素框架（PROMPT）":"8-Part AI Image Prompt Framework","薪資":"Salary","花費健檢":"Spending check","回黑牛工具首頁":"Back to Heiniu Tools","所在位置":"Breadcrumb","繼續探索黑牛工具":"Keep exploring HEINIU Tools","更多免費工具、完整做法與 AI 專案筆記，都整理在同一個地方。":"Explore more free tools, practical guides, and AI notes.","查看全部工具 →":"Browse all tools →","薪水扣完勞健保剩多少？":"What remains after labor and health insurance?","每月花費 · 分類圖":"Monthly spending breakdown","PDF → 文字":"PDF → text","AI 實作練習":"Hands-on AI exercise","AI 效率筆記":"AI efficiency notes","AI RADAR · 精選":"AI Radar · picks","工具 · PDF":"TOOL · PDF","完整做法 A · 省 token":"GUIDE A · SAVE TOKENS","全部免費，資料不上傳":"Free, with local-first privacy","Tool 01 · 薪資":"TOOL 01 · PAYCHECK","Tool 02 · 花費健檢":"TOOL 02 · SPENDING","AI 剪輯 · Claude 技能":"AI VIDEO EDITING · CLAUDE SKILL","ASTRA 實作 · 黑牛茶鋪":"ASTRA · BUBBLE TEA SHOP","輸入月薪，產生你的薪資明細表：扣完勞健保實拿多少，還有老闆「另外」幫你付的錢。":"Enter your monthly salary to see your real take-home pay after insurance and what your employer contributes.","輸入你的月薪":"Enter your monthly salary","眷屬人數（健保）":"Dependents (health insurance)","勞退自提":"Voluntary pension contribution","年終獎金（幾個月）":"Year-end bonus (months)","薪資明細表":"PAYSLIP","每月 · 2026 費率":"Monthly · 2026 rates","勞保自付":"Employee labor insurance","健保自付":"Employee health insurance","實領":"Take-home pay","核發":"Issued","合計":"Total","可省稅":"Tax-deductible","備註：雇主每月「另外」為你負擔（不在你薪水裡）":"Employer's additional contributions (not deducted from your salary)","雇主 70%":"Employer: 70%","雇主 60%":"Employer: 60%","雇主 6%":"Employer: 6%","貼上你的信用卡／銀行明細，自動分類、找出你的最大錢坑，看你「亂花」的有沒有比房租多。":"Paste card or bank transactions to automatically categorize your spending and find the biggest leaks.","資料不上傳、不儲存 — 全部在你這台裝置裡算，關掉就消失。":"Your data stays on this device. Nothing is uploaded or stored.","貼上明細（複製你的帳單就好，卡號姓名可先刪掉）":"Paste transactions (remove card numbers and names first)","分析我的花費":"Analyze my spending","載入範例":"Load an example","偵測到 1 個月的明細":"Detected one month of transactions","換算成一年：":"Annualized:","這是 1 個月":"1 month","這是 3 個月":"3 months","這是 半年":"6 months","這是 1 整年":"1 year","房租":"Rent","一年":"Per year","亂花總和":"Discretionary spending","外送·手搖·網購·餐飲·娛樂·訂閱":"Delivery · Drinks · Shopping · Dining · Entertainment · Subscriptions","分類明細（一年）":"Spending by category (annual)","分錯了？手動調整":"Category incorrect? Adjust manually","下面填「這份明細期間」的金額，工具會幫你換算一年。改完會即時更新。":"Enter totals for this statement period. Annual estimates update instantly.","想要 AI 給你省錢建議？複製這段":"Want AI-generated savings ideas? Copy this prompt.","複製 Prompt":"Copy prompt","分類用關鍵字比對，可能會有誤差，可手動調整。教育示範，不構成理財建議。":"Categories are keyword-based estimates. You can edit them. Educational tool, not financial advice.","放入你的 PDF":"Upload your PDF","把 PDF 拖進來，或點這裡選檔":"Drop a PDF here or click to select a file","檔案只會在你的裝置裡處理，不會上傳到任何地方":"Files stay on your device and are never uploaded","換一份":"Choose a different file","你只要哪幾頁？":"Which pages do you need?","全部":"All","留空 = 全部。可用逗號和連字號組合。":"Leave blank for all pages; use commas and hyphens for ranges.","取出文字":"Extract text","正在抽文字…":"Extracting text…","複製給 AI":"Copy for AI","複製文字":"Copy text","複製成 AI 指令":"Copy as AI prompt","為什麼這樣做？完整原理在":"Want to learn why this works? Read","跳到主要內容":"Skip to content","安裝技能":"Install skill","免費下載技能 ↓":"Download free skill ↓","看安裝步驟 →":"Installation guide →","直接玩黑牛茶鋪":"Play the tea-shop demo","我也想做 →":"I want to build one →","開始挑戰":"Start challenge","可以直接玩":"Play now","做一間自己的店":"Build your own shop","準備一張照片":"Prepare a photo","開啟 Codex":"Open Codex","查看官方入門 ↗":"Official getting-started guide ↗","複製，貼上，玩一輪":"Copy, paste, and try it","為什麼燒 token":"Why tokens add up","正確做法":"What to do instead","常見錯誤":"Common mistakes","看專案":"View project","三個專案":"Three projects","真的問題？· 能重現？· 能放進工作流？":"Real problem? Reproducible? Workflow-ready?","真實專案":"Real project","官方":"Official","複製":"Copy","已複製 ✓":"Copied ✓","分享":"Share","下一步":"Next step","下一章":"Next chapter","上一步":"Previous step","開始":"Start","返回":"Back","來源":"Sources","注意":"Note","做法":"Guides","AI 創業家":"AI founder","Claude 從零到高手 · 完整攻略":"Claude Zero to Hero · Complete Guide","99% 的人只把 Claude 當聊天機器人。工作和生活都用得上，11 章照做就好：記憶、專案、Skills、連接工具、排程任務，每章都有可以直接複製的指令。":"Most people use Claude like a chatbot. Go further with 11 practical chapters on memory, projects, Skills, connected tools, scheduled tasks, and copy-ready prompts for work and life.","黑牛影片專屬資源":"Your guide from Heiniu's video","開始閱讀完整攻略":"Start the complete guide","7 天實際應用計畫":"7-day action plan","11 章完整教學":"11 complete chapters","免費公開":"Free access","無需註冊 · 無需付費 · 隨時可以回來閱讀":"No sign-up · No payment · Return anytime","這份攻略包含":"What's inside","從第 00 章開始":"Start at Chapter 00","查看 7 天實踐計畫 ↗":"See the 7-day plan ↗"};
+Object.assign(translations, {
+  "月薪": "Monthly salary",
+  "月薪滑桿": "Monthly salary slider",
+  "台灣 · 勞健保 + 勞退": "Taiwan · Insurance and pension",
+  "TAKE-HOME / 月": "TAKE-HOME / MONTH",
+  "實領　·　扣除": "take-home · deductions",
+  "勞保": "Labor insurance",
+  "健保": "Health insurance",
+  "勞退提撥": "Pension",
+  "一年實拿": "Annual take-home pay",
+  "月實領 × 12 + 年終": "Monthly net × 12 + bonus",
+  "月實領 × 12": "Monthly net × 12",
+  "年終獎金": "Year-end bonus",
+  "一年真正拿到": "Annual net pay",
+  "年薪": "Annual pay",
+  "一年被扣掉（勞健保 + 自提）": "Annual insurance and voluntary pension deductions",
+  "複製連結": "Copy link",
+  "本機計算 · 你的數字不會上傳": "Calculated on this device. Your figures stay private.",
+  "進階：自訂費率 / 級距（預設 2026）": "Advanced settings · Rates and caps (2026 defaults)",
+  "勞保費率 %（普通+就業）": "Labor and employment insurance rate (%)",
+  "健保費率 %": "Health insurance rate (%)",
+  "勞保投保上限": "Labor insurance cap",
+  "健保投保上限": "Health insurance cap",
+  "※ 本工具為": "This calculator gives an ",
+  "估算": "estimate",
+  "：以月薪直接套用費率，實際金額依勞保局／健保署公告之「投保薪資／金額分級表」四捨五入，可能小幅差異。「一年實拿」＝月實領×12＋年終，年終以整月月薪估算、未扣所得稅與補充保費。不含個人所得稅（年度結算另計）。費率以 2026 年（民國115年）為準。": " using the monthly salary directly. Actual premiums follow official insured-salary brackets and rounding. Annual net pay includes 12 months plus the estimated bonus. The estimate excludes income tax and supplemental premiums. Defaults are for 2026.",
+  "探索更多工具": "Explore more tools",
+  "這張「薪資明細表」我沒自己刻，是我叫": "I made this payslip with ",
+  "做的": " assistance.",
+  "想學怎麼自己叫 AI 做一個？到我的影片下面留言「薪水」。": "Want to build one? Comment “salary” on my video.",
+  "公司導入 AI → PrimeStride": "AI for companies → PrimeStride",
+  "黑牛 @fatty_bamba · AI 創業家 · 工程師 · PhD": "Heiniu @fatty_bamba · AI founder · Engineer · PhD",
+  "AI 花費健檢": "Spending review",
+  "收起調整": "Hide adjustments",
+  "這個工具是": "Built by ",
+  "叫 AI 做的": " with AI.",
+  "想知道怎麼叫 AI 幫你做自己的工具？到影片留言告訴我你想做什麼。": "Want to build your own tool with AI? Leave an idea on my video.",
+  "PDF 文字擷取": "PDF text extraction",
+  "別把三百多頁的 PDF 整份丟給 AI——它每次都要重讀一遍，": "Sending an entire PDF to AI can ",
+  "token 一下就燒光": "use up tokens quickly",
+  "。拖進來、選你要的頁，直接抽出": ". Choose specific pages to extract ",
+  "純文字": "plain text",
+  "複製給 AI：省額度、答更準。": " and copy it into your prompt.",
+  "100% 在你的瀏覽器裡跑 · 檔案不會上傳": "Runs in your browser. Your file stays on this device.",
+  "選擇或拖入 PDF": "Choose or drop a PDF",
+  "頁碼範圍": "Page range",
+  "擷取的文字": "Extracted text",
+  "抽出來的文字會出現在這裡…": "Extracted text appears here…",
+  "例如 37　或　30-40　或　1,5,9-12": "For example, 2 or 1,3-5",
+  "共": "Total",
+  "字": "characters",
+  "這份看起來是掃描/圖片 PDF": "These pages contain no extractable text",
+  "，沒有可複製的文字層。這種要看版面或圖表的，建議": ". For scans, diagrams or page layouts, ",
+  "直接留著 PDF、只上傳你需要的那幾頁": "keep the selected pages in PDF format",
+  "給 AI，不要轉文字（轉了版面資訊會不見）。": " to preserve the layout.",
+  "：只給 AI 需要的部分、新任務開新對話、需要才開功能。": " for ways to keep your AI context focused.",
+  "我是": "I'm",
+  "— 工程師出身、AI 博士、AI 公司創辦人": " — engineer, AI PhD and founder",
+  "每個東西都是我叫 AI 做的。想看下一個做什麼？到影片留言告訴我。": "I built these tools with AI. Tell me what you would like to see next.",
+  "黑牛 @fatty_bamba · AI 創業家 · 工程師 · PhD · 檔案不上傳，全部在你的瀏覽器裡運算": "Heiniu @fatty_bamba · AI founder · Engineer · PhD · Files are processed in your browser.",
+  "已複製連結 ✓": "Link copied ✓",
+  "複製失敗": "Copy failed",
+  "消費分析指令": "Spending analysis prompt",
+  "偵測到的月份": "Detected period",
+  "沒有其他分類的花費。": "No spending in other categories.",
+  "請貼上至少一筆含金額的消費明細。": "Enter at least one transaction with an amount.",
+  "找不到有效的消費金額，請檢查明細。": "No spending amounts found. Check the transactions.",
+  "最大": "Largest",
+  "健保依本人及眷屬人數計算": "Includes the employee and dependents"
+});
 const ROOT=document.documentElement;
 const KEY='heiniu-language';
 const originalText=new WeakMap();
 const originalAttrs=new WeakMap();
 const originalTitle=document.title;
 const titles={en:'HEINIU Tools | Practical AI for real life'};
-const exclude='script,style,code,pre,textarea,option,[contenteditable],.num,.fig';
+const exclude='script,style,code,pre,textarea,[data-localized],[contenteditable],.num,.fig';
 function translateTextNode(node,lang){
- if(!originalText.has(node))originalText.set(node,node.nodeValue);
- const original=originalText.get(node);
- if(lang==='zh'){if(node.nodeValue!==original)node.nodeValue=original;return;}
- const trimmed=original.trim();if(!trimmed)return;
- const translated=translations[trimmed];
- if(translated){const before=original.match(/^\s*/)[0],after=original.match(/\s*$/)[0];node.nodeValue=before+translated+after;}
+ const previous = originalText.get(node);
+ if (previous && node.nodeValue === previous.rendered) {
+   if (lang === 'zh') { node.nodeValue = previous.source; originalText.delete(node); }
+   return;
+ }
+ originalText.delete(node);
+ if (lang !== 'en') return;
+ const source = node.nodeValue;
+ const english = translations[source.trim()];
+ if (!english) return;
+ const rendered = source.replace(source.trim(), () => english);
+ originalText.set(node, {source, rendered});
+ node.nodeValue = rendered;
 }
 function apply(lang){
  ROOT.lang=lang==='en'?'en':'zh-Hant';
@@ -34,7 +111,7 @@ function apply(lang){
  document.querySelectorAll('[data-lang-choice]').forEach(btn=>{const active=btn.dataset.langChoice===lang;btn.setAttribute('aria-pressed',String(active));btn.classList.toggle('active',active)});
 }
 let current='zh';try{const param=new URLSearchParams(location.search).get('lang');current=param==='en'||param==='zh'?param:(localStorage.getItem(KEY)==='en'?'en':'zh')}catch(_){}
-function choose(lang){if(!['en','zh'].includes(lang))return;current=lang;try{localStorage.setItem(KEY,lang)}catch(_){}const path=location.pathname;if(/\/claude-zerotohero\/(?:en\/)?$/.test(path)){const root=path.replace(/(?:en\/)?$/,'');const next=lang==='en'?root+'en/':root;if(next!==path){location.assign(next+location.hash);return;}}apply(lang)}
+function choose(lang){if(!['en','zh'].includes(lang))return;current=lang;try{localStorage.setItem(KEY,lang)}catch(_){}const path=location.pathname;if(/\/claude-zerotohero\/(?:en\/)?$/.test(path)){const root=path.replace(/(?:en\/)?$/,'');const next=lang==='en'?root+'en/':root;if(next!==path){location.assign(next+location.hash);return;}}apply(lang); document.dispatchEvent(new Event('heiniu:languagechange'));}
 function boot(){
  const isGuideEn=/\/claude-zerotohero\/en\/$/.test(location.pathname);
  const isGuideZh=/\/claude-zerotohero\/$/.test(location.pathname);
@@ -49,6 +126,7 @@ function boot(){
  s.addEventListener('click',e=>{const b=e.target.closest('[data-lang-choice]');if(b)choose(b.dataset.langChoice)});
  }
  apply(current);
+ document.dispatchEvent(new Event('heiniu:languagechange'));
  let queued=false;
  const obs=new MutationObserver(records=>{if(queued)return;const relevant=records.some(r=>r.addedNodes.length>0);if(!relevant)return;queued=true;queueMicrotask(()=>{queued=false;apply(current)})});
  obs.observe(document.body,{subtree:true,childList:true});
