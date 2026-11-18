@@ -48,7 +48,7 @@ def capture(browser, origin, stage, route, lang, width, height, output):
         page = context.new_page()
         errors = []
         page.on("pageerror", lambda exc: errors.append(str(exc)))
-        page.on("console", lambda msg: errors.append(msg.text) if msg.type == "error" and
+        page.on("console", lambda msg: errors.append(f"{msg.location.get('url', '')}: {msg.text}") if msg.type == "error" and
                 msg.location.get("url", "").startswith(origin) else None)
         page.goto(f"{origin}/{route}?lang={lang}", wait_until="load")
         page.evaluate("document.fonts.ready")
