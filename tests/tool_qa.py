@@ -146,6 +146,37 @@ def courses(page, origin, out):
         expect(q("#weekDone b")).to_have_text("6")
 
 
+def english_course_copy_feedback(page, origin, out):
+    """Regression: clipboard outcomes must reach a live region, not a transient aria-label."""
+    page.goto(origin + "/claude-zerotohero/en/?lang=en")
+    prompt = page.locator("#memory .prompt").first
+    button = prompt.locator(".copy")
+    status = prompt.get_by_role("status")
+    expect(button).to_have_attribute("aria-label", "Copy prompt")
+
+    # Permission granted: the user sees and hears the success state.
+    button.click()
+    expect(button).to_have_text("Copied ✓")
+    expect(status).to_have_text("Prompt copied to clipboard.")
+    expect(button).to_have_attribute("aria-label", "Copy prompt")
+    page.evaluate("window.HeiniuI18n.setLanguage('en')")
+    expect(status).to_have_text("Prompt copied to clipboard.")
+
+    # Permission denied: select the prompt and announce the manual fallback.
+    page.evaluate("""() => Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: {writeText: () => Promise.reject(new DOMException('Denied', 'NotAllowedError'))}
+    })""")
+    button.click()
+    expect(button).to_have_text("Selected — press Ctrl/Cmd+C")
+    expect(status).to_have_text("Prompt text selected. Press Control or Command and C to copy.")
+    expect(button).to_have_attribute("aria-label", "Copy prompt")
+    assert page.evaluate("window.getSelection().toString().trim()") == prompt.locator("pre").inner_text().strip()
+    page.evaluate("window.HeiniuI18n.setLanguage('en')")
+    expect(status).to_have_text("Prompt text selected. Press Control or Command and C to copy.")
+    page.screenshot(path=out / "course-copy-feedback.jpg", type="jpeg", quality=82)
+
+
 def salary(page, origin, out):
     page.goto(origin + "/salary/?lang=en")
     q = page.locator
@@ -210,7 +241,7 @@ def main():
     args.out.mkdir(parents=True, exist_ok=True)
     with serve(args.root) as origin, sync_playwright() as pw:
         browser = pw.chromium.launch(executable_path=shutil.which("google-chrome") or shutil.which("chromium"))
-        for test in (pdf, universe, courses, salary, spending):
+        for test in (pdf, universe, courses, english_course_copy_feedback, salary, spending):
             context = browser.new_context(permissions=["clipboard-read","clipboard-write"], reduced_motion="reduce")
             page = context.new_page()
             errors = []
