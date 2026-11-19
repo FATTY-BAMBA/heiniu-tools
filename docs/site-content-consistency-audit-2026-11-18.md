@@ -21,6 +21,17 @@
 
 These issues were found by comparing the Stage 3 draft against the accessible source-repository visibility and StrideBrain's `docs/product/PRODUCT_CONSTITUTION.md`. The StrideBrain repository itself is public; related private repositories and other client handover repositories are private. Private client materials are not approved public references.
 
+## 2026-11-19 follow-up — status language and regression protection
+
+The following are now **corrected on Stage 3 PR #31, not on production**:
+
+- Homepage and flagship EduSense now describe the learning-product **scope and intended experience** instead of asserting an unversioned `Working learning tool` status. The case study still requests verified release/feature evidence.
+- Homepage and flagship iOS-slope descriptions no longer assert that the applications are patented or currently distributed. Patent and availability information remains an approval gate, not a silently disproved fact.
+- StrideBrain flagship v0.1 is described explicitly as **Comparable Project Intelligence controlled-demo work** rather than unqualified “production standards”.
+- Added `docs/portfolio-claim-register.md` as a single public-claim source of truth, and `tests/content_consistency.py` with CI workflow `.github/workflows/stage3-content-qa.yml` to catch wording regressions.
+
+**Not closed:** Consultation Coach NDA/public-disclosure permission, current EduSense implementation/deployment evidence, current StrideBrain exact-head release acceptance, official patents, real case-study media, metrics, and browser visual QA. Rewording uncertain claims is a conservative editorial fix, not verification that their stronger versions are false.
+
 ## Remaining substantive issues
 
 | Priority | Surface | Issue / evidence | Required resolution |
