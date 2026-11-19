@@ -66,3 +66,16 @@
 @media(max-width:700px){.stridebrain-case .wrap{width:calc(100% - 2.4rem)}.sb-hero-grid,.sb-split{grid-template-columns:1fr}.sb-hero{padding-top:7rem}.sb-section{padding-block:4rem}.sb-hero h1{font-size:clamp(3.5rem,12vw,6rem)}.decision-list{grid-template-columns:1fr;gap:0}.journey article{min-height:0}.loop div{min-height:120px}}
 @media(max-width:390px){.journey{grid-template-columns:1fr}.loop{gap:.45rem}.loop div{padding:.8rem}.stridebrain-case .heiniu-shell .shell-inner{gap:.25rem;padding-inline:.35rem}.stridebrain-case .heiniu-shell .shell-nav{gap:.25rem}}
 @media(prefers-reduced-motion:reduce){.stridebrain-case *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Stage 3: company-wide operating-intelligence capabilities and compounding loops. */
+.sb-platform{background:#dce8dc}
+.stridebrain-case .sb-platform h2{max-width:26ch}
+.platform-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:clamp(2rem,4vw,3.5rem)}
+.platform-grid article{min-width:0;background:#f7faf5;border:1px solid #acbfad;border-top:4px solid #3d7050;padding:clamp(1.3rem,2.3vw,2.5rem);display:flex;flex-direction:column;align-items:flex-start}
+.platform-grid article>span{font:650 .7rem/1.35 ui-monospace,Menlo,monospace;letter-spacing:.08em;color:#496b50}
+.platform-grid h3{font-size:clamp(1.5rem,2.45vw,2.6rem);font-weight:540;letter-spacing:-.045em;line-height:1.15;margin:1.2rem 0 .85rem;max-width:20ch}
+.platform-grid p{line-height:1.7;font-size:clamp(.97rem,1.12vw,1.08rem);color:#415d49;max-width:58ch}
+.platform-grid small{border-top:1px solid #c1d0c1;padding-top:.9rem;margin-top:auto;width:100%;color:#58745f;font-size:.78rem;line-height:1.5}
+.platform-promises{margin-top:clamp(1.6rem,3vw,2.6rem);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.9rem 2rem;border-top:1px solid #98b39d;padding-top:1.5rem}
+.platform-promises p{font-size:clamp(1rem,1.5vw,1.4rem);font-weight:550;letter-spacing:-.02em;color:#254a32}
+@media(max-width:700px){.platform-grid{grid-template-columns:1fr}.platform-grid article{min-height:0}.platform-grid small{margin-top:1.4rem}}
