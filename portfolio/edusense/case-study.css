@@ -1,0 +1,86 @@
+/* EduSense case study — extends the approved HEINIU portfolio language. */
+.edusense-case{--case-ink:#182921;--case-muted:#506256;--case-green:#172b24;--case-sage:#e4eddf;--case-line:#bfcbbd;background:#f8f9f5}
+.edusense-case .skip{z-index:11}
+.edusense-case main{overflow:clip}
+.edusense-case .wrap{width:min(calc(100% - 2 * var(--heiniu-pad)),1350px);margin-inline:auto}
+.edusense-case [data-lang-en][hidden]{display:none}
+.edusense-case.lang-en [data-lang-en][hidden]{display:contents}
+.edusense-case.lang-en [data-lang-zh]{display:none}
+.edusense-case .heiniu-shell{position:absolute}
+.case-hero{background:#172923;color:#f3f6ed;padding:clamp(8rem,12vw,11rem) 0 clamp(3.2rem,6vw,6rem)}
+.case-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.8fr);align-items:center;gap:clamp(2rem,6vw,7rem)}
+.overline{font:600 .74rem/1.4 ui-monospace,Menlo,monospace;letter-spacing:.085em;text-transform:uppercase}
+.case-hero .overline{color:#b5cfb9}
+.case-back{margin:clamp(2rem,4vw,4rem) 0 0}
+.case-back a{color:#d5e5d4;font-size:.88rem;text-decoration:none}
+.case-back a:hover,.source-group a:hover,.case-end-links a:hover{text-decoration:underline;text-underline-offset:4px}
+.case-hero h1{font-size:clamp(4.1rem,8.2vw,9rem);line-height:.98;letter-spacing:-.085em;margin:clamp(1.7rem,3vw,3rem) 0 1.3rem;font-weight:530}
+.case-hero h1 .dot{color:#c6e18b}
+.case-hero h1 small{font-size:.24em;vertical-align:top;margin-left:.3em;letter-spacing:.02em;font-weight:500}
+.case-headline{font-size:clamp(1.65rem,2.9vw,3rem);font-weight:520;line-height:1.2;letter-spacing:-.047em;max-width:22ch;color:#e8f0e0}
+.case-lede{margin-top:1.45rem;line-height:1.7;font-size:clamp(1rem,1.25vw,1.17rem);max-width:54ch;color:#d0ddd1}
+.case-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:3rem;gap:1rem;border-top:1px solid #557465;padding-top:1.25rem}
+.case-meta>div{display:grid;gap:.5rem}
+.case-meta span{font:600 .66rem/1.4 ui-monospace,Menlo,monospace;color:#bacfb8;letter-spacing:.08em}
+.case-meta strong{font-size:.9rem;font-weight:520;line-height:1.35}
+.case-hero-art{min-width:0}
+.case-hero-art figure{margin:0;background:#d4e5d4;padding:clamp(1rem,2.5vw,2.3rem);border-radius:7px;transform:rotate(1.2deg)}
+.case-hero-art img{width:100%;height:auto;display:block;max-height:570px;object-fit:contain}
+.case-hero-art figcaption{font-size:.73rem;color:#314b3a;margin-top:.9rem;line-height:1.4}
+.case-section{padding:clamp(4rem,8vw,9rem) 0}
+.case-split{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(2rem,8vw,8rem)}
+.edusense-case .case-section h2,.edusense-case .case-end h2{font-size:clamp(2.3rem,4.3vw,4.65rem);line-height:1.09;letter-spacing:-.055em;font-weight:530;margin:.65rem 0 0;max-width:20ch}
+.case-prose{max-width:65ch}
+.case-prose p{font-size:clamp(1.05rem,1.4vw,1.24rem);line-height:1.75;color:#41584b}
+.case-prose p+p{margin-top:1.5rem}
+.case-problem{background:#f6f7f2}
+.case-flow-section{background:#e7ede2}
+.section-label{display:flex;flex-direction:column;gap:.65rem;max-width:65ch}
+.section-label>p:last-child{color:#4b6351;font-size:1.05rem;line-height:1.6}
+.experience-line{display:flex;flex-direction:column;align-items:center;margin:3.1rem 0 1rem}
+.flow-source{display:flex;flex-direction:column;gap:.45rem;min-width:min(400px,100%);text-align:center;background:#1b372a;color:#eef3e6;padding:1.7rem}
+.flow-source span,.four-outputs article>span{font:650 .69rem ui-monospace,Menlo,monospace;letter-spacing:.08em}
+.flow-source span{color:#bbd9b5}
+.flow-source strong{font-size:clamp(1.5rem,2.3vw,2.25rem);font-weight:530;letter-spacing:-.035em}
+.flow-source small{color:#b2c5b4}
+.flow-arrow{font-size:1.7rem;margin:.4rem;color:#456a4e}
+.four-outputs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(.6rem,1.2vw,1.4rem)}
+.four-outputs article{min-width:0;background:#f8faf5;padding:clamp(1.1rem,2vw,2rem);border:1px solid #bccbbb;display:flex;flex-direction:column;gap:.85rem}
+.four-outputs article>span{color:#52725a}
+.four-outputs h3{font-size:clamp(1.3rem,1.9vw,2rem);line-height:1.17;letter-spacing:-.04em;font-weight:550}
+.four-outputs p{color:#536357;font-size:.94rem;line-height:1.55}
+.engineering{background:#f8faf5}
+.decision-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2rem;margin-top:3rem}
+.decision-grid>div{border-top:1px solid #a4b9aa;padding:1.25rem 0}
+.decision-grid>div>span{font:650 .72rem ui-monospace,Menlo,monospace;color:#54715a}
+.decision-grid h3{font-weight:550;font-size:clamp(1.5rem,2vw,2.2rem);margin:1.4rem 0 1rem;letter-spacing:-.04em}
+.decision-grid p{color:#4d6153;line-height:1.73}
+.case-evidence{background:#e9efeb}
+.source-group{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:2rem}
+.source-group a,.case-end-links a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;color:inherit;border:1px solid #9eafa6;padding:.7rem 1rem;border-radius:999px;font-size:.9rem;font-weight:560}
+.case-collect{background:#f8faf5}
+.pending{border-left:3px solid #3f6f50;background:#e4eee3;padding:1.2rem 1.6rem;margin-top:2rem;display:grid;gap:.65rem}
+.pending span{font:.69rem ui-monospace,Menlo,monospace;letter-spacing:.07em;color:#496d51}
+.pending strong{font-size:1rem;font-weight:520}
+.case-end{background:#172923;color:#f1f6ef;padding:clamp(4rem,7vw,7rem) 0}
+.case-end .overline{color:#a8cda6}
+.case-end h2{max-width:20ch}
+.case-end-links{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:2rem}
+.case-end-links a{border-color:#70907b;color:#f5f7ed}
+.case-foot{background:#11231c;color:#d4e5d4;border-top:1px solid #45604b}
+.case-foot .wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-block:1.8rem;font-size:.9rem}
+.case-foot a{color:inherit}
+@media(max-width:950px){.case-hero-grid{grid-template-columns:1.15fr .85fr;gap:2rem}.four-outputs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.edusense-case .wrap{width:calc(100% - 2.4rem)}.case-hero{padding-top:7rem}.case-hero-grid,.case-split{grid-template-columns:1fr}.case-hero-art{max-width:560px}.case-hero-art figure{transform:none}.case-meta{grid-template-columns:1fr 1fr;gap:1rem 1.5rem}.case-split{gap:1.5rem}.decision-grid{grid-template-columns:1fr;gap:.2rem}.four-outputs{grid-template-columns:1fr 1fr}.case-section{padding-block:4rem}.case-hero h1{font-size:clamp(3.7rem,14vw,6.2rem)}}
+@media(max-width:390px){.four-outputs{grid-template-columns:1fr}.case-meta{grid-template-columns:1fr}.edusense-case .heiniu-shell .shell-inner{gap:.25rem;padding-inline:.35rem}.edusense-case .heiniu-shell .shell-nav{gap:.25rem}}
+@media(prefers-reduced-motion:reduce){.edusense-case *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Student-to-educator learning intelligence capability cards. */
+.learning-intelligence{background:#dfe9dc}
+.intelligence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.8rem,1.5vw,1.5rem);margin-top:clamp(2rem,4vw,3.5rem)}
+.intelligence-grid article{min-width:0;background:#f7faf4;border:1px solid #b7c9b5;border-radius:6px;padding:clamp(1.3rem,2.5vw,2.5rem);border-top:5px solid #50755b}
+.intelligence-grid article>span{font:650 .7rem/1.4 ui-monospace,Menlo,monospace;color:#52755a;letter-spacing:.065em}
+.intelligence-grid h3{font-size:clamp(1.45rem,2.2vw,2.2rem);font-weight:560;line-height:1.16;letter-spacing:-.04em;margin:1.5rem 0 1rem}
+.intelligence-grid p{font-size:clamp(.95rem,1.15vw,1.05rem);line-height:1.7;color:#4a6051}
+@media(max-width:950px){.intelligence-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.intelligence-grid{grid-template-columns:1fr}}
