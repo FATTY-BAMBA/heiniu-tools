@@ -57,6 +57,21 @@ for name, text in content.items():
           f"{name}: private repository reference")
 check("controlled-demo" in portfolio and "controlled-demo" in stride,
       "StrideBrain release boundary is missing from flagship or deep dive")
+# StrideBrain is an operating-intelligence platform; historical comparison is one slice.
+for page, body in [("homepage", home), ("portfolio", portfolio), ("case study", stride)]:
+    check("operating intelligence" in body.lower() or "operating-intelligence" in body.lower(),
+          f"StrideBrain {page} undersells platform-level positioning")
+check("Every project makes the company smarter." in home
+      and "Every project makes the company smarter." in portfolio
+      and "Every project makes the company smarter." in stride,
+      "StrideBrain company-level compounding promise missing")
+for phrase in ("Run the project happening now", "Make company knowledge usable",
+               "Turn experience into better decisions", "Delegate recurring work to governed AI agents"):
+    check(phrase in stride, f"StrideBrain platform case missing {phrase}")
+check("continuous agents are part of the vision" in stride,
+      "StrideBrain must distinguish future continuous-agent direction from v0.1 demo")
+check("24/7 autonomous agents" not in (home + portfolio + stride).lower(),
+      "Unproven autonomous-agent availability claim")
 # Keep EduSense's publicly described educator-intelligence capabilities visible.
 for phrase in ("Student classification", "Knowledge-gap dashboard", "Dropout-risk signals",
                "AI teaching assistant", "nine-stage processing pipeline"):
