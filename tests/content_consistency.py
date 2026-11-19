@@ -61,9 +61,8 @@ check("controlled-demo" in portfolio and "controlled-demo" in stride,
 for page, body in [("homepage", home), ("portfolio", portfolio), ("case study", stride)]:
     check("operating intelligence" in body.lower() or "operating-intelligence" in body.lower(),
           f"StrideBrain {page} undersells platform-level positioning")
-check("Every project makes the company smarter." in home
-      and "Every project makes the company smarter." in portfolio
-      and "Every project makes the company smarter." in stride,
+check(all("every project makes the company smarter" in page.lower()
+          for page in (home, portfolio, stride)),
       "StrideBrain company-level compounding promise missing")
 for phrase in ("Run the project happening now", "Make company knowledge usable",
                "Turn experience into better decisions", "Delegate recurring work to governed AI agents"):
