@@ -32,6 +32,15 @@ A dedicated bilingual case study exists at `/portfolio/stridebrain/`, linked fro
 
 **Still needed:** authorized real screenshots from the exact accepted build; release-gate and deployment evidence; personal contribution and team role; approved architecture diagram; current validated evaluation results; bilingual visual and accessibility QA.
 
+## Published-research deep dive (2026-11-19)
+
+- Added `/portfolio/building-extraction/` in English and Traditional Chinese, linked from the existing computer-vision flagship. The page follows the publisher's accessible 2023 online / 2024 volume record, names all three authors, and describes Mask R-CNN, PointRend, transfer learning and augmentation only at the level supported by the abstract. It explicitly marks the footprint diagram conceptual and **does not reproduce Springer figures** or invent precision/recall values.
+- Added a documented personal role to the main portfolio research section: the **2020 open-access Applied Sciences paper's author-contribution statement** credits A. Fatty with all numerical analysis and shared discussion/drafting. See https://doi.org/10.3390/app10062012.
+- Original building segmentation source: https://doi.org/10.1007/s11042-023-15905-w — article online 17 June 2023; journal volume 83 (2024), pages 61913–61928. Springer lists Abdoulie Fatty as corresponding author.
+- Stage 3 CI now includes `tests/stage3_routes_qa.py` to exercise EduSense, StrideBrain and building extraction at 1440/834/390/320 px in English and Chinese (24 browser combinations), capture image evidence at 1440 and 390 px, check overflow, broken images, JavaScript exceptions, canonical tags and heading/skip targets. This does not substitute for editorial approval or a manual screenshot review.
+
+**Still needed:** full original paper's method/metrics if quantitative extraction claims are desired; rights-cleared input/mask comparison visuals; confirmed detailed individual role in the 2024 study; human review of bilingual screenshots; client-approved evidence and deployment claims for other projects.
+
 ## Evidence and next assets
 
 | Area | Current public presentation | Source to consult | Evidence/approval still required |
