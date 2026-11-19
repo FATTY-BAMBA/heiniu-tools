@@ -14,6 +14,7 @@ PAGES = [
     "portfolio/index.html",
     "portfolio/edusense/index.html",
     "portfolio/stridebrain/index.html",
+    "portfolio/building-extraction/index.html",
 ]
 content = {path: (ROOT / path).read_text(encoding="utf-8") for path in PAGES}
 failures = []
@@ -28,6 +29,7 @@ home = content["index.html"]
 portfolio = content["portfolio/index.html"]
 edu = content["portfolio/edusense/index.html"]
 stride = content["portfolio/stridebrain/index.html"]
+building = content["portfolio/building-extraction/index.html"]
 
 # The canonical product loop must be uniform, including the visual's node labels.
 check("KNOW</span><b>→</b><span>THINK</span><b>→</b><span>DO</span><b>→</b><span>LEARN" in portfolio,
@@ -59,15 +61,25 @@ check("site-content-consistency-audit" not in edu,
       "Internal editorial audit leaked into public-facing EduSense story")
 
 # Bilingual markup in new case studies should be structurally paired.
-for name in ("portfolio/edusense/index.html", "portfolio/stridebrain/index.html"):
+for name in ("portfolio/edusense/index.html", "portfolio/stridebrain/index.html", "portfolio/building-extraction/index.html"):
     text = content[name]
     zh = len(re.findall(r"<span data-lang-zh>", text))
     en = len(re.findall(r'<span data-lang-en lang="en" hidden>', text))
     check(zh == en and zh > 30, f"{name}: bilingual span mismatch ({zh} zh / {en} en)")
     check('href="#main"' in text and 'id="main"' in text,
           f"{name}: missing skip-link target")
-    check("Concept" in text or "conceptual" in text,
+    check("Concept" in text or "conceptual" in text or "概念示意" in text,
           f"{name}: schematic artwork is not explicitly disclosed")
+
+# The research case must cite the correct paper and never borrow metrics or imagery.
+check("10.1007/s11042-023-15905-w" in building,
+      "Building extraction case missing original paper DOI")
+check("2024 journal volume" in building and "17 June 2023" in building,
+      "Building publication chronology is not clearly distinguished")
+check("not a real aerial image or model prediction" in building.lower(),
+      "Building schematic could be mistaken for authentic model output")
+check('href="./building-extraction/"' in portfolio,
+      "Main portfolio does not link to the research deep dive")
 
 if failures:
     print("FAIL: public content consistency check")
@@ -76,4 +88,4 @@ if failures:
     raise SystemExit(1)
 
 print("PASS: portfolio content consistency guardrails")
-print("Checked", len(content), "public pages and both deep dives.")
+print("Checked", len(content), "public pages and all case studies.")
