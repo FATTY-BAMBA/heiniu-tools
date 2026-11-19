@@ -57,6 +57,16 @@ for name, text in content.items():
           f"{name}: private repository reference")
 check("controlled-demo" in portfolio and "controlled-demo" in stride,
       "StrideBrain release boundary is missing from flagship or deep dive")
+# Keep EduSense's publicly described educator-intelligence capabilities visible.
+for phrase in ("Student classification", "Knowledge-gap dashboard", "Dropout-risk signals",
+               "AI teaching assistant", "nine-stage processing pipeline"):
+    check(phrase.lower() in edu.lower(), f"EduSense case study omits {phrase}")
+check("student support" in home.lower() and "learning analytics" in home.lower(),
+      "EduSense homepage understates its learning-intelligence offering")
+check("student support" in portfolio.lower() and "learning analytics" in portfolio.lower(),
+      "EduSense flagship understates its learning-intelligence offering")
+check("Ready to use." in home and "Use now" in home,
+      "HEINIU browser tools do not have ready-to-use calls to action")
 check("site-content-consistency-audit" not in edu,
       "Internal editorial audit leaked into public-facing EduSense story")
 
