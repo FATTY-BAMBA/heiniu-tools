@@ -114,7 +114,7 @@ def main():
                                         switched["lang"] == expected_switched
                                         and switched["overflow"] == 0
                                         and any(btn["pressed"] == "true"
-                                                and btn["lang"] == expected_switched
+                                                and btn["lang"] == (expected_switched if label == "home" else target)
                                                 for btn in switched["languageButtons"])
                                     ),
                                 }
