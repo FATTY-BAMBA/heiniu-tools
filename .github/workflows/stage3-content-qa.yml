@@ -1,0 +1,29 @@
+name: Stage 3 public content guardrails
+
+on:
+  push:
+    branches:
+      - codex/stage3-portfolio-evidence
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'portfolio/**'
+      - 'tests/content_consistency.py'
+      - '.github/workflows/stage3-content-qa.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  portfolio-claims:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check public portfolio wording and bilingual markers
+        run: python tests/content_consistency.py
+      - name: Parse test source
+        run: python -m py_compile tests/content_consistency.py
