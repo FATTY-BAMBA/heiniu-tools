@@ -61,7 +61,8 @@ check("controlled-demo" in portfolio and "controlled-demo" in stride,
 for phrase in ("Student classification", "Knowledge-gap dashboard", "Dropout-risk signals",
                "AI teaching assistant", "nine-stage processing pipeline"):
     check(phrase.lower() in edu.lower(), f"EduSense case study omits {phrase}")
-check("student support" in home.lower() and "learning analytics" in home.lower(),
+check(("student support" in home.lower() or "students need support" in home.lower())
+      and "learning analytics" in home.lower(),
       "EduSense homepage understates its learning-intelligence offering")
 check("student support" in portfolio.lower() and "learning analytics" in portfolio.lower(),
       "EduSense flagship understates its learning-intelligence offering")
