@@ -74,3 +74,13 @@
 @media(max-width:700px){.edusense-case .wrap{width:calc(100% - 2.4rem)}.case-hero{padding-top:7rem}.case-hero-grid,.case-split{grid-template-columns:1fr}.case-hero-art{max-width:560px}.case-hero-art figure{transform:none}.case-meta{grid-template-columns:1fr 1fr;gap:1rem 1.5rem}.case-split{gap:1.5rem}.decision-grid{grid-template-columns:1fr;gap:.2rem}.four-outputs{grid-template-columns:1fr 1fr}.case-section{padding-block:4rem}.case-hero h1{font-size:clamp(3.7rem,14vw,6.2rem)}}
 @media(max-width:390px){.four-outputs{grid-template-columns:1fr}.case-meta{grid-template-columns:1fr}.edusense-case .heiniu-shell .shell-inner{gap:.25rem;padding-inline:.35rem}.edusense-case .heiniu-shell .shell-nav{gap:.25rem}}
 @media(prefers-reduced-motion:reduce){.edusense-case *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Student-to-educator learning intelligence capability cards. */
+.learning-intelligence{background:#dfe9dc}
+.intelligence-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(.8rem,1.5vw,1.5rem);margin-top:clamp(2rem,4vw,3.5rem)}
+.intelligence-grid article{min-width:0;background:#f7faf4;border:1px solid #b7c9b5;border-radius:6px;padding:clamp(1.3rem,2.5vw,2.5rem);border-top:5px solid #50755b}
+.intelligence-grid article>span{font:650 .7rem/1.4 ui-monospace,Menlo,monospace;color:#52755a;letter-spacing:.065em}
+.intelligence-grid h3{font-size:clamp(1.45rem,2.2vw,2.2rem);font-weight:560;line-height:1.16;letter-spacing:-.04em;margin:1.5rem 0 1rem}
+.intelligence-grid p{font-size:clamp(.95rem,1.15vw,1.05rem);line-height:1.7;color:#4a6051}
+@media(max-width:950px){.intelligence-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.intelligence-grid{grid-template-columns:1fr}}
