@@ -9,6 +9,7 @@ on:
       - 'index.html'
       - 'portfolio/**'
       - 'tests/content_consistency.py'
+      - 'tests/stage3_routes_qa.py'
       - '.github/workflows/stage3-content-qa.yml'
 
 permissions:
@@ -17,7 +18,7 @@ permissions:
 jobs:
   portfolio-claims:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -26,4 +27,15 @@ jobs:
       - name: Check public portfolio wording and bilingual markers
         run: python tests/content_consistency.py
       - name: Parse test source
-        run: python -m py_compile tests/content_consistency.py
+        run: python -m py_compile tests/content_consistency.py tests/stage3_routes_qa.py
+      - name: Install Chromium browser tests
+        run: python -m pip install playwright==1.56.0
+      - name: Run Stage 3 responsive and language checks
+        run: python tests/stage3_routes_qa.py . evidence/stage3
+      - name: Upload Stage 3 screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage3-browser-evidence
+          path: evidence/stage3
+          retention-days: 7
