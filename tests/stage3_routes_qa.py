@@ -1,7 +1,7 @@
 """Stage 3 Chromium smoke/visual evidence for bilingual case studies.
 
 Run: python tests/stage3_routes_qa.py . evidence/stage3
-CI collects 12 screenshots and a structured JSON report.
+CI captures 20 screenshots and a structured JSON report.
 """
 import argparse
 import functools
@@ -32,6 +32,8 @@ def serve(root):
 
 
 ROUTES = {
+    "home": "",
+    "portfolio": "portfolio/",
     "edusense": "portfolio/edusense/",
     "stridebrain": "portfolio/stridebrain/",
     "building": "portfolio/building-extraction/",
@@ -53,8 +55,8 @@ def inspect(page):
             brokenImages: visibleImages.filter(i => i.complete && i.naturalWidth === 0).map(i => i.src),
             skipTarget: document.querySelector('a.skip')?.getAttribute('href') === '#main',
             hasCanonical: !!document.querySelector('link[rel="canonical"]'),
-            languageButtons: [...document.querySelectorAll('.shell-languages [data-lang-choice]')]
-                .map(b => ({lang:b.dataset.langChoice,pressed:b.getAttribute('aria-pressed')}))
+            languageButtons: [...document.querySelectorAll('.shell-languages button')]
+                .map(b => ({lang:b.dataset.langChoice || b.dataset.locale,pressed:b.getAttribute('aria-pressed')}))
         };
     }""")
 
@@ -87,9 +89,40 @@ def main():
                         passed = (
                             response.status == 200 and m["lang"] == expected
                             and m["overflow"] == 0 and m["hasMain"] and m["visibleHeading"]
-                            and m["skipTarget"] and m["hasCanonical"]
+                            and m["skipTarget"] and (m["hasCanonical"] or label in ("home", "portfolio"))
                             and not m["brokenImages"] and not exceptions
                         )
+                        # Exercise native language controls on key desktop/mobile views.
+                        switch = None
+                        if width in (1440, 390):
+                            target = "zh" if lang == "en" else "en"
+                            selector = (
+                                '[data-locale="zh-Hant"]' if label == "home" and target == "zh"
+                                else f'[data-locale="{target}"]' if label == "home"
+                                else f'[data-lang-choice="{target}"]'
+                            )
+                            switch_button = page.locator(selector)
+                            if switch_button.count() == 1:
+                                switch_button.click()
+                                switched = inspect(page)
+                                expected_switched = "zh-Hant" if target == "zh" else "en"
+                                switch = {
+                                    "target": target, "lang": switched["lang"],
+                                    "pressed": switched["languageButtons"],
+                                    "overflow": switched["overflow"],
+                                    "passed": (
+                                        switched["lang"] == expected_switched
+                                        and switched["overflow"] == 0
+                                        and any(btn["pressed"] == "true"
+                                                and btn["lang"] == expected_switched
+                                                for btn in switched["languageButtons"])
+                                    ),
+                                }
+                            else:
+                                switch = {"passed": False, "reason": "Missing language toggle"}
+                            passed = passed and switch["passed"]
+                            # Restore original locale so the screenshot corresponds to its name.
+                            page.goto(f"{origin}/{route}?lang={lang}", wait_until="load")
                         if width in (1440, 390):
                             page.screenshot(
                                 path=args.out / f"{label}-{lang}-{width}.png",
@@ -98,7 +131,7 @@ def main():
                         results.append({
                             "route": route, "lang": lang, "width": width,
                             "passed": passed, "status": response.status,
-                            "details": m, "pageErrors": exceptions,
+                            "details": m, "languageSwitch": switch, "pageErrors": exceptions,
                         })
                         print(json.dumps(results[-1], ensure_ascii=False), flush=True)
                     finally:
