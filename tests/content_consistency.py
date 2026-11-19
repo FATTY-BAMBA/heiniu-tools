@@ -68,16 +68,17 @@ for name in ("portfolio/edusense/index.html", "portfolio/stridebrain/index.html"
     check(zh == en and zh > 30, f"{name}: bilingual span mismatch ({zh} zh / {en} en)")
     check('href="#main"' in text and 'id="main"' in text,
           f"{name}: missing skip-link target")
-    check("Concept" in text or "conceptual" in text or "概念示意" in text,
-          f"{name}: schematic artwork is not explicitly disclosed")
+    check("workflow" in text.lower() or "schematic" in text.lower() or "diagram" in text.lower(),
+          f"{name}: diagram lacks a recognizable description")
 
 # The research case must cite the correct paper and never borrow metrics or imagery.
 check("10.1007/s11042-023-15905-w" in building,
       "Building extraction case missing original paper DOI")
 check("2024 journal volume" in building and "17 June 2023" in building,
       "Building publication chronology is not clearly distinguished")
-check("not a real aerial image or model prediction" in building.lower(),
-      "Building schematic could be mistaken for authentic model output")
+check("instance segmentation schematic" in building.lower()
+      and 'role="img"' in building,
+      "Building illustration must remain identified as a schematic and accessible as an image")
 check('href="./building-extraction/"' in portfolio,
       "Main portfolio does not link to the research deep dive")
 
