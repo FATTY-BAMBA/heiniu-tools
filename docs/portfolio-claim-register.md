@@ -1,6 +1,6 @@
 # HEINIU flagship claims — source of truth
 
-**Updated:** 2026-11-19. **Status:** editorial release contract for Stage 3 draft PR #31, not a certification of production features.
+**Updated:** 2026-11-24 (technology stack section added; flagship entries last reviewed 2026-11-19). **Status:** editorial release contract for Stage 3 draft PR #31, not a certification of production features.
 
 This register governs `index.html`, `portfolio/index.html`, and `portfolio/{edusense,stridebrain}/index.html`. Update it with a specific source and approval before introducing stronger public claims. The terms **designed**, **documented**, **demonstrated**, **controlled demo**, **deployed**, and **general availability** are not interchangeable.
 
@@ -21,6 +21,41 @@ This register governs `index.html`, `portfolio/index.html`, and `portfolio/{edus
 **Consultation Coach:** Keep existing nonidentifying case-study framing pending authorized client review. Do not repurpose private handover repositories as publishable proof.
 
 **iOS slope research:** “Published research describes two RNN-based iOS applications for rock slope safety assessment.” Do not use “patented”/“ready to use” without official verification.
+
+## Technology stack section
+
+**Added:** 2026-11-24. **Scope:** `portfolio/index.html#stack`. **Status:** draft pull request; owner sign-off pending.
+
+The section says what the listed work was **built with**. A tool or method appears only when a published paper, a public repository or already-approved portfolio copy documents its use, and every row links to the work it belongs to. It does not assert proficiency, scale, or the configuration of any current client deployment.
+
+| Row | Listed | Source and revision |
+| --- | --- | --- |
+| Machine learning & optimization | XGBoost, genetic algorithms | https://doi.org/10.1007/s11042-023-17445-9 (genetic-algorithm-tuned XGBoost, 2024 volume) |
+| | Extreme learning machine | https://doi.org/10.1080/02533839.2020.1719899. DOI taken from the reference list of the 2024 XGBoost paper; open it once before merge |
+| | Particle swarm optimization, genetic algorithms | https://doi.org/10.3390/app10062012 and https://doi.org/10.1007/978-3-319-97115-5_125 |
+| Deep learning & computer vision | Mask R-CNN, PointRend, transfer learning | https://doi.org/10.1007/s11042-023-15905-w |
+| | Recurrent neural networks | https://doi.org/10.1109/MCE.2022.3174334 |
+| Speech recognition & OCR | faster-whisper, PaddleOCR, EasyOCR, PyTorch, OpenCV, FFmpeg | Public repository `FATTY-BAMBA/Class_Genuis` at `1b60adc` (2026-02-24): `requirements.txt`, `Dockerfile`, `app/video_processing.py`. This is the lecture pipeline under EduSense's earlier name |
+| LLM applications | OpenAI API | `Class_Genuis` at `1b60adc`: `requirements.txt` |
+| | Gemini API | Public repository `FATTY-BAMBA/StrideBrain` at `1fe84af` (2026-11-23); Consultation Coach approved copy |
+| | Vector retrieval | Consultation Coach approved copy (separate vector indexes per department) |
+| Backend & data | Python, Flask, Celery, Redis | `Class_Genuis` at `1b60adc`: `requirements.txt`, `docker-compose.yml` |
+| | FastAPI | Consultation Coach approved copy |
+| | PostgreSQL, Prisma | `StrideBrain` at `1fe84af`: `package.json`, `prisma/` |
+| | Supabase | `StrideBrain` at `1fe84af`: `docs/development/TEST_SITE.md`; public repository `FATTY-BAMBA/primestride-kms` at `96ce9ee` (2026-06-06): `package.json` |
+| Frontend | Next.js, React, TypeScript | `StrideBrain` at `1fe84af`: `package.json` |
+| | Tailwind CSS, Vite | `primestride-kms` at `96ce9ee` and public repository `FATTY-BAMBA/geofield-site` at `c0b2a33` (2026-08-20): `package.json` |
+| Infrastructure & deployment | Docker, NVIDIA CUDA, RunPod GPU, Linux | `Class_Genuis` at `1b60adc`: `Dockerfile`, `app/runpod_client.py` |
+| | Google Cloud | Consultation Coach approved copy |
+| | Vercel, GitHub Actions | This repository (`vercel.json`, `.github/workflows/`); `StrideBrain` at `1fe84af` |
+| Testing & AI tooling | Playwright | This repository: `tests/` |
+| | Vitest | `StrideBrain` at `1fe84af`: `package.json` |
+| | Claude skills & plugins, Claude Code | This repository: `plugins/heiniu-video-editor`, `/edit/` |
+| | Codex | This repository: Stage 3 development branch `codex/stage3-portfolio-evidence` |
+
+**Held back until a public source or written owner approval exists:** Pinecone and AWS (documented only in private repositories); Gaussian process regression (manuscript not yet published); support vector regression (paper metadata not verified); LiDAR point-cloud work (employer project); the iOS toolchain behind the slope applications; any client name.
+
+**Wording guardrails:** Keep the heading and intro to "built with" and "used in". Do not add proficiency words such as expert or advanced, years of experience, or data volumes. Consultation Coach contributes only the tools already named in its approved copy. Link rows to on-page work or DOIs, never to a private repository. A repository revision records what was true at that commit; re-check it when the product changes.
 
 ## Evidence references
 

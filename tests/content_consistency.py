@@ -107,6 +107,28 @@ check("instance segmentation schematic" in building.lower()
 check('href="./building-extraction/"' in portfolio,
       "Main portfolio does not link to the research deep dive")
 
+# The technology stack lists only tools the claim register can source, and every row
+# must point at published research or at work that exists on the page.
+stack_section = re.search(r'<section[^>]*id="stack".*?</section>', portfolio, flags=re.S)
+check(stack_section is not None, "Portfolio technology stack section is missing")
+stack = stack_section.group(0) if stack_section else ""
+for doi in ("10.1007/s11042-023-17445-9", "10.1080/02533839.2020.1719899", "10.3390/app10062012"):
+    check(doi in stack, f"Technology stack research row missing source {doi}")
+for anchor in re.findall(r'href="#([^"]+)"', stack):
+    check(f'id="{anchor}"' in portfolio, f"Technology stack links to missing section #{anchor}")
+check(len(re.findall(r'<dd class="stack-where">\s*</dd>', stack)) == 0
+      and stack.count('class="stack-where"') == stack.count("<dt>") > 0,
+      "Technology stack row has no linked work")
+check(re.search(r"Pinecone|\bAWS\b|Amazon Web Services|Gaussian process|support vector|LiDAR|Core ML|Swift",
+                stack, flags=re.I) is None,
+      "Technology stack lists a tool held back in docs/portfolio-claim-register.md")
+check(re.search(r"\bexpert|\badvanced\b|years of experience|精通|專家", stack, flags=re.I) is None,
+      "Technology stack asserts proficiency instead of documented use")
+portfolio_zh = len(re.findall(r"<span data-lang-zh>", portfolio))
+portfolio_en = len(re.findall(r'<span data-lang-en lang="en" hidden>', portfolio))
+check(portfolio_zh == portfolio_en,
+      f"portfolio/index.html: bilingual span mismatch ({portfolio_zh} zh / {portfolio_en} en)")
+
 if failures:
     print("FAIL: public content consistency check")
     for issue in failures:
