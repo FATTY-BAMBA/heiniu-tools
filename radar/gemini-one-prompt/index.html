@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="./feature.css">
   <script src="../../assets/site-shell.js" defer></script>
   <script src="../../assets/language.js" defer></script>
+  <script src="./lesson.js" defer></script>
 </head>
 <body class="heiniu-interior heiniu-experience" data-english-title="What can Gemini build from one prompt? · AI Radar | HEINIU">
   <a class="skip-link" href="#main"><span data-lang-zh>跳到主要內容</span><span data-lang-en lang="en" hidden>Skip to content</span></a>
@@ -48,6 +49,7 @@
       <h1><span data-lang-zh>Gemini 一段提示詞能做到什麼？</span><span data-lang-en lang="en" hidden>What can Gemini build from one prompt?</span></h1>
       <p class="lede"><span data-lang-zh>以前打開 AI，我都在想「它可以做什麼？」這 48 小時玩下來，我反而想問「給它對的 skills，它到底還有什麼做不到？」</span><span data-lang-en lang="en" hidden>I used to open AI and think, “What can it do?” After 48 hours of playing with Gemini, I’m asking, “With the right skills, what can’t it do?”</span></p>
       <p class="lede"><span data-lang-zh>這兩個 Demo 都是我在 Google Antigravity 各丟一段 prompt 做出來的。</span><span data-lang-en lang="en" hidden>I gave Google Antigravity one prompt for each of these two demos.</span></p>
+      <a class="btn btn-ghost lesson-link" href="#lesson"><span data-lang-zh>看模型怎麼分工、拿提示詞</span><span data-lang-en lang="en" hidden>Learn the model workflow and get the prompt</span></a>
     </header>
 
     <article id="calibre" class="card demo" aria-labelledby="calibre-title">
@@ -65,7 +67,11 @@
     <article id="meridian" class="card demo" aria-labelledby="meridian-title">
       <div class="demo-copy">
         <h2 id="meridian-title">Meridian</h2>
-        <p><span data-lang-zh>轉一下指南針就抽目的地，連登機證都有。這輪抽到巴塔哥尼亞。</span><span data-lang-en lang="en" hidden>Spin the compass and it picks a destination, boarding pass included. This spin landed on Patagonia.</span></p>
+        <p><span data-lang-zh>轉一下指南針就抽目的地，連登機證都有。右邊是原始 Demo 的錄影，按下方按鈕可以玩同一套互動的重製版。</span><span data-lang-en lang="en" hidden>Spin the compass, get a destination, and see your boarding pass. The reel shows the original build. The playable version recreates that interaction.</span></p>
+        <a class="btn btn-hi" href="./meridian/">
+          <span data-lang-zh>試玩 Meridian</span><span data-lang-en lang="en" hidden>Try Meridian</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </a>
       </div>
       <div class="demo-reel">
         <video class="demo-media" width="1080" height="1920" controls playsinline preload="none" poster="./meridian-poster.webp" aria-labelledby="meridian-title">
@@ -75,9 +81,44 @@
       </div>
     </article>
 
-    <section class="radar-note" aria-labelledby="workflow-title">
-      <h2 id="workflow-title"><span data-lang-zh>連分工都交給它</span><span data-lang-en lang="en" hidden>It even handled the handoff</span></h2>
-      <p><span data-lang-zh>Hydrogen、Neon、Carbon 我都玩了一輪。最戳我的是 Antigravity 裡可以讓 Neon 拆題、Hydrogen 動手，我可以繼續懶 😂</span><span data-lang-en lang="en" hidden>I tried Hydrogen, Neon, and Carbon. My favorite part was handing off the work in Antigravity. Neon broke down the task, Hydrogen did the building, and I got to stay lazy 😂</span></p>
+    <section id="lesson" class="radar-note" aria-labelledby="workflow-title">
+      <h2 id="workflow-title"><span data-lang-zh>自己做一次：從一段提示詞到可用的網站</span><span data-lang-en lang="en" hidden>Try it yourself: from one prompt to a working site</span></h2>
+      <p><span data-lang-zh>我在 Antigravity 玩了 Hydrogen、Neon 和 Carbon。這次我讓 Neon 拆題、Hydrogen 動手，我可以繼續懶 😂。先看你的模型選單有哪些選項，再試試下面這個分工。</span><span data-lang-en lang="en" hidden>I tried Hydrogen, Neon, and Carbon in Antigravity. I had Neon break down the task, Hydrogen do the building, and got to stay lazy 😂. Check which models are available in your picker, then try this workflow.</span></p>
+
+      <dl class="model-roles">
+        <div>
+          <dt>Neon</dt>
+          <dd><span data-lang-zh><strong>拆解流程。</strong> 先列出使用者會經歷的三個狀態：等待抽選、指南針轉動、顯示登機證。每個狀態都寫出畫面和按鈕應該怎麼變。</span><span data-lang-en lang="en" hidden><strong>Plan the interaction.</strong> Ask for three states: ready to spin, spinning, and showing the pass. Spell out what the visitor should see and what the button should do in each state.</span></dd>
+        </div>
+        <div>
+          <dt>Hydrogen</dt>
+          <dd><span data-lang-zh><strong>動手做出來。</strong> 把同一份規格交給它，做成可以在瀏覽器開啟的頁面，並檢查連點、重抽和手機畫面。</span><span data-lang-en lang="en" hidden><strong>Build and test it.</strong> Hand it the same brief for a runnable browser page, then check rapid clicks, repeat spins, and the mobile layout.</span></dd>
+        </div>
+        <div>
+          <dt>Carbon</dt>
+          <dd><span data-lang-zh><strong>拿來做對照。</strong> 在新工作階段用同一段提示詞、同樣的工具和測試條件，看看第一次交付就通過幾項。</span><span data-lang-en lang="en" hidden><strong>Use it for a comparison.</strong> Start a fresh session with the same prompt and tools. Count how many checks the first version passes.</span></dd>
+        </div>
+      </dl>
+
+      <section class="card lesson-prompt" aria-labelledby="prompt-title">
+        <h3 id="prompt-title"><span data-lang-zh>一段可以複製的練習提示詞</span><span data-lang-en lang="en" hidden>A practice prompt you can copy</span></h3>
+        <p><span data-lang-zh>這是根據 Meridian 的互動整理的練習版。</span><span data-lang-en lang="en" hidden>This practice prompt is based on Meridian’s core interaction.</span></p>
+        <pre data-lang-zh data-localized tabindex="0">做一個可在手機與桌面瀏覽器開啟的靜態旅行網站。先列出「等待抽選 → 指南針轉動 → 顯示登機證」三個狀態，再實作。
+
+按下「轉動指南針」後，從至少四個目的地抽出一個。轉動時停用按鈕。轉完顯示同一個目的地的城市、機場代碼和一項行李建議，並讓我可以再抽一次。用鍵盤也能操作；使用者偏好減少動態效果時直接顯示結果。
+
+用 HTML、CSS 和 JavaScript 製作，不需要帳號或外部 API。提供可開啟的預覽。測試連點、重抽和窄螢幕，最後告訴我哪些項目有測過。</pre>
+        <pre data-lang-en data-localized lang="en" hidden tabindex="0">Build a static travel site that runs in a phone or desktop browser. Outline three states first: ready to spin, compass spinning, and boarding pass shown. Then implement them.
+
+When I press “Spin the compass,” choose from at least four destinations. Disable the button during the spin. Once it stops, show a boarding pass with the matching city, airport code, and a packing tip. Let me spin again. Support keyboard controls and show the result immediately when reduced motion is enabled.
+
+Use HTML, CSS, and JavaScript with no sign-in or external API. Give me a runnable preview. Check rapid clicks, repeat spins, and a narrow screen, then tell me which checks you actually ran.</pre>
+        <button class="btn btn-ghost" id="copy-prompt" type="button" hidden><span data-lang-zh>複製提示詞</span><span data-lang-en lang="en" hidden>Copy prompt</span></button>
+        <span id="copy-status" role="status"></span>
+      </section>
+
+      <h3 class="check-title"><span data-lang-zh>怎麼判斷哪個結果比較好？</span><span data-lang-en lang="en" hidden>How do you tell which result is better?</span></h3>
+      <p><span data-lang-zh>打開預覽，用鍵盤抽一次、快速連點、再抽一次，最後把視窗縮到手機寬度。確認每次只出現一張登機證，城市和機場代碼對得上，按鈕也沒跑出畫面。想單獨比較模型，就讓各模型從空白工作階段開始，用相同提示詞與工具，記下第一次就通過幾項、修了幾輪。</span><span data-lang-en lang="en" hidden>Open the preview. Spin with the keyboard, click rapidly, spin again, then shrink the window to phone width. Check that each spin produces one pass, the city and airport code match, and the controls stay on-screen. To compare models individually, give each one the same prompt and tools in a fresh session. Record how many checks passed on the first try and how many follow-up prompts it took.</span></p>
     </section>
   </main>
 

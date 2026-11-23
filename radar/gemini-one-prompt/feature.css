@@ -6,11 +6,11 @@
   padding: 10px 16px;
   background: var(--ink);
   color: white;
-  transform: translateY(-160%);
+  clip-path: inset(50%);
 }
 
 .skip-link:focus {
-  transform: none;
+  clip-path: none;
 }
 
 .radar-head .eyebrow {
@@ -19,6 +19,11 @@
 
 .radar-head .lede {
   margin-top: 1rem;
+}
+
+.lesson-link {
+  margin-top: 1.25rem;
+  white-space: normal;
 }
 
 .demo {
@@ -76,10 +81,70 @@
   border-top: 1px solid var(--line);
   margin-block: 2.25rem clamp(2.5rem, 6vw, 4rem);
   padding-top: 1.5rem;
+  scroll-margin-top: 6rem;
+}
+
+.model-roles {
+  margin-block: 1.5rem;
+}
+
+.model-roles div {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: .75rem;
+  border-top: 1px solid var(--line);
+  padding-block: .85rem;
+}
+
+.model-roles dt {
+  font-weight: 700;
+}
+
+.model-roles dd {
+  color: var(--ink2);
+}
+
+.lesson-prompt {
+  padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.lesson-prompt pre {
+  margin-block: 1rem;
+  padding: 1rem;
+  border-radius: var(--r);
+  background: var(--surface2);
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Prompts need their own box in both languages; inline translations use display: contents. */
+.lang-en .lesson-prompt pre[data-lang-en] {
+  display: block !important;
+}
+
+.lesson-prompt button[hidden] {
+  display: none;
+}
+
+#copy-status {
+  margin-inline-start: .5rem;
+  color: var(--ink2);
+}
+
+.check-title {
+  margin-top: 1.5rem;
 }
 
 @media (max-width: 600px) {
   .demo {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 400px) {
+  .model-roles div {
+    grid-template-columns: 1fr;
+    gap: .25rem;
   }
 }

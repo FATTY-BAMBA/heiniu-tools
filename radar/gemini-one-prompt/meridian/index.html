@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meridian · 黑牛互動重製</title>
+  <meta name="description" content="轉動指南針，抽出旅遊目的地、登機證和三個行李靈感。">
+  <link rel="canonical" href="https://fattybamba.com/radar/gemini-one-prompt/meridian/">
+  <link rel="stylesheet" href="../../../assets/base.css">
+  <link rel="stylesheet" href="../../../assets/experience.css">
+  <link rel="stylesheet" href="../../../assets/bilingual.css">
+  <link rel="stylesheet" href="../../../assets/heiniu-shell.css">
+  <link rel="stylesheet" href="../../../assets/interior.css">
+  <link rel="stylesheet" href="./meridian.css">
+  <script src="../../../assets/site-shell.js" defer></script>
+  <script src="../../../assets/language.js" defer></script>
+  <script src="./meridian.js" defer></script>
+</head>
+<body class="heiniu-interior heiniu-experience" data-english-title="Meridian · HEINIU interactive recreation">
+  <a class="skip" href="#main"><span data-lang-zh>跳到主要內容</span><span data-lang-en lang="en" hidden>Skip to content</span></a>
+  <header class="heiniu-shell">
+    <div class="shell-inner">
+      <a class="wordmark shell-brand" href="../../../" aria-label="HEINIU"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#233b31"/><path d="M8 10q2 6 8 6t8-6" fill="none" stroke="#ebf59a" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="21" r="3" fill="#ebf59a"/></svg><span>HEINIU</span></a>
+      <nav class="shell-nav" aria-label="HEINIU">
+        <a href="../../../#tools"><span data-lang-zh>工具</span><span data-lang-en lang="en" hidden>Tools</span></a>
+        <a href="../../../#work"><span data-lang-zh>作品集</span><span data-lang-en lang="en" hidden>Portfolio</span></a>
+        <a href="../../../#guides"><span data-lang-zh>教學</span><span data-lang-en lang="en" hidden>Lessons</span></a>
+      </nav>
+      <div class="shell-languages" role="group" aria-label="Language / 語言">
+        <button type="button" data-lang-choice="zh" aria-pressed="true">繁中</button>
+        <button type="button" data-lang-choice="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+  </header>
+  <div class="experience-crumb">
+    <div class="wrap">
+      <a href="../#meridian"><span data-lang-zh>← 返回 AI RADAR</span><span data-lang-en lang="en" hidden>← Back to AI Radar</span></a>
+      <span class="crumb-sep" aria-hidden="true">/</span>
+      <span class="crumb-current">Meridian</span>
+    </div>
+  </div>
+
+  <main id="main" class="wrap meridian" tabindex="-1">
+    <header class="meridian-head">
+      <p class="eyebrow"><span data-lang-zh>MERIDIAN · 黑牛互動重製</span><span data-lang-en lang="en" hidden>Meridian · HEINIU interactive recreation</span></p>
+      <h1><span data-lang-zh>下一站，去哪裡？</span><span data-lang-en lang="en" hidden>Where to next?</span></h1>
+      <p><span data-lang-zh>轉動指南針，抽一個目的地。拿到登機證時，你也會得到三個行李靈感。</span><span data-lang-en lang="en" hidden>Spin the compass to draw a destination. Your boarding pass comes with three ideas for what to pack.</span></p>
+    </header>
+
+    <div class="meridian-grid">
+      <div class="compass-panel">
+        <div class="compass" aria-hidden="true">
+          <div class="compass-face"></div>
+          <span class="cardinal north">N</span>
+          <span class="cardinal east">E</span>
+          <span class="cardinal south">S</span>
+          <span class="cardinal west">W</span>
+          <div class="needle" id="needle"></div>
+        </div>
+        <button class="btn spin" id="spin" type="button" disabled><span id="spin-label">轉動指南針</span><span class="spin-icon" aria-hidden="true">↻</span></button>
+        <noscript><p>請開啟 JavaScript 來轉動指南針。<br><span lang="en">Enable JavaScript to spin the compass.</span></p></noscript>
+      </div>
+
+      <section class="boarding-pass" aria-labelledby="pass-heading">
+        <h2 id="pass-heading"><span data-lang-zh>登機證</span><span data-lang-en lang="en" hidden>Boarding pass</span></h2>
+        <div class="pass-route">
+          <dl>
+            <dt><span data-lang-zh>出發地</span><span data-lang-en lang="en" hidden>From</span></dt>
+            <dd><span data-lang-zh>此刻</span><span data-lang-en lang="en" hidden>Here</span></dd>
+          </dl>
+          <span class="pass-arrow" aria-hidden="true">→</span>
+          <dl>
+            <dt><span data-lang-zh>目的地</span><span data-lang-en lang="en" hidden>To</span></dt>
+            <dd id="destination-code">—</dd>
+          </dl>
+        </div>
+        <div class="pass-details">
+          <p class="pass-placeholder" id="placeholder"><span data-lang-zh>轉動指南針，揭曉你的下一站。</span><span data-lang-en lang="en" hidden>Spin the compass to reveal your next stop.</span></p>
+          <div id="destination" hidden>
+            <h3 id="destination-name"></h3>
+            <p id="destination-region"></p>
+            <h4><span data-lang-zh>帶上這三樣</span><span data-lang-en lang="en" hidden>Three things to pack</span></h4>
+            <ul id="packing-list"></ul>
+          </div>
+        </div>
+      </section>
+    </div>
+    <p class="visually-hidden" id="announcement" role="status"></p>
+  </main>
+</body>
+</html>
