@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Calibre H-288 — Automatic Skeleton Mechanical Watch</title>
+  <link rel="stylesheet" href="./tailwind.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+
+  <style>
+    /* Base Studio Environment */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #050608;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* Cinematic Radial Studio Backdrop */
+    .studio-bg {
+      background:
+        radial-gradient(circle at 50% 44%, rgba(34, 41, 56, 0.42) 0%, rgba(12, 14, 20, 0.88) 46%, rgba(4, 5, 7, 1) 100%);
+    }
+
+    /* Subtle Ambient Film Grain */
+    .studio-grain {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+
+    /* 3D Perspective Container for Case Flip */
+    .watch-stage {
+      perspective: 1600px;
+    }
+
+    .watch-flip-wrapper {
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Sleek Custom Range Slider */
+    input[type="range"].horology-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"].horology-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f3d5b5 0%, #c89666 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 0 10px rgba(200, 150, 102, 0.5);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"].horology-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    input[type="range"].horology-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f3d5b5 0%, #c89666 100%);
+      border: 1.5px solid rgba(255, 255, 255, 0.65);
+      box-shadow: 0 0 10px rgba(200, 150, 102, 0.5);
+    }
+
+    .font-horology {
+      font-family: 'Cinzel', serif;
+    }
+
+    .font-mono-tech {
+      font-family: 'JetBrains Mono', monospace;
+    }
+  </style>
+</head>
+<body class="studio-bg text-zinc-100 flex flex-col justify-between items-center relative overflow-hidden">
+
+  <!-- Subtle Background Texture & Studio Rim Glow -->
+  <div class="pointer-events-none fixed inset-0 studio-grain opacity-40"></div>
+  <div id="ambientSpotlight" class="pointer-events-none fixed inset-0 transition-opacity duration-700"
+       style="background: radial-gradient(620px circle at 50% 45%, rgba(212, 165, 116, 0.08), transparent 70%);"></div>
+
+  <!-- Minimal Gallery Header -->
+  <header class="relative z-10 w-full max-w-5xl px-5 sm:px-8 pt-4 sm:pt-6 flex items-center justify-between pointer-events-none">
+    <div class="flex flex-col">
+      <span class="font-horology text-xs sm:text-sm tracking-[0.32em] text-amber-200/85 uppercase">
+        Atelier Chronos
+      </span>
+      <span class="text-[10px] sm:text-xs tracking-[0.22em] text-zinc-400 uppercase mt-0.5">
+        Calibre H-288 &bull; 28,800 vph
+      </span>
+      <a id="radarBack" href="../" class="pointer-events-auto self-start mt-2 py-1 text-xs text-zinc-300 hover:text-amber-200 underline underline-offset-4">← Back to AI Radar</a>
+    </div>
+
+    <div class="flex flex-col items-end">
+      <div id="digitalTimeReadout" class="font-mono-tech text-xs sm:text-sm tracking-[0.18em] text-zinc-200/90 tabular-nums">
+        00:00:00
+      </div>
+      <div id="viewStatusLabel" class="text-[10px] tracking-[0.22em] text-amber-200/70 uppercase mt-0.5">
+        Open-Worked Dial
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Watch Stage -->
+  <main class="watch-stage relative z-10 flex-1 w-full flex items-center justify-center px-2 sm:px-4 min-h-0">
+    <div id="watchContainer" class="watch-flip-wrapper relative flex items-center justify-center w-full h-full max-w-[740px] max-h-[740px]">
+      <canvas id="watchCanvas" class="block cursor-grab active:cursor-grabbing"></canvas>
+    </div>
+  </main>
+
+  <!-- Floating Minimal Studio Control Bar -->
+  <footer class="relative z-20 w-full flex justify-center px-3 pb-4 sm:pb-6">
+    <div class="w-full max-w-2xl bg-zinc-950/70 backdrop-blur-xl border border-white/10 rounded-2xl px-3.5 py-2.5 sm:px-5 sm:py-3 shadow-[0_20px_50px_rgba(0,0,0,0.75)] flex flex-wrap sm:flex-nowrap items-center justify-between gap-3">
+
+      <!-- Left Action Buttons -->
+      <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
+        <!-- Flip Watch Button -->
+        <button id="flipBtn" type="button"
+                class="group flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-b from-amber-200/15 to-amber-500/10 hover:from-amber-200/25 hover:to-amber-500/20 border border-amber-200/25 text-amber-100 text-xs font-medium tracking-wide transition-all duration-200 active:scale-95">
+          <svg class="w-4 h-4 text-amber-300 transition-transform duration-500 group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+            <path d="M3 3v5h5" />
+            <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+            <path d="M16 16h5v5" />
+          </svg>
+          <span id="flipBtnText">Case Back</span>
+        </button>
+
+        <!-- Escapement Beat Sound Toggle -->
+        <button id="soundBtn" type="button"
+                class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.09] border border-white/10 text-zinc-300 hover:text-white text-xs font-medium tracking-wide transition-all duration-200 active:scale-95">
+          <svg id="soundIconOff" class="w-4 h-4 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+          <svg id="soundIconOn" class="w-4 h-4 text-amber-300 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <span id="soundBtnText">Beat Sound</span>
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="hidden sm:block h-6 w-px bg-white/10"></div>
+
+      <!-- Right Sliders (X-Ray / Skeleton Opacity & Lighting) -->
+      <div class="flex items-center justify-center sm:justify-end gap-4 w-full sm:w-auto flex-1">
+        <!-- Skeleton / Rotor Visibility Slider -->
+        <label class="flex items-center gap-2.5 flex-1 sm:flex-initial max-w-[175px]">
+          <span id="xrayLabel" class="text-[11px] text-zinc-400 tracking-wide whitespace-nowrap">Skeleton</span>
+          <input id="xraySlider" type="range" min="0" max="100" value="72" class="horology-slider w-full sm:w-24" aria-label="Skeleton transparency" />
+        </label>
+
+        <!-- Lighting Angle / Specular Intensity -->
+        <label class="flex items-center gap-2.5 flex-1 sm:flex-initial max-w-[175px]">
+          <span class="text-[11px] text-zinc-400 tracking-wide whitespace-nowrap">Light</span>
+          <input id="lightSlider" type="range" min="0" max="360" value="315" class="horology-slider w-full sm:w-24" aria-label="Studio lighting angle" />
+        </label>
+      </div>
+
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const radarBack = document.getElementById('radarBack');
+      const radarLanguage = new URLSearchParams(location.search).get('lang');
+      if (radarLanguage === 'en' || radarLanguage === 'zh') {
+        radarBack.href = `../?lang=${radarLanguage}`;
+      }
+      if (radarLanguage === 'zh') {
+        radarBack.lang = 'zh-Hant';
+        radarBack.textContent = '← 返回 AI Radar';
+      }
+
+      /* =========================================================================
+       * 1. DOM REFERENCES & APPLICATION STATE
+       * ========================================================================= */
+      const canvas = document.getElementById('watchCanvas');
+      const ctx = canvas.getContext('2d', { alpha: true });
+      const watchContainer = document.getElementById('watchContainer');
+      const ambientSpotlight = document.getElementById('ambientSpotlight');
+      const digitalTimeReadout = document.getElementById('digitalTimeReadout');
+      const viewStatusLabel = document.getElementById('viewStatusLabel');
+      const flipBtn = document.getElementById('flipBtn');
+      const flipBtnText = document.getElementById('flipBtnText');
+      const soundBtn = document.getElementById('soundBtn');
+      const soundBtnText = document.getElementById('soundBtnText');
+      const soundIconOff = document.getElementById('soundIconOff');
+      const soundIconOn = document.getElementById('soundIconOn');
+      const xraySlider = document.getElementById('xraySlider');
+      const xrayLabel = document.getElementById('xrayLabel');
+      const lightSlider = document.getElementById('lightSlider');
+
+      const state = {
+        view: 'front',           // 'front' (open-worked dial) or 'back' (exhibition case back)
+        isFlipping: false,
+        flipProgress: 0,         // 0 = front, 1 = back
+        xrayLevel: 0.72,         // 0..1 (higher = more open/transparent dial or rotor)
+        lightAngleRad: (315 * Math.PI) / 180,
+        manualLightOverride: false,
+        mouseX: 0,               // normalized -1..1
+        mouseY: 0,               // normalized -1..1
+        smoothMouseX: 0,
+        smoothMouseY: 0,
+        // Oscillating Rotor physics (for Case Back)
+        rotorAngle: 0.65,
+        rotorVelocity: 0.015,
+        isDraggingRotor: false,
+        lastDragAngle: 0,
+        // Audio state
+        soundEnabled: false,
+        audioCtx: null,
+        lastBeatIndex: -1,
+        // Canvas layout metrics
+        width: 600,
+        height: 600,
+        dpr: Math.min(window.devicePixelRatio || 1, 2.5),
+        scale: 1
+      };
+
+      // Virtual design coordinate system: watch centered at (0, 0), case radius = 212
+      const VIRTUAL_SIZE = 720;
+      const CASE_RADIUS = 212;
+      const BEZEL_INNER = 178;
+      const MOVEMENT_RADIUS = 166;
+
+      /* =========================================================================
+       * 2. PROCEDURAL TEXTURE CACHE (Brushed Metal, Geneva Stripes, Perlage)
+       * ========================================================================= */
+      const textures = {
+        geneva: null,
+        perlage: null,
+        leather: null
+      };
+
+      /**
+       * Generates reusable offscreen procedural patterns for horological finishes.
+       */
+      function buildProceduralTextures() {
+        try {
+          // A) Côtes de Genève (Geneva Stripes)
+          const gCanvas = document.createElement('canvas');
+          gCanvas.width = 240;
+          gCanvas.height = 240;
+          const gCtx = gCanvas.getContext('2d');
+          const stripeW = 30;
+          for (let x = 0; x < 240; x += stripeW) {
+            const grad = gCtx.createLinearGradient(x, 0, x + stripeW, 0);
+            grad.addColorStop(0.0, '#1f232b');
+            grad.addColorStop(0.12, '#3a404c');
+            grad.addColorStop(0.45, '#545c6b');
+            grad.addColorStop(0.75, '#343a46');
+            grad.addColorStop(0.95, '#191d24');
+            grad.addColorStop(1.0, '#13161c');
+            gCtx.fillStyle = grad;
+            gCtx.fillRect(x, 0, stripeW, 240);
+
+            // Subtle curved abrasive sheen lines inside each stripe
+            gCtx.strokeStyle = 'rgba(255,255,255,0.035)';
+            gCtx.lineWidth = 0.8;
+            for (let y = -20; y < 260; y += 5) {
+              gCtx.beginPath();
+              gCtx.arc(x + stripeW * 0.5, y, stripeW * 0.85, Math.PI * 0.15, Math.PI * 0.85);
+              gCtx.stroke();
+            }
+          }
+          textures.geneva = ctx.createPattern(gCanvas, 'repeat');
+
+          // B) Perlage (Circular Graining for Mainplate)
+          const pCanvas = document.createElement('canvas');
+          pCanvas.width = 160;
+          pCanvas.height = 160;
+          const pCtx = pCanvas.getContext('2d');
+          pCtx.fillStyle = '#181b21';
+          pCtx.fillRect(0, 0, 160, 160);
+          const step = 16;
+          for (let y = 0; y <= 160; y += step) {
+            for (let x = 0; x <= 160; x += step) {
+              const ox = (y / step) % 2 === 0 ? 0 : step * 0.5;
+              const cx = x + ox;
+              const cy = y;
+              const r = 11;
+              const grad = pCtx.createRadialGradient(cx - 2, cy - 2, 1, cx, cy, r);
+              grad.addColorStop(0, 'rgba(220,230,245,0.14)');
+              grad.addColorStop(0.55, 'rgba(90,100,115,0.08)');
+              grad.addColorStop(1, 'rgba(10,12,16,0.0)');
+              pCtx.fillStyle = grad;
+              pCtx.beginPath();
+              pCtx.arc(cx, cy, r, 0, Math.PI * 2);
+              pCtx.fill();
+
+              pCtx.strokeStyle = 'rgba(255,255,255,0.05)';
+              pCtx.lineWidth = 0.7;
+              pCtx.beginPath();
+              pCtx.arc(cx, cy, r * 0.65, 0, Math.PI * 2);
+              pCtx.stroke();
+            }
+          }
+          textures.perlage = ctx.createPattern(pCanvas, 'repeat');
+
+          // C) Fine Calfskin / Alligator Grain for Strap
+          const lCanvas = document.createElement('canvas');
+          lCanvas.width = 64;
+          lCanvas.height = 64;
+          const lCtx = lCanvas.getContext('2d');
+          lCtx.fillStyle = '#111114';
+          lCtx.fillRect(0, 0, 64, 64);
+          for (let i = 0; i < 220; i++) {
+            const x = Math.random() * 64;
+            const y = Math.random() * 64;
+            const r = 0.6 + Math.random() * 1.4;
+            lCtx.fillStyle = Math.random() > 0.5 ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.28)';
+            lCtx.beginPath();
+            lCtx.arc(x, y, r, 0, Math.PI * 2);
+            lCtx.fill();
+          }
+          textures.leather = ctx.createPattern(lCanvas, 'repeat');
+        } catch (err) {
+          console.warn('Texture generation fallback:', err);
+        }
+      }
+
+      /* =========================================================================
+       * 3. MATHEMATICALLY MESHED GEAR TRAIN ARCHITECTURE
+       * =========================================================================
+       * Every meshing pair (A, B) satisfies:
+       *   pitchRadius = (module * teeth) / 2
+       *   distance(A, B) = rA + rB
+       *   omegaB = -omegaA * (teethA / teethB)
+       *   phaseB = (thetaAB + PI) + (PI / teethB) - (phaseA - thetaAB) * (teethA / teethB)
+       * Guaranteeing zero-slip, zero-overlap tooth engagement.
+       */
+      const GEAR_MODULE = 2.6;
+
+      function createGearTrain() {
+        const gears = {};
+
+        // 1. Center Wheel (anchor at origin)
+        gears.center = {
+          id: 'center',
+          x: 0,
+          y: 0,
+          teeth: 30,
+          module: GEAR_MODULE,
+          pitchR: (GEAR_MODULE * 30) / 2, // 39.0
+          spokes: 5,
+          material: 'gold',
+          hubR: 11,
+          ratio: 1, // relative to center wheel
+          phaseOffset: 0,
+          jewel: true
+        };
+
+        /**
+         * Helper to attach a child gear mathematically meshed to a parent gear
+         * at a specific angle (in radians) from the parent's center.
+         */
+        function attachGear(id, parent, teeth, angleRad, options = {}) {
+          const mod = parent.module;
+          const pitchR = (mod * teeth) / 2;
+          const dist = parent.pitchR + pitchR;
+          const x = parent.x + Math.cos(angleRad) * dist;
+          const y = parent.y + Math.sin(angleRad) * dist;
+
+          // Angular velocity ratio relative to center wheel
+          const ratio = -parent.ratio * (parent.teeth / teeth);
+
+          // Exact phase alignment so parent's tooth at angleRad lands inside child's valley at angleRad + PI
+          const phaseOffset =
+            (angleRad + Math.PI) +
+            (Math.PI / teeth) -
+            (parent.phaseOffset - angleRad) * (parent.teeth / teeth);
+
+          const gear = {
+            id,
+            x,
+            y,
+            teeth,
+            module: mod,
+            pitchR,
+            spokes: options.spokes ?? 5,
+            material: options.material ?? 'brass',
+            hubR: options.hubR ?? Math.max(6, pitchR * 0.24),
+            ratio,
+            phaseOffset,
+            jewel: options.jewel ?? true,
+            isBarrel: options.isBarrel ?? false,
+            isEscape: options.isEscape ?? false,
+            isSolid: options.isSolid ?? false
+          };
+          gears[id] = gear;
+          return gear;
+        }
+
+        // 2. Open-worked Mainspring Barrel (top-left, ~10:30 o'clock)
+        attachGear('barrel', gears.center, 42, (-126 * Math.PI) / 180, {
+          spokes: 6,
+          material: 'steel',
+          hubR: 15,
+          isBarrel: true,
+          jewel: false
+        });
+
+        // 3. Ratchet / Winding Wheel (top-right, ~1 o'clock, meshed with barrel)
+        attachGear('ratchet', gears.barrel, 24, (12 * Math.PI) / 180, {
+          spokes: 0,
+          material: 'brushedSteel',
+          hubR: 9,
+          isSolid: true,
+          jewel: false
+        });
+
+        // 4. Crown / Transmission Wheel (~2:30 o'clock, meshed with ratchet)
+        attachGear('crownWheel', gears.ratchet, 18, (18 * Math.PI) / 180, {
+          spokes: 4,
+          material: 'steel',
+          hubR: 7,
+          jewel: false
+        });
+
+        // 5. Third Wheel (~4:30 o'clock, meshed with center wheel)
+        attachGear('third', gears.center, 26, (38 * Math.PI) / 180, {
+          spokes: 5,
+          material: 'roseGold',
+          hubR: 8,
+          jewel: true
+        });
+
+        // 6. Fourth Wheel (6 o'clock, meshed with third wheel)
+        attachGear('fourth', gears.third, 22, (150 * Math.PI) / 180, {
+          spokes: 5,
+          material: 'gold',
+          hubR: 7.5,
+          jewel: true
+        });
+
+        // 7. Escape Wheel (~7:30 o'clock, meshed with fourth wheel)
+        attachGear('escape', gears.fourth, 15, (186 * Math.PI) / 180, {
+          spokes: 3,
+          material: 'roseGold',
+          hubR: 5.5,
+          isEscape: true,
+          jewel: true
+        });
+
+        // Normalize ratios so that driving `escape` by 1 unit drives all gears accurately
+        const escapeRatio = gears.escape.ratio;
+        Object.values(gears).forEach((g) => {
+          g.speedFromEscape = g.ratio / escapeRatio;
+        });
+
+        return gears;
+      }
+
+      const GEARS = createGearTrain();
+      const BALANCE_POS = { x: -82, y: 34, radius: 44 };
+
+      /* =========================================================================
+       * 4. WEB AUDIO API — 28,800 VPH (8 HZ) MECHANICAL ESCAPEMENT SYNTHESIS
+       * ========================================================================= */
+      function initAudio() {
+        try {
+          if (!state.audioCtx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return false;
+            state.audioCtx = new AudioCtx();
+          }
+          if (state.audioCtx.state === 'suspended') {
+            state.audioCtx.resume();
+          }
+          return true;
+        } catch (err) {
+          console.warn('Web Audio unavailable:', err);
+          return false;
+        }
+      }
+
+      /**
+       * Synthesizes a subtle, crisp horological escapement impulse ("tick" / "tock").
+       * Alternating slight pitch shift mimics real pallet stone entry/exit acoustics.
+       */
+      function triggerEscapementTick(isEvenBeat) {
+        if (!state.soundEnabled || !state.audioCtx || state.audioCtx.state !== 'running') return;
+        try {
+          const now = state.audioCtx.currentTime;
+
+          // 1) High-frequency metallic impulse (pallet stone hitting escape wheel tooth)
+          const osc = state.audioCtx.createOscillator();
+          const gain = state.audioCtx.createGain();
+          const filter = state.audioCtx.createBiquadFilter();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(isEvenBeat ? 5150 : 4680, now);
+          osc.frequency.exponentialRampToValueAtTime(1600, now + 0.012);
+
+          filter.type = 'bandpass';
+          filter.frequency.setValueAtTime(isEvenBeat ? 4600 : 4200, now);
+          filter.Q.setValueAtTime(5.5, now);
+
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(0.055, now + 0.0012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.018);
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(state.audioCtx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.022);
+
+          // 2) Subtle steel case acoustic resonance body
+          const bodyOsc = state.audioCtx.createOscillator();
+          const bodyGain = state.audioCtx.createGain();
+          bodyOsc.type = 'sine';
+          bodyOsc.frequency.setValueAtTime(isEvenBeat ? 1180 : 1090, now);
+          bodyGain.gain.setValueAtTime(0.0001, now);
+          bodyGain.gain.linearRampToValueAtTime(0.018, now + 0.0015);
+          bodyGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.014);
+
+          bodyOsc.connect(bodyGain);
+          bodyGain.connect(state.audioCtx.destination);
+          bodyOsc.start(now);
+          bodyOsc.stop(now + 0.016);
+        } catch (err) {
+          // Silently ignore occasional audio scheduling glitches
+        }
+      }
+
+      /* =========================================================================
+       * 5. HOROLOGICAL DRAWING PRIMITIVES
+       * ========================================================================= */
+
+      /**
+       * Draws a mathematically accurate involute-profile gear with spokes, beveled rim,
+       * metallic sheen, and optional ruby jewel bearing.
+       */
+      function drawGear(g, angle) {
+        const { x, y, teeth, module: m, pitchR, spokes, material, hubR, isBarrel, isEscape, isSolid, jewel } = g;
+
+        const addendum = m * 0.92;
+        const dedendum = m * 1.15;
+        const outerR = pitchR + addendum;
+        const rootR = Math.max(4, pitchR - dedendum);
+        const rimInnerR = Math.max(hubR + 2, rootR - (isBarrel ? 7.5 : 5.2));
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Subtle drop shadow underneath gear for 3D Z-depth
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.58)';
+        ctx.shadowBlur = 7;
+        ctx.shadowOffsetX = 2.5;
+        ctx.shadowOffsetY = 3.5;
+
+        ctx.rotate(angle);
+
+        // Color palettes by horological alloy
+        let cLight, cMid, cDark, cRimStroke;
+        if (material === 'gold') {
+          cLight = '#f6dfa4';
+          cMid = '#cfa252';
+          cDark = '#7c5922';
+          cRimStroke = 'rgba(255, 241, 198, 0.55)';
+        } else if (material === 'roseGold') {
+          cLight = '#f3cbb4';
+          cMid = '#c78563';
+          cDark = '#6e3f28';
+          cRimStroke = 'rgba(255, 224, 205, 0.5)';
+        } else if (material === 'brushedSteel') {
+          cLight = '#e4e9f0';
+          cMid = '#98a2b3';
+          cDark = '#4a5260';
+          cRimStroke = 'rgba(255, 255, 255, 0.45)';
+        } else {
+          // Polished rhodium / steel
+          cLight = '#dce2ea';
+          cMid = '#8791a1';
+          cDark = '#3d4452';
+          cRimStroke = 'rgba(255, 255, 255, 0.4)';
+        }
+
+        // Gear Metallic Gradient (rotated slightly against gear spin for realistic static light)
+        const grad = ctx.createLinearGradient(-outerR, -outerR, outerR, outerR);
+        grad.addColorStop(0.0, cLight);
+        grad.addColorStop(0.45, cMid);
+        grad.addColorStop(0.85, cDark);
+        grad.addColorStop(1.0, cMid);
+
+        // Build Gear Tooth Path
+        ctx.beginPath();
+        const step = (Math.PI * 2) / teeth;
+
+        if (isEscape) {
+          // Swiss Lever Club-Tooth Escape Wheel (angled hawk-beak teeth)
+          for (let i = 0; i < teeth; i++) {
+            const a0 = i * step;
+            const aRoot1 = a0 - step * 0.24;
+            const aTip1 = a0 + step * 0.08;
+            const aTip2 = a0 + step * 0.22;
+            const aRoot2 = a0 + step * 0.28;
+
+            if (i === 0) {
+              ctx.moveTo(Math.cos(aRoot1) * rootR, Math.sin(aRoot1) * rootR);
+            } else {
+              ctx.lineTo(Math.cos(aRoot1) * rootR, Math.sin(aRoot1) * rootR);
+            }
+            ctx.lineTo(Math.cos(aTip1) * (outerR + 2.2), Math.sin(aTip1) * (outerR + 2.2));
+            ctx.lineTo(Math.cos(aTip2) * (outerR + 1.0), Math.sin(aTip2) * (outerR + 1.0));
+            ctx.lineTo(Math.cos(aRoot2) * rootR, Math.sin(aRoot2) * rootR);
+          }
+        } else {
+          // Standard Involute-Approximated Watch Gear Teeth
+          for (let i = 0; i < teeth; i++) {
+            const a = i * step;
+            const aRootL = a - step * 0.34;
+            const aPitchL = a - step * 0.22;
+            const aTipL = a - step * 0.13;
+            const aTipR = a + step * 0.13;
+            const aPitchR = a + step * 0.22;
+            const aRootR = a + step * 0.34;
+
+            if (i === 0) {
+              ctx.moveTo(Math.cos(aRootL) * rootR, Math.sin(aRootL) * rootR);
+            } else {
+              ctx.lineTo(Math.cos(aRootL) * rootR, Math.sin(aRootL) * rootR);
+            }
+            ctx.lineTo(Math.cos(aPitchL) * pitchR, Math.sin(aPitchL) * pitchR);
+            ctx.lineTo(Math.cos(aTipL) * outerR, Math.sin(aTipL) * outerR);
+            ctx.lineTo(Math.cos(aTipR) * outerR, Math.sin(aTipR) * outerR);
+            ctx.lineTo(Math.cos(aPitchR) * pitchR, Math.sin(aPitchR) * pitchR);
+            ctx.lineTo(Math.cos(aRootR) * rootR, Math.sin(aRootR) * rootR);
+          }
+        }
+        ctx.closePath();
+
+        // Cut out open-worked spoke windows (even-odd fill rule)
+        if (!isSolid && spokes > 0 && rimInnerR > hubR + 3) {
+          const spokeStep = (Math.PI * 2) / spokes;
+          const spokeHalfAngle = Math.min(0.22, (isBarrel ? 0.14 : 0.17));
+          for (let s = 0; s < spokes; s++) {
+            const sa1 = s * spokeStep + spokeHalfAngle;
+            const sa2 = (s + 1) * spokeStep - spokeHalfAngle;
+            if (sa2 > sa1) {
+              ctx.moveTo(Math.cos(sa1) * rimInnerR, Math.sin(sa1) * rimInnerR);
+              ctx.arc(0, 0, rimInnerR, sa1, sa2, false);
+              ctx.lineTo(Math.cos(sa2) * hubR, Math.sin(sa2) * hubR);
+              ctx.arc(0, 0, hubR, sa2, sa1, true);
+              ctx.closePath();
+            }
+          }
+        }
+
+        ctx.fillStyle = grad;
+        ctx.fill('evenodd');
+        ctx.restore(); // clear shadow for crisp interior detailing
+
+        // If Mainspring Barrel: draw visible coiled dark-blue mainspring inside the open-worked windows
+        if (isBarrel) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(0, 0, rimInnerR - 1, 0, Math.PI * 2);
+          ctx.clip();
+
+          // Dark barrel recess
+          ctx.fillStyle = 'rgba(10, 13, 18, 0.72)';
+          ctx.fill();
+
+          // Coiled tempered blue-steel mainspring spiral
+          ctx.rotate(angle * 0.4);
+          ctx.strokeStyle = '#3b5984';
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          const turns = 6.5;
+          const pts = 140;
+          for (let i = 0; i <= pts; i++) {
+            const t = i / pts;
+            const a = t * Math.PI * 2 * turns;
+            const r = hubR + 1 + t * (rimInnerR - hubR - 3);
+            const px = Math.cos(a) * r;
+            const py = Math.sin(a) * r;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+          }
+          ctx.stroke();
+
+          // Metallic glint on mainspring coils
+          ctx.strokeStyle = 'rgba(155, 195, 255, 0.25)';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          ctx.restore();
+
+          // Re-draw barrel spokes over mainspring so they sit cleanly on top
+          ctx.save();
+          ctx.rotate(angle);
+          ctx.strokeStyle = cMid;
+          ctx.lineWidth = 4.2;
+          for (let s = 0; s < spokes; s++) {
+            const sa = (s * Math.PI * 2) / spokes;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(sa) * hubR, Math.sin(sa) * hubR);
+            ctx.lineTo(Math.cos(sa) * (rimInnerR + 2), Math.sin(sa) * (rimInnerR + 2));
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        // Chamfered inner rim highlight
+        ctx.beginPath();
+        ctx.arc(0, 0, rootR - 1.2, 0, Math.PI * 2);
+        ctx.strokeStyle = cRimStroke;
+        ctx.lineWidth = 0.9;
+        ctx.stroke();
+
+        // Sunburst brushed finish on solid ratchet wheel
+        if (isSolid) {
+          ctx.save();
+          ctx.rotate(angle);
+          const sunGrad = ctx.createConicGradient(0, 0, 0);
+          sunGrad.addColorStop(0.0, 'rgba(255,255,255,0.22)');
+          sunGrad.addColorStop(0.25, 'rgba(0,0,0,0.18)');
+          sunGrad.addColorStop(0.5, 'rgba(255,255,255,0.22)');
+          sunGrad.addColorStop(0.75, 'rgba(0,0,0,0.18)');
+          sunGrad.addColorStop(1.0, 'rgba(255,255,255,0.22)');
+          ctx.fillStyle = sunGrad;
+          ctx.beginPath();
+          ctx.arc(0, 0, rootR - 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+
+          // Center slotted blued screw on ratchet wheel
+          drawBluedScrew(0, 0, 5.8, angle + 0.5);
+        } else {
+          // Central pinion / hub cap
+          ctx.beginPath();
+          ctx.arc(0, 0, hubR * 0.65, 0, Math.PI * 2);
+          ctx.fillStyle = '#2a2f39';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+
+          if (jewel) {
+            drawRubyJewel(0, 0, Math.min(4.8, hubR * 0.48));
+          } else {
+            drawBluedScrew(0, 0, Math.min(5.2, hubR * 0.42), angle);
+          }
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * Draws a synthetic corundum ruby jewel bearing set in a gold chaton.
+       */
+      function drawRubyJewel(x, y, r) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Gold chaton bevel
+        const chatonGrad = ctx.createLinearGradient(-r, -r, r, r);
+        chatonGrad.addColorStop(0, '#f8e3b0');
+        chatonGrad.addColorStop(0.5, '#b8893d');
+        chatonGrad.addColorStop(1, '#664616');
+        ctx.beginPath();
+        ctx.arc(0, 0, r + 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = chatonGrad;
+        ctx.fill();
+
+        // Deep magenta-crimson ruby
+        const rubyGrad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r);
+        rubyGrad.addColorStop(0, '#ff4d88');
+        rubyGrad.addColorStop(0.45, '#b80f48');
+        rubyGrad.addColorStop(0.85, '#5e0422');
+        rubyGrad.addColorStop(1, '#360112');
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fillStyle = rubyGrad;
+        ctx.fill();
+
+        // Center steel pivot
+        ctx.beginPath();
+        ctx.arc(0, 0, r * 0.34, 0, Math.PI * 2);
+        ctx.fillStyle = '#d4dbe6';
+        ctx.fill();
+
+        // Specular catchlight
+        ctx.beginPath();
+        ctx.arc(-r * 0.32, -r * 0.32, r * 0.22, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 230, 240, 0.78)';
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      /**
+       * Draws a heat-blued Swiss steel movement screw with beveled slot.
+       */
+      function drawBluedScrew(x, y, r, slotAngle = 0.6) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Countersunk recess shadow
+        ctx.beginPath();
+        ctx.arc(0, 0, r + 1.1, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        ctx.fill();
+
+        // Heat-blued steel dome
+        const grad = ctx.createRadialGradient(-r * 0.35, -r * 0.35, 0.5, 0, 0, r);
+        grad.addColorStop(0, '#629bff');
+        grad.addColorStop(0.42, '#1d4ea8');
+        grad.addColorStop(0.85, '#0b2254');
+        grad.addColorStop(1, '#061333');
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Screw slot
+        ctx.rotate(slotAngle);
+        ctx.strokeStyle = '#040917';
+        ctx.lineWidth = Math.max(1.2, r * 0.28);
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.85, 0);
+        ctx.lineTo(r * 0.85, 0);
+        ctx.stroke();
+
+        // Subtle rim highlight along slot edge
+        ctx.strokeStyle = 'rgba(155, 200, 255, 0.45)';
+        ctx.lineWidth = 0.6;
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.8, -r * 0.16);
+        ctx.lineTo(r * 0.8, -r * 0.16);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      /**
+       * Draws the oscillating Balance Wheel, breathing spiral Hairspring,
+       * Pallet Fork, and shock-protected Balance Cock bridge.
+       */
+      function drawBalanceAssembly(balanceAngle, breathFactor, palletRock) {
+        const { x, y, radius } = BALANCE_POS;
+
+        // 1) Rocking Swiss Lever Pallet Fork (between Escape Wheel and Balance Wheel)
+        ctx.save();
+        const px = (GEARS.escape.x + x) * 0.52;
+        const py = (GEARS.escape.y + y) * 0.52;
+        ctx.translate(px, py);
+        ctx.rotate(-0.62 + palletRock * 0.18);
+
+        ctx.strokeStyle = '#c9d2df';
+        ctx.lineWidth = 2.6;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-16, 0);
+        ctx.lineTo(14, 0);
+        // Fork horns
+        ctx.moveTo(11, -7);
+        ctx.lineTo(17, 0);
+        ctx.lineTo(11, 7);
+        ctx.stroke();
+
+        // Tiny ruby pallet stones
+        ctx.fillStyle = '#e11d5a';
+        ctx.fillRect(10, -8.5, 3, 2.5);
+        ctx.fillRect(10, 6, 3, 2.5);
+
+        drawRubyJewel(0, 0, 2.5);
+        ctx.restore();
+
+        // 2) Balance Wheel & Hairspring
+        ctx.save();
+        ctx.translate(x, y);
+
+        // Dark circular aperture beneath balance wheel for dramatic contrast
+        ctx.beginPath();
+        ctx.arc(0, 0, radius + 5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(4, 6, 10, 0.72)';
+        ctx.fill();
+
+        // Breathing Blue-Steel Spiral Hairspring
+        ctx.save();
+        ctx.strokeStyle = 'rgba(116, 172, 255, 0.85)';
+        ctx.lineWidth = 1.05;
+        ctx.beginPath();
+        const turns = 5.5;
+        const samples = 130;
+        for (let i = 0; i <= samples; i++) {
+          const t = i / samples;
+          const a = t * Math.PI * 2 * turns + balanceAngle * 0.14 * (1 - t);
+          const breathe = 1 + breathFactor * 0.085 * Math.sin(t * Math.PI);
+          const r = (5.5 + t * (radius * 0.62)) * breathe;
+          const hx = Math.cos(a) * r;
+          const hy = Math.sin(a) * r;
+          if (i === 0) ctx.moveTo(hx, hy);
+          else ctx.lineTo(hx, hy);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        // Oscillating Glucydur Gold Balance Rim
+        ctx.save();
+        ctx.rotate(balanceAngle);
+
+        ctx.shadowColor = 'rgba(0,0,0,0.65)';
+        ctx.shadowBlur = 7;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 3;
+
+        const rimGrad = ctx.createLinearGradient(-radius, -radius, radius, radius);
+        rimGrad.addColorStop(0, '#fbe6b2');
+        rimGrad.addColorStop(0.5, '#c79545');
+        rimGrad.addColorStop(1, '#7a541c');
+
+        // 3 Spokes
+        ctx.strokeStyle = rimGrad;
+        ctx.lineWidth = 3.2;
+        for (let i = 0; i < 3; i++) {
+          const a = (i * Math.PI * 2) / 3;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(a) * (radius - 2), Math.sin(a) * (radius - 2));
+          ctx.stroke();
+        }
+
+        // Outer Rim
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.lineWidth = 4.6;
+        ctx.strokeStyle = rimGrad;
+        ctx.stroke();
+
+        // Poising / Regulation micro-weights around perimeter
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#fff0c7';
+        for (let i = 0; i < 12; i++) {
+          const a = (i * Math.PI * 2) / 12;
+          ctx.beginPath();
+          ctx.arc(Math.cos(a) * (radius + 2.6), Math.sin(a) * (radius + 2.6), 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+
+        // 3) Sculpted Skeletonized Balance Cock Bridge spanning over the wheel
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.7)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 4;
+
+        ctx.beginPath();
+        ctx.moveTo(-radius - 16, -8);
+        ctx.quadraticCurveTo(-radius * 0.4, -13, 0, -10);
+        ctx.arc(0, 0, 10.5, -Math.PI * 0.5, Math.PI * 0.5, false);
+        ctx.quadraticCurveTo(-radius * 0.4, 13, -radius - 16, 9);
+        ctx.closePath();
+
+        const cockGrad = ctx.createLinearGradient(-radius - 16, -12, 12, 12);
+        cockGrad.addColorStop(0, '#5a6374');
+        cockGrad.addColorStop(0.5, '#343a46');
+        cockGrad.addColorStop(1, '#20242c');
+        ctx.fillStyle = cockGrad;
+        ctx.fill();
+
+        // Polished anglage (beveled edge)
+        ctx.strokeStyle = 'rgba(225, 234, 248, 0.55)';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+        ctx.restore();
+
+        // Incabloc Lyre Shock Spring & Central Ruby
+        drawRubyJewel(0, 0, 5.2);
+        ctx.strokeStyle = '#f2d08b';
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        ctx.arc(0, 0, 7.6, 0.35, Math.PI * 2 - 0.35);
+        ctx.stroke();
+
+        // Balance cock mounting screw
+        drawBluedScrew(-radius - 8, 0, 3.8, 1.1);
+
+        ctx.restore();
+      }
+
+      /**
+       * Draws sculpted rhodium bridges with Côtes de Genève stripes, polished bevels,
+       * jewel bearings, and blued steel screws.
+       */
+      function drawMovementBridges(isCaseBack) {
+        ctx.save();
+
+        // Bridge 1: Upper Barrel & Winding Bridge (curvilinear architecture)
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.68)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 5;
+
+        ctx.beginPath();
+        ctx.arc(0, 0, MOVEMENT_RADIUS - 2, -Math.PI * 0.92, -Math.PI * 0.08, false);
+        ctx.quadraticCurveTo(95, -22, 42, -32);
+        ctx.quadraticCurveTo(0, -18, -32, -45);
+        ctx.quadraticCurveTo(-82, -78, -148, -38);
+        ctx.closePath();
+
+        ctx.fillStyle = textures.geneva || '#2d323c';
+        ctx.globalAlpha = isCaseBack ? 0.94 : 0.78;
+        ctx.fill();
+
+        // Anglage chamfered edge
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = 'rgba(230, 238, 250, 0.42)';
+        ctx.lineWidth = 1.25;
+        ctx.stroke();
+        ctx.restore();
+
+        // Bridge 2: Lower Gear-Train Bridge (sweeping across 3rd & 4th wheels)
+        ctx.save();
+        ctx.shadowColor = 'rgba(0,0,0,0.68)';
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 4;
+
+        ctx.beginPath();
+        ctx.moveTo(148, 22);
+        ctx.arc(0, 0, MOVEMENT_RADIUS - 2, 0.14, 1.48, false);
+        ctx.quadraticCurveTo(-18, 118, -14, 72);
+        ctx.quadraticCurveTo(22, 56, 48, 34);
+        ctx.quadraticCurveTo(95, 18, 148, 22);
+        ctx.closePath();
+
+        ctx.fillStyle = textures.geneva || '#2c313b';
+        ctx.globalAlpha = isCaseBack ? 0.92 : 0.72;
+        ctx.fill();
+
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = 'rgba(230, 238, 250, 0.38)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+
+        // Bridge Jewels & Blued Steel Screws
+        drawRubyJewel(GEARS.third.x, GEARS.third.y, 4.6);
+        drawRubyJewel(GEARS.fourth.x, GEARS.fourth.y, 4.4);
+        drawRubyJewel(GEARS.center.x, GEARS.center.y, 6.0);
+
+        drawBluedScrew(-116, -68, 4.6, 0.4);
+        drawBluedScrew(104, -84, 4.6, 1.8);
+        drawBluedScrew(124, 52, 4.4, 2.3);
+        drawBluedScrew(42, 134, 4.4, 0.9);
+        drawBluedScrew(-22, -138, 4.2, 1.3);
+
+        // Engraved Calibre Marking on upper bridge (extra sharp on case back)
+        ctx.save();
+        ctx.fillStyle = isCaseBack ? 'rgba(232, 198, 142, 0.78)' : 'rgba(232, 198, 142, 0.42)';
+        ctx.font = '600 8.5px "Inter", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('CALIBRE H-288', 22, -112);
+        ctx.font = '400 6.8px "Inter", sans-serif';
+        ctx.fillStyle = isCaseBack ? 'rgba(215, 224, 238, 0.65)' : 'rgba(215, 224, 238, 0.32)';
+        ctx.fillText('THIRTY-ONE (31) JEWELS • SWISS', 22, -101);
+        ctx.restore();
+
+        ctx.restore();
+      }
+
+      /**
+       * Draws the full mechanical movement (Mainplate + Gear Train + Balance + Bridges).
+       */
+      function drawMechanicalMovement(escapeAngle, balanceAngle, breathFactor, palletRock, isCaseBack) {
+        ctx.save();
+
+        // Clip movement interior
+        ctx.beginPath();
+        ctx.arc(0, 0, MOVEMENT_RADIUS, 0, Math.PI * 2);
+        ctx.clip();
+
+        // Perlage Mainplate Background
+        ctx.fillStyle = textures.perlage || '#15181f';
+        ctx.fillRect(-MOVEMENT_RADIUS, -MOVEMENT_RADIUS, MOVEMENT_RADIUS * 2, MOVEMENT_RADIUS * 2);
+
+        // Subtle recessed inner vignette for cinematic depth
+        const depthGrad = ctx.createRadialGradient(0, 0, 20, 0, 0, MOVEMENT_RADIUS);
+        depthGrad.addColorStop(0, 'rgba(255,255,255,0.03)');
+        depthGrad.addColorStop(0.75, 'rgba(0,0,0,0.22)');
+        depthGrad.addColorStop(1, 'rgba(0,0,0,0.72)');
+        ctx.fillStyle = depthGrad;
+        ctx.fillRect(-MOVEMENT_RADIUS, -MOVEMENT_RADIUS, MOVEMENT_RADIUS * 2, MOVEMENT_RADIUS * 2);
+
+        // Winding Stem extending from 3 o'clock into the Crown Wheel
+        ctx.save();
+        const stemGrad = ctx.createLinearGradient(0, -5, 0, 5);
+        stemGrad.addColorStop(0, '#6a7384');
+        stemGrad.addColorStop(0.5, '#e2e8f0');
+        stemGrad.addColorStop(1, '#3a404c');
+        ctx.fillStyle = stemGrad;
+        ctx.fillRect(92, -3.5, 80, 7);
+        ctx.restore();
+
+        // Render Gear Train in proper Z-layer order
+        const renderOrder = ['barrel', 'ratchet', 'crownWheel', 'center', 'third', 'fourth', 'escape'];
+        for (const id of renderOrder) {
+          const g = GEARS[id];
+          const gearAngle = g.phaseOffset + escapeAngle * g.speedFromEscape;
+          drawGear(g, gearAngle);
+        }
+
+        // Render Bridges
+        drawMovementBridges(isCaseBack);
+
+        // Render Oscillating Balance Wheel, Hairspring & Pallet Fork on top
+        drawBalanceAssembly(balanceAngle, breathFactor, palletRock);
+
+        ctx.restore();
+      }
+
+      /* =========================================================================
+       * 6. STRAP, CASE, LUGS, CROWN & BEZEL RENDERING
+       * ========================================================================= */
+
+      /**
+       * Draws realistic stitched dark leather straps fading smoothly into the dark studio.
+       */
+      function drawLeatherStrap() {
+        ctx.save();
+        const strapW = 132;
+        const strapH = 195;
+
+        const drawHalf = (dir) => {
+          ctx.save();
+          // Tapered strap silhouette
+          ctx.beginPath();
+          ctx.moveTo(-strapW * 0.5, dir * 168);
+          ctx.lineTo(strapW * 0.5, dir * 168);
+          ctx.lineTo(strapW * 0.44, dir * (168 + strapH));
+          ctx.lineTo(-strapW * 0.44, dir * (168 + strapH));
+          ctx.closePath();
+
+          // Base leather fill
+          ctx.fillStyle = textures.leather || '#121317';
+          ctx.fill();
+
+          // Cylindrical 3D leather contour lighting
+          const cylGrad = ctx.createLinearGradient(-strapW * 0.5, 0, strapW * 0.5, 0);
+          cylGrad.addColorStop(0.0, 'rgba(0,0,0,0.88)');
+          cylGrad.addColorStop(0.22, 'rgba(35,38,46,0.28)');
+          cylGrad.addColorStop(0.5, 'rgba(65,70,82,0.16)');
+          cylGrad.addColorStop(0.78, 'rgba(35,38,46,0.28)');
+          cylGrad.addColorStop(1.0, 'rgba(0,0,0,0.88)');
+          ctx.fillStyle = cylGrad;
+          ctx.fill();
+
+          // Fine saddle stitching along left & right edges
+          ctx.strokeStyle = 'rgba(218, 178, 134, 0.34)';
+          ctx.lineWidth = 1.3;
+          ctx.setLineDash([5, 5]);
+          for (const side of [-1, 1]) {
+            ctx.beginPath();
+            ctx.moveTo(side * (strapW * 0.42), dir * 188);
+            ctx.lineTo(side * (strapW * 0.37), dir * (168 + strapH));
+            ctx.stroke();
+          }
+          ctx.setLineDash([]);
+
+          // Seamless fade into the dark obsidian studio background
+          const fadeGrad = ctx.createLinearGradient(0, dir * 185, 0, dir * (168 + strapH));
+          fadeGrad.addColorStop(0.0, 'rgba(5, 6, 8, 0.55)');
+          fadeGrad.addColorStop(0.18, 'rgba(5, 6, 8, 0.0)');
+          fadeGrad.addColorStop(0.55, 'rgba(5, 6, 8, 0.55)');
+          fadeGrad.addColorStop(1.0, 'rgba(5, 6, 8, 1.0)');
+          ctx.fillStyle = fadeGrad;
+          ctx.fill();
+          ctx.restore();
+        };
+
+        drawHalf(-1); // Top strap
+        drawHalf(1);  // Bottom strap
+        ctx.restore();
+      }
+
+      /**
+       * Draws sculpted brushed stainless steel lugs with polished chamfered edges.
+       */
+      function drawLugs(lightAngle) {
+        const lx = Math.cos(lightAngle);
+        const ly = Math.sin(lightAngle);
+
+        const corners = [
+          { sx: -1, sy: -1 },
+          { sx: 1, sy: -1 },
+          { sx: -1, sy: 1 },
+          { sx: 1, sy: 1 }
+        ];
+
+        corners.forEach(({ sx, sy }) => {
+          ctx.save();
+          ctx.scale(sx, sy);
+
+          // Cast shadow behind lug
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+          ctx.shadowBlur = 18;
+          ctx.shadowOffsetX = -lx * 8 * sx;
+          ctx.shadowOffsetY = -ly * 8 * sy;
+
+          ctx.beginPath();
+          ctx.moveTo(64, 152);
+          ctx.quadraticCurveTo(68, 224, 76, 250);
+          ctx.quadraticCurveTo(96, 256, 108, 244);
+          ctx.quadraticCurveTo(126, 200, 146, 134);
+          ctx.closePath();
+
+          const lugGrad = ctx.createLinearGradient(64, 150, 130, 240);
+          lugGrad.addColorStop(0.0, '#3e4450');
+          lugGrad.addColorStop(0.32, '#c8d1de');
+          lugGrad.addColorStop(0.58, '#6e7787');
+          lugGrad.addColorStop(0.85, '#2b303a');
+          lugGrad.addColorStop(1.0, '#8d96a6');
+          ctx.fillStyle = lugGrad;
+          ctx.fill();
+
+          // Polished inner chamfer highlight
+          ctx.shadowBlur = 0;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.36)';
+          ctx.lineWidth = 1.3;
+          ctx.stroke();
+
+          ctx.restore();
+        });
+      }
+
+      /**
+       * Draws the knurled rose-gold / steel winding crown with sculpted crown guards.
+       * Positioned at 3 o'clock on the front, and 9 o'clock when flipped to the back.
+       */
+      function drawCrown(sideSign) {
+        ctx.save();
+        ctx.scale(sideSign, 1);
+
+        // Crown Guards
+        ctx.beginPath();
+        ctx.moveTo(CASE_RADIUS - 14, -46);
+        ctx.quadraticCurveTo(CASE_RADIUS + 14, -36, CASE_RADIUS + 14, -18);
+        ctx.lineTo(CASE_RADIUS + 14, 18);
+        ctx.quadraticCurveTo(CASE_RADIUS + 14, 36, CASE_RADIUS - 14, 46);
+        ctx.closePath();
+
+        const guardGrad = ctx.createLinearGradient(CASE_RADIUS - 10, -45, CASE_RADIUS + 14, 45);
+        guardGrad.addColorStop(0, '#5a6270');
+        guardGrad.addColorStop(0.45, '#d5dde8');
+        guardGrad.addColorStop(1, '#2c313b');
+        ctx.fillStyle = guardGrad;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Knurled Rose Gold Winding Crown
+        const cx = CASE_RADIUS + 6;
+        const cw = 26;
+        const ch = 48;
+
+        ctx.shadowColor = 'rgba(0,0,0,0.75)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 5;
+
+        const crownGrad = ctx.createLinearGradient(cx, -ch * 0.5, cx, ch * 0.5);
+        crownGrad.addColorStop(0.0, '#69412b');
+        crownGrad.addColorStop(0.22, '#e8be9e');
+        crownGrad.addColorStop(0.42, '#fff0e3');
+        crownGrad.addColorStop(0.68, '#b87a56');
+        crownGrad.addColorStop(1.0, '#4f2c1a');
+
+        ctx.beginPath();
+        ctx.roundRect(cx, -ch * 0.5, cw, ch, [4, 7, 7, 4]);
+        ctx.fillStyle = crownGrad;
+        ctx.fill();
+
+        // Knurling flutes
+        ctx.shadowBlur = 0;
+        for (let y = -ch * 0.42; y <= ch * 0.42; y += 5.2) {
+          ctx.strokeStyle = 'rgba(42, 20, 10, 0.58)';
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(cx + 2, y);
+          ctx.lineTo(cx + cw - 3, y);
+          ctx.stroke();
+
+          ctx.strokeStyle = 'rgba(255, 238, 222, 0.45)';
+          ctx.lineWidth = 0.8;
+          ctx.beginPath();
+          ctx.moveTo(cx + 2, y + 1.4);
+          ctx.lineTo(cx + cw - 3, y + 1.4);
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * Draws the polished + brushed metallic watch case bezel with dynamic studio specular lighting.
+       */
+      function drawCaseBezel(lightAngle, isCaseBack) {
+        ctx.save();
+
+        // Deep ambient studio shadow under the watch case
+        ctx.save();
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.92)';
+        ctx.shadowBlur = 55;
+        ctx.shadowOffsetX = -Math.cos(lightAngle) * 14;
+        ctx.shadowOffsetY = -Math.sin(lightAngle) * 18 + 12;
+        ctx.beginPath();
+        ctx.arc(0, 0, CASE_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = '#0a0c10';
+        ctx.fill();
+        ctx.restore();
+
+        // Outer Case Ring — Conic Brushed Steel Reflection aligned to studio light
+        const conic = ctx.createConicGradient(lightAngle, 0, 0);
+        conic.addColorStop(0.00, '#f4f7fc');
+        conic.addColorStop(0.08, '#9aa4b4');
+        conic.addColorStop(0.22, '#2d333e');
+        conic.addColorStop(0.36, '#656f80');
+        conic.addColorStop(0.50, '#dce4f0');
+        conic.addColorStop(0.62, '#3a414e');
+        conic.addColorStop(0.78, '#1d2129');
+        conic.addColorStop(0.92, '#7d8798');
+        conic.addColorStop(1.00, '#f4f7fc');
+
+        ctx.beginPath();
+        ctx.arc(0, 0, CASE_RADIUS, 0, Math.PI * 2);
+        ctx.fillStyle = conic;
+        ctx.fill();
+
+        // Outer subtle rim light catch
+        ctx.beginPath();
+        ctx.arc(0, 0, CASE_RADIUS - 0.8, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Stepped Inner Rose-Gold Accent Ring (Front) or Brushed Caseback Ring (Back)
+        if (!isCaseBack) {
+          const roseConic = ctx.createConicGradient(lightAngle + 0.35, 0, 0);
+          roseConic.addColorStop(0.00, '#fae0cb');
+          roseConic.addColorStop(0.16, '#b87956');
+          roseConic.addColorStop(0.36, '#59331e');
+          roseConic.addColorStop(0.52, '#f0c8ab');
+          roseConic.addColorStop(0.74, '#472716');
+          roseConic.addColorStop(0.90, '#c88b68');
+          roseConic.addColorStop(1.00, '#fae0cb');
+
+          ctx.beginPath();
+          ctx.arc(0, 0, CASE_RADIUS - 14, 0, Math.PI * 2);
+          ctx.fillStyle = roseConic;
+          ctx.fill();
+
+          // Polished dark inner bezel rehaut
+          ctx.beginPath();
+          ctx.arc(0, 0, BEZEL_INNER + 4, 0, Math.PI * 2);
+          ctx.fillStyle = '#12151b';
+          ctx.fill();
+        } else {
+          // Exhibition Case Back: 6 machined opener notches & engraved technical text
+          ctx.beginPath();
+          ctx.arc(0, 0, CASE_RADIUS - 10, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(0,0,0,0.55)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // 6 Machined Case-Back Notches
+          for (let i = 0; i < 6; i++) {
+            const a = (i * Math.PI * 2) / 6 + Math.PI / 6;
+            ctx.save();
+            ctx.rotate(a);
+            ctx.fillStyle = '#161920';
+            ctx.beginPath();
+            ctx.roundRect(CASE_RADIUS - 21, -7, 11, 14, 2);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255,255,255,0.22)';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+            ctx.restore();
+          }
+
+          // Micro-engraved circular caseback text
+          drawCircularText('ATELIER CHRONOS  •  CALIBRE H-288  •', CASE_RADIUS - 24, -Math.PI * 0.5, false);
+          drawCircularText('SAPPHIRE CRYSTAL  •  SWISS MADE  •  5 ATM', CASE_RADIUS - 24, Math.PI * 0.5, true);
+
+          // Inner rose-gold retaining ring
+          ctx.beginPath();
+          ctx.arc(0, 0, MOVEMENT_RADIUS + 4, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(222, 168, 128, 0.55)';
+          ctx.lineWidth = 3.2;
+          ctx.stroke();
+        }
+
+        ctx.restore();
+      }
+
+      /**
+       * Helper to draw engraved text along a circular arc on the case back.
+       */
+      function drawCircularText(text, radius, centerAngle, isBottom) {
+        ctx.save();
+        ctx.font = '600 8.5px "Inter", sans-serif';
+        ctx.fillStyle = 'rgba(20, 23, 30, 0.82)';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const charStep = 0.044;
+        const totalSpan = (text.length - 1) * charStep;
+
+        for (let i = 0; i < text.length; i++) {
+          const offset = i * charStep - totalSpan * 0.5;
+          const angle = isBottom ? centerAngle - offset : centerAngle + offset;
+          ctx.save();
+          ctx.rotate(angle);
+          ctx.translate(0, isBottom ? radius : -radius);
+          if (isBottom) ctx.rotate(Math.PI);
+          ctx.fillText(text[i], 0, 0);
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+
+      /* =========================================================================
+       * 7. OPEN-WORKED SKELETON DIAL & HIGH-FREQUENCY HANDS
+       * ========================================================================= */
+
+      /**
+       * Draws the skeletonized dial chapter ring, minute track, luminous applied baton
+       * hour indices, smoked sapphire dial veil (controlled by X-Ray slider), and brand crest.
+       */
+      function drawSkeletonDial() {
+        ctx.save();
+
+        // Smoked translucent dial veil (inversely proportional to X-Ray slider)
+        const veilOpacity = Math.max(0, (1 - state.xrayLevel) * 0.78);
+        if (veilOpacity > 0.01) {
+          const veilGrad = ctx.createRadialGradient(0, 0, 18, 0, 0, MOVEMENT_RADIUS);
+          veilGrad.addColorStop(0, `rgba(11, 14, 20, ${veilOpacity * 0.72})`);
+          veilGrad.addColorStop(0.78, `rgba(9, 11, 16, ${veilOpacity * 0.92})`);
+          veilGrad.addColorStop(1, `rgba(6, 8, 12, ${veilOpacity})`);
+          ctx.fillStyle = veilGrad;
+          ctx.beginPath();
+          ctx.arc(0, 0, MOVEMENT_RADIUS, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // Brushed Anthracite Outer Chapter Ring
+        ctx.beginPath();
+        ctx.arc(0, 0, BEZEL_INNER, 0, Math.PI * 2);
+        ctx.arc(0, 0, MOVEMENT_RADIUS - 14, 0, Math.PI * 2, true);
+        ctx.fillStyle = 'rgba(14, 17, 24, 0.88)';
+        ctx.fill('evenodd');
+
+        // Subtle inner ring accent line
+        ctx.beginPath();
+        ctx.arc(0, 0, MOVEMENT_RADIUS - 14, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(219, 172, 132, 0.36)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Precision Minute & 1/5th-Second Track (300 ticks)
+        for (let i = 0; i < 300; i++) {
+          const a = (i * Math.PI * 2) / 300 - Math.PI * 0.5;
+          const isHour = i % 25 === 0;
+          const isMinute = i % 5 === 0;
+
+          ctx.save();
+          ctx.rotate(a);
+          if (isHour) {
+            ctx.strokeStyle = 'rgba(244, 214, 184, 0.88)';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(BEZEL_INNER - 3, 0);
+            ctx.lineTo(BEZEL_INNER - 11, 0);
+            ctx.stroke();
+          } else if (isMinute) {
+            ctx.strokeStyle = 'rgba(218, 224, 235, 0.65)';
+            ctx.lineWidth = 1.1;
+            ctx.beginPath();
+            ctx.moveTo(BEZEL_INNER - 3, 0);
+            ctx.lineTo(BEZEL_INNER - 9, 0);
+            ctx.stroke();
+          } else {
+            ctx.strokeStyle = 'rgba(160, 170, 188, 0.28)';
+            ctx.lineWidth = 0.65;
+            ctx.beginPath();
+            ctx.moveTo(BEZEL_INNER - 3, 0);
+            ctx.lineTo(BEZEL_INNER - 6.5, 0);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        // Applied Faceted Rose-Gold Hour Indices with Super-LumiNova Inlays
+        for (let h = 0; h < 12; h++) {
+          const a = (h * Math.PI * 2) / 12 - Math.PI * 0.5;
+          ctx.save();
+          ctx.rotate(a);
+
+          const isCardinal = h % 3 === 0;
+          const innerX = MOVEMENT_RADIUS - (isCardinal ? 30 : 25);
+          const outerX = BEZEL_INNER - 13;
+          const w = isCardinal ? 6.2 : 4.6;
+
+          ctx.shadowColor = 'rgba(0,0,0,0.75)';
+          ctx.shadowBlur = 5;
+          ctx.shadowOffsetY = 2;
+
+          if (h === 0) {
+            // Double baton at 12 o'clock
+            for (const oy of [-4.2, 4.2]) {
+              drawBatonIndex(innerX, outerX, oy, 3.6);
+            }
+          } else {
+            drawBatonIndex(innerX, outerX, 0, w);
+          }
+
+          ctx.restore();
+        }
+
+        // Subtle Skeletonized Sub-Dial Ring at 6 o'clock (around the Fourth Wheel)
+        ctx.save();
+        ctx.translate(GEARS.fourth.x, GEARS.fourth.y);
+        ctx.beginPath();
+        ctx.arc(0, 0, 32, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(220, 176, 134, 0.42)';
+        ctx.lineWidth = 1.1;
+        ctx.stroke();
+        for (let i = 0; i < 12; i++) {
+          const a = (i * Math.PI * 2) / 12;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(a) * 28.5, Math.sin(a) * 28.5);
+          ctx.lineTo(Math.cos(a) * 32, Math.sin(a) * 32);
+          ctx.strokeStyle = i % 3 === 0 ? 'rgba(245, 225, 200, 0.72)' : 'rgba(180, 190, 205, 0.32)';
+          ctx.lineWidth = i % 3 === 0 ? 1.2 : 0.7;
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // Floating Sapphire-Printed Brand Signature at 12 o'clock
+        ctx.save();
+        ctx.fillStyle = 'rgba(246, 224, 198, 0.92)';
+        ctx.font = '600 11.5px "Cinzel", serif';
+        ctx.textAlign = 'center';
+        ctx.letterSpacing = '3px';
+        ctx.fillText('CHRONOS', 0, -96);
+
+        ctx.fillStyle = 'rgba(198, 206, 220, 0.65)';
+        ctx.font = '400 7.2px "Inter", sans-serif';
+        ctx.fillText('AUTOMATIC  •  28,800 VPH', 0, -84);
+        ctx.restore();
+
+        ctx.restore();
+      }
+
+      /**
+       * Helper to render a faceted rose-gold applied hour index with luminous inlay.
+       */
+      function drawBatonIndex(innerX, outerX, offsetY, width) {
+        const len = outerX - innerX;
+        const grad = ctx.createLinearGradient(innerX, offsetY - width * 0.5, innerX, offsetY + width * 0.5);
+        grad.addColorStop(0.0, '#ffe8d6');
+        grad.addColorStop(0.45, '#d49872');
+        grad.addColorStop(0.55, '#8c5334');
+        grad.addColorStop(1.0, '#e3b292');
+
+        ctx.beginPath();
+        ctx.moveTo(innerX, offsetY);
+        ctx.lineTo(innerX + 4, offsetY - width * 0.5);
+        ctx.lineTo(outerX, offsetY - width * 0.45);
+        ctx.lineTo(outerX, offsetY + width * 0.45);
+        ctx.lineTo(innerX + 4, offsetY + width * 0.5);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Subtle Super-LumiNova center strip
+        ctx.fillStyle = 'rgba(222, 248, 240, 0.85)';
+        ctx.fillRect(innerX + 6, offsetY - width * 0.16, len - 9, width * 0.32);
+      }
+
+      /**
+       * Draws the faceted Dauphine Hour & Minute hands and the high-frequency
+       * 8 Hz rose-gold central Second Hand.
+       */
+      function drawWatchHands(hoursAngle, minutesAngle, secondsAngle, lightAngle) {
+        const sx = -Math.cos(lightAngle) * 4.5;
+        const sy = -Math.sin(lightAngle) * 4.5 + 3.5;
+
+        // Helper for faceted Dauphine hand
+        function drawDauphine(angle, length, tail, width) {
+          ctx.save();
+          ctx.rotate(angle);
+
+          // Cast shadow onto movement
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.72)';
+          ctx.shadowBlur = 9;
+          ctx.shadowOffsetX = sx;
+          ctx.shadowOffsetY = sy;
+
+          // Left Bright Facet
+          ctx.beginPath();
+          ctx.moveTo(-tail, 0);
+          ctx.lineTo(0, -width);
+          ctx.lineTo(length, 0);
+          ctx.closePath();
+          ctx.fillStyle = '#f8e3d0';
+          ctx.fill();
+
+          // Right Shaded Facet
+          ctx.beginPath();
+          ctx.moveTo(-tail, 0);
+          ctx.lineTo(0, width);
+          ctx.lineTo(length, 0);
+          ctx.closePath();
+          ctx.fillStyle = '#a86b49';
+          ctx.fill();
+          ctx.restore();
+
+          // Skeletonized luminous central inlay
+          ctx.beginPath();
+          ctx.moveTo(18, 0);
+          ctx.lineTo(24, -width * 0.28);
+          ctx.lineTo(length * 0.72, 0);
+          ctx.lineTo(24, width * 0.28);
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(225, 250, 244, 0.9)';
+          ctx.fill();
+
+          ctx.restore();
+        }
+
+        // 1) Hour Hand
+        drawDauphine(hoursAngle, 102, 22, 8.2);
+
+        // 2) Minute Hand
+        drawDauphine(minutesAngle, 146, 26, 6.2);
+
+        // 3) Smooth 8 Hz Central Second Hand
+        ctx.save();
+        ctx.rotate(secondsAngle);
+
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.68)';
+        ctx.shadowBlur = 7;
+        ctx.shadowOffsetX = sx * 1.1;
+        ctx.shadowOffsetY = sy * 1.1;
+
+        // Slender needle shaft
+        ctx.beginPath();
+        ctx.moveTo(-36, -1.6);
+        ctx.lineTo(156, -0.75);
+        ctx.lineTo(162, 0);
+        ctx.lineTo(156, 0.75);
+        ctx.lineTo(-36, 1.6);
+        ctx.closePath();
+        ctx.fillStyle = '#e8b38c';
+        ctx.fill();
+
+        // Crimson horological precision tip
+        ctx.beginPath();
+        ctx.moveTo(132, -1.1);
+        ctx.lineTo(162, 0);
+        ctx.lineTo(132, 1.1);
+        ctx.closePath();
+        ctx.fillStyle = '#dc3545';
+        ctx.fill();
+
+        // Open-worked crescent counterweight
+        ctx.beginPath();
+        ctx.arc(-28, 0, 6.5, 0, Math.PI * 2);
+        ctx.lineWidth = 2.2;
+        ctx.strokeStyle = '#e8b38c';
+        ctx.stroke();
+
+        ctx.restore();
+
+        // 4) Central Pinion Cap
+        ctx.save();
+        const capGrad = ctx.createRadialGradient(-2, -2, 1, 0, 0, 7.5);
+        capGrad.addColorStop(0, '#fff3e6');
+        capGrad.addColorStop(0.55, '#c78862');
+        capGrad.addColorStop(1, '#5e351e');
+        ctx.beginPath();
+        ctx.arc(0, 0, 7.5, 0, Math.PI * 2);
+        ctx.fillStyle = capGrad;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#242933';
+        ctx.fill();
+        ctx.restore();
+      }
+
+      /* =========================================================================
+       * 8. CASE BACK OSCILLATING ROTOR (WITH GRAVITY / INERTIA PHYSICS)
+       * ========================================================================= */
+
+      /**
+       * Draws the skeletonized 18k Rose Gold / Tungsten oscillating automatic winding rotor
+       * on the exhibition case back view.
+       */
+      function drawOscillatingRotor(rotorAngle) {
+        const rotorOpacity = Math.max(0.15, 1 - state.xrayLevel * 0.75);
+
+        ctx.save();
+        ctx.globalAlpha = rotorOpacity;
+        ctx.rotate(rotorAngle);
+
+        const outerR = MOVEMENT_RADIUS - 3;
+        const midR = MOVEMENT_RADIUS - 34;
+
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.72)';
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetY = 6;
+
+        // Heavy Tungsten / 18k Rose Gold Outer Mass Crescent (half-circle)
+        ctx.beginPath();
+        ctx.arc(0, 0, outerR, 0.08, Math.PI - 0.08, false);
+        ctx.arc(0, 0, midR, Math.PI - 0.08, 0.08, true);
+        ctx.closePath();
+
+        const massGrad = ctx.createLinearGradient(-outerR, 0, outerR, outerR);
+        massGrad.addColorStop(0.0, '#78482c');
+        massGrad.addColorStop(0.28, '#e8b694');
+        massGrad.addColorStop(0.52, '#ffe9d9');
+        massGrad.addColorStop(0.75, '#b87650');
+        massGrad.addColorStop(1.0, '#61371f');
+        ctx.fillStyle = massGrad;
+        ctx.fill();
+
+        // Decorative Côtes de Genève radial ribs on rotor weight
+        ctx.save();
+        ctx.clip();
+        ctx.strokeStyle = 'rgba(70, 35, 15, 0.25)';
+        ctx.lineWidth = 1.2;
+        for (let a = 0.12; a < Math.PI - 0.12; a += 0.065) {
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(a) * midR, Math.sin(a) * midR);
+          ctx.lineTo(Math.cos(a) * outerR, Math.sin(a) * outerR);
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // Skeletonized Rotor Arms connecting mass to central ball-bearing hub
+        ctx.beginPath();
+        // Left arm
+        ctx.moveTo(-midR - 2, 12);
+        ctx.lineTo(-22, 6);
+        ctx.lineTo(-14, 18);
+        ctx.lineTo(-midR + 6, 36);
+        ctx.closePath();
+        // Right arm
+        ctx.moveTo(midR + 2, 12);
+        ctx.lineTo(22, 6);
+        ctx.lineTo(14, 18);
+        ctx.lineTo(midR - 6, 36);
+        ctx.closePath();
+        // Center strut
+        ctx.moveTo(-7, 20);
+        ctx.lineTo(7, 20);
+        ctx.lineTo(11, midR + 2);
+        ctx.lineTo(-11, midR + 2);
+        ctx.closePath();
+
+        ctx.fillStyle = massGrad;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 238, 224, 0.45)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Engraved Rotor Signature
+        ctx.shadowBlur = 0;
+        ctx.save();
+        ctx.fillStyle = 'rgba(54, 28, 14, 0.8)';
+        ctx.font = '600 8px "Cinzel", serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('ATELIER CHRONOS • 18K', 0, outerR - 14);
+        ctx.restore();
+
+        // Central Ceramic Ball-Bearing Hub
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        const hubGrad = ctx.createRadialGradient(-5, -5, 2, 0, 0, 22);
+        hubGrad.addColorStop(0, '#eef2f7');
+        hubGrad.addColorStop(0.55, '#8690a0');
+        hubGrad.addColorStop(1, '#363c47');
+        ctx.fillStyle = hubGrad;
+        ctx.fill();
+
+        // 7 Visible Ceramic Micro Ball-Bearings
+        for (let i = 0; i < 7; i++) {
+          const a = (i * Math.PI * 2) / 7;
+          ctx.beginPath();
+          ctx.arc(Math.cos(a) * 12, Math.sin(a) * 12, 2.6, 0, Math.PI * 2);
+          ctx.fillStyle = '#181c24';
+          ctx.fill();
+          ctx.beginPath();
+          ctx.arc(Math.cos(a) * 12 - 0.7, Math.sin(a) * 12 - 0.7, 0.9, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255,255,255,0.65)';
+          ctx.fill();
+        }
+
+        // Center hub screw
+        ctx.beginPath();
+        ctx.arc(0, 0, 6.2, 0, Math.PI * 2);
+        ctx.fillStyle = '#c9d2df';
+        ctx.fill();
+
+        ctx.restore();
+      }
+
+      /* =========================================================================
+       * 9. DOMED SAPPHIRE CRYSTAL SPECULAR & PARALLAX REFLECTIONS
+       * ========================================================================= */
+      function drawSapphireCrystal(lightAngle, radius) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.clip();
+
+        const lx = Math.cos(lightAngle);
+        const ly = Math.sin(lightAngle);
+
+        // 1) Anti-Reflective (AR) Blue-Violet Coating Sheen
+        const arGrad = ctx.createRadialGradient(
+          lx * radius * 0.48,
+          ly * radius * 0.48,
+          radius * 0.08,
+          0,
+          0,
+          radius * 1.1
+        );
+        arGrad.addColorStop(0.0, 'rgba(130, 175, 255, 0.11)');
+        arGrad.addColorStop(0.45, 'rgba(70, 115, 210, 0.04)');
+        arGrad.addColorStop(1.0, 'rgba(0, 0, 0, 0.0)');
+        ctx.fillStyle = arGrad;
+        ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
+
+        // 2) Sweeping Curved Specular Glare Band (moves smoothly with mouse parallax)
+        ctx.save();
+        ctx.rotate(lightAngle + Math.PI * 0.25);
+        const bandGrad = ctx.createLinearGradient(-radius, -radius, radius, radius);
+        bandGrad.addColorStop(0.0, 'rgba(255, 255, 255, 0.0)');
+        bandGrad.addColorStop(0.32, 'rgba(255, 255, 255, 0.09)');
+        bandGrad.addColorStop(0.42, 'rgba(255, 255, 255, 0.02)');
+        bandGrad.addColorStop(0.55, 'rgba(255, 255, 255, 0.0)');
+        ctx.fillStyle = bandGrad;
+
+        ctx.beginPath();
+        ctx.ellipse(0, -radius * 0.42, radius * 1.05, radius * 0.56, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // 3) Crisp Domed Edge Refraction Rim
+        ctx.beginPath();
+        ctx.arc(0, 0, radius - 1.5, lightAngle - 1.15, lightAngle + 1.15);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      /* =========================================================================
+       * 10. MAIN REAL-TIME ANIMATION LOOP (60/120 FPS)
+       * ========================================================================= */
+      let lastFrameTime = performance.now();
+      let lastDigitalUpdate = '';
+
+      function renderFrame(nowMs) {
+        requestAnimationFrame(renderFrame);
+
+        const dt = Math.min(0.05, (nowMs - lastFrameTime) / 1000);
+        lastFrameTime = nowMs;
+
+        // Smooth mouse interpolation for silky parallax reflections
+        state.smoothMouseX += (state.mouseX - state.smoothMouseX) * 0.08;
+        state.smoothMouseY += (state.mouseY - state.smoothMouseY) * 0.08;
+
+        // Compute dynamic studio light angle (slider + subtle mouse parallax)
+        const parallaxOffset = state.smoothMouseX * 0.45 + state.smoothMouseY * 0.25;
+        const effectiveLightAngle = state.lightAngleRad + parallaxOffset;
+
+        // Update background ambient spotlight position subtly
+        const spotX = 50 + state.smoothMouseX * 14;
+        const spotY = 44 + state.smoothMouseY * 12;
+        ambientSpotlight.style.background =
+          `radial-gradient(640px circle at ${spotX.toFixed(1)}% ${spotY.toFixed(1)}%, rgba(212, 165, 116, 0.095), transparent 70%)`;
+
+        // --- EXACT LOCAL SYSTEM TIME & 28,800 VPH (8 HZ) MECHANICAL BEAT ---
+        const date = new Date();
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+        const ms = date.getMilliseconds();
+
+        // Update minimal digital readout once per second
+        const pad = (n) => (n < 10 ? '0' + n : '' + n);
+        const timeStr = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        if (timeStr !== lastDigitalUpdate) {
+          lastDigitalUpdate = timeStr;
+          digitalTimeReadout.textContent = timeStr;
+        }
+
+        // True 28,800 vph = 8 beats per second (125 ms per beat)
+        const totalSecondsContinuous = seconds + ms / 1000;
+        const totalBeats = totalSecondsContinuous * 8;
+        const beatIndex = Math.floor(totalBeats);
+        const beatFrac = totalBeats - beatIndex; // 0..1 within current 125ms impulse
+
+        // Trigger Web Audio escapement tick on each 8 Hz beat transition
+        if (beatIndex !== state.lastBeatIndex) {
+          state.lastBeatIndex = beatIndex;
+          triggerEscapementTick(beatIndex % 2 === 0);
+        }
+
+        // Mechanical escapement easing: crisp snap-forward with tiny elastic settle
+        const easedBeatFrac = 1 - Math.pow(1 - beatFrac, 3.6);
+        const steppedSeconds = (beatIndex + easedBeatFrac * 0.92) / 8;
+
+        // Hands angles (canvas 0 rad = 3 o'clock, so subtract PI/2 for 12 o'clock)
+        const secondsAngle = (steppedSeconds / 60) * Math.PI * 2 - Math.PI * 0.5;
+        const minutesAngle = ((minutes + totalSecondsContinuous / 60) / 60) * Math.PI * 2 - Math.PI * 0.5;
+        const hoursAngle = (((hours % 12) + minutes / 60 + totalSecondsContinuous / 3600) / 12) * Math.PI * 2 - Math.PI * 0.5;
+
+        // Balance wheel oscillation: 4 Hz full cycle (8 half-beats/sec)
+        const oscillationPhase = (nowMs / 1000) * 4 * Math.PI * 2;
+        const balanceAngle = Math.sin(oscillationPhase) * 3.8; // ±218° realistic amplitude
+        const breathFactor = Math.sin(oscillationPhase);
+        const palletRock = Math.tanh(Math.sin(oscillationPhase) * 4.5);
+
+        // Escape Wheel advances 1/30 rev per beat (15 teeth, 2 beats per tooth)
+        const continuousBeatsGlobal = (nowMs / 1000) * 8;
+        const gBeatIdx = Math.floor(continuousBeatsGlobal);
+        const gBeatFrac = continuousBeatsGlobal - gBeatIdx;
+        const gEased = 1 - Math.pow(1 - gBeatFrac, 3.8);
+        const escapeAngle = ((gBeatIdx + gEased) / 30) * Math.PI * 2;
+
+        // Update Oscillating Rotor pendulum physics (gravity + mouse tilt + damping)
+        if (!state.isDraggingRotor) {
+          const gravityTarget = Math.PI * 0.5 + state.smoothMouseX * 0.95;
+          const torque = Math.sin(gravityTarget - state.rotorAngle) * 14.5;
+          state.rotorVelocity += torque * dt;
+          state.rotorVelocity *= Math.pow(0.28, dt); // smooth ceramic bearing damping
+          state.rotorAngle += state.rotorVelocity * dt;
+        }
+
+        // --- CLEAR & DRAW WATCH ---
+        ctx.save();
+        ctx.setTransform(state.dpr, 0, 0, state.dpr, 0, 0);
+        ctx.clearRect(0, 0, state.width, state.height);
+
+        // Center and scale virtual coordinate space
+        ctx.translate(state.width * 0.5, state.height * 0.5);
+        ctx.scale(state.scale, state.scale);
+
+        const isBack = state.view === 'back';
+
+        // 1. Leather Strap fading into dark studio
+        drawLeatherStrap();
+
+        // 2. Sculpted Metallic Lugs
+        drawLugs(effectiveLightAngle);
+
+        // 3. Winding Crown (3 o'clock on dial view, 9 o'clock on case back view)
+        drawCrown(isBack ? -1 : 1);
+
+        // 4. Polished & Brushed Watch Case Bezel
+        drawCaseBezel(effectiveLightAngle, isBack);
+
+        // 5. Mechanical Movement (mirrored horizontally on Case Back for physical accuracy)
+        ctx.save();
+        if (isBack) {
+          ctx.scale(-1, 1);
+        }
+        drawMechanicalMovement(escapeAngle, balanceAngle, breathFactor, palletRock, isBack);
+        ctx.restore();
+
+        // 6. Front Dial + Hands OR Back Oscillating Rotor
+        if (!isBack) {
+          drawSkeletonDial();
+          drawWatchHands(hoursAngle, minutesAngle, secondsAngle, effectiveLightAngle);
+          drawSapphireCrystal(effectiveLightAngle, BEZEL_INNER);
+        } else {
+          drawOscillatingRotor(state.rotorAngle);
+          drawSapphireCrystal(effectiveLightAngle, MOVEMENT_RADIUS + 2);
+        }
+
+        ctx.restore();
+      }
+
+      /* =========================================================================
+       * 11. RESPONSIVE CANVAS SIZING & USER INTERACTIONS
+       * ========================================================================= */
+      function resizeCanvas() {
+        const rect = watchContainer.getBoundingClientRect();
+        const size = Math.max(260, Math.min(rect.width, rect.height));
+        state.dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+        state.width = size;
+        state.height = size;
+        state.scale = size / VIRTUAL_SIZE;
+
+        canvas.width = Math.round(size * state.dpr);
+        canvas.height = Math.round(size * state.dpr);
+        canvas.style.width = `${size}px`;
+        canvas.style.height = `${size}px`;
+      }
+
+      // Flip Watch with 3D CSS Rotation & Mid-Flip Face Swap
+      flipBtn.addEventListener('click', () => {
+        if (state.isFlipping) return;
+        state.isFlipping = true;
+
+        const targetView = state.view === 'front' ? 'back' : 'front';
+
+        // Phase 1: Rotate to 90deg edge-on
+        watchContainer.style.transition = 'transform 0.36s cubic-bezier(0.55, 0.055, 0.675, 0.19)';
+        watchContainer.style.transform = 'rotateY(90deg) scale(0.94)';
+
+        setTimeout(() => {
+          state.view = targetView;
+          if (targetView === 'back') {
+            flipBtnText.textContent = 'Dial View';
+            viewStatusLabel.textContent = 'Exhibition Case Back';
+            xrayLabel.textContent = 'Rotor';
+            // Give rotor a realistic physical spin impulse from flipping the watch!
+            state.rotorVelocity += (Math.random() > 0.5 ? 1 : -1) * 7.5;
+          } else {
+            flipBtnText.textContent = 'Case Back';
+            viewStatusLabel.textContent = 'Open-Worked Dial';
+            xrayLabel.textContent = 'Skeleton';
+          }
+
+          // Instantly jump to -90deg so the back emerges facing forward without mirroring UI
+          watchContainer.style.transition = 'none';
+          watchContainer.style.transform = 'rotateY(-90deg) scale(0.94)';
+
+          // Force reflow
+          void watchContainer.offsetWidth;
+
+          // Phase 2: Rotate smoothly to 0deg
+          watchContainer.style.transition = 'transform 0.44s cubic-bezier(0.215, 0.61, 0.355, 1)';
+          watchContainer.style.transform = 'rotateY(0deg) scale(1)';
+
+          setTimeout(() => {
+            state.isFlipping = false;
+          }, 450);
+        }, 360);
+      });
+
+      // Toggle Escapement Beat Sound
+      soundBtn.addEventListener('click', () => {
+        if (!state.soundEnabled) {
+          const ok = initAudio();
+          if (ok) {
+            state.soundEnabled = true;
+            soundIconOff.classList.add('hidden');
+            soundIconOn.classList.remove('hidden');
+            soundBtn.classList.add('border-amber-300/40', 'text-amber-100', 'bg-amber-400/10');
+            soundBtnText.textContent = '28,800 vph';
+          }
+        } else {
+          state.soundEnabled = false;
+          soundIconOn.classList.add('hidden');
+          soundIconOff.classList.remove('hidden');
+          soundBtn.classList.remove('border-amber-300/40', 'text-amber-100', 'bg-amber-400/10');
+          soundBtnText.textContent = 'Beat Sound';
+        }
+      });
+
+      // X-Ray / Skeleton & Rotor Transparency Slider
+      xraySlider.addEventListener('input', (e) => {
+        state.xrayLevel = Number(e.target.value) / 100;
+      });
+
+      // Studio Lighting Angle Slider
+      lightSlider.addEventListener('input', (e) => {
+        state.lightAngleRad = (Number(e.target.value) * Math.PI) / 180;
+        state.manualLightOverride = true;
+      });
+
+      // Mouse & Touch Parallax + Interactive Rotor Spin on Case Back
+      function updatePointer(clientX, clientY) {
+        const nx = (clientX / window.innerWidth) * 2 - 1;
+        const ny = (clientY / window.innerHeight) * 2 - 1;
+        state.mouseX = Math.max(-1, Math.min(1, nx));
+        state.mouseY = Math.max(-1, Math.min(1, ny));
+      }
+
+      window.addEventListener('mousemove', (e) => {
+        updatePointer(e.clientX, e.clientY);
+
+        if (state.isDraggingRotor && state.view === 'back') {
+          const rect = canvas.getBoundingClientRect();
+          const cx = rect.left + rect.width * 0.5;
+          const cy = rect.top + rect.height * 0.5;
+          const angle = Math.atan2(e.clientY - cy, e.clientX - cx);
+          let delta = angle - state.lastDragAngle;
+          if (delta > Math.PI) delta -= Math.PI * 2;
+          if (delta < -Math.PI) delta += Math.PI * 2;
+          state.rotorAngle += delta;
+          state.rotorVelocity = delta * 35;
+          state.lastDragAngle = angle;
+        }
+      });
+
+      canvas.addEventListener('mousedown', (e) => {
+        if (state.view === 'back') {
+          state.isDraggingRotor = true;
+          const rect = canvas.getBoundingClientRect();
+          state.lastDragAngle = Math.atan2(
+            e.clientY - (rect.top + rect.height * 0.5),
+            e.clientX - (rect.left + rect.width * 0.5)
+          );
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        state.isDraggingRotor = false;
+      });
+
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          const t = e.touches[0];
+          updatePointer(t.clientX, t.clientY);
+          if (state.view === 'back') {
+            state.isDraggingRotor = true;
+            const rect = canvas.getBoundingClientRect();
+            state.lastDragAngle = Math.atan2(
+              t.clientY - (rect.top + rect.height * 0.5),
+              t.clientX - (rect.left + rect.width * 0.5)
+            );
+          }
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1) {
+          const t = e.touches[0];
+          updatePointer(t.clientX, t.clientY);
+          if (state.isDraggingRotor && state.view === 'back') {
+            const rect = canvas.getBoundingClientRect();
+            const cx = rect.left + rect.width * 0.5;
+            const cy = rect.top + rect.height * 0.5;
+            const angle = Math.atan2(t.clientY - cy, t.clientX - cx);
+            let delta = angle - state.lastDragAngle;
+            if (delta > Math.PI) delta -= Math.PI * 2;
+            if (delta < -Math.PI) delta += Math.PI * 2;
+            state.rotorAngle += delta;
+            state.rotorVelocity = delta * 35;
+            state.lastDragAngle = angle;
+          }
+        }
+      }, { passive: true });
+
+      window.addEventListener('touchend', () => {
+        state.isDraggingRotor = false;
+      });
+
+      window.addEventListener('resize', resizeCanvas);
+
+      /* =========================================================================
+       * 12. INITIALIZATION
+       * ========================================================================= */
+      window.addEventListener('load', () => {
+        buildProceduralTextures();
+        resizeCanvas();
+        requestAnimationFrame(renderFrame);
+      });
+    })();
+  </script>
+</body>
+</html>
