@@ -1,91 +1,1752 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Meridian · 黑牛互動重製</title>
-  <meta name="description" content="轉動指南針，抽出旅遊目的地、登機證和三個行李靈感。">
-  <link rel="canonical" href="https://fattybamba.com/radar/gemini-one-prompt/meridian/">
-  <link rel="stylesheet" href="../../../assets/base.css">
-  <link rel="stylesheet" href="../../../assets/experience.css">
-  <link rel="stylesheet" href="../../../assets/bilingual.css">
-  <link rel="stylesheet" href="../../../assets/heiniu-shell.css">
-  <link rel="stylesheet" href="../../../assets/interior.css">
-  <link rel="stylesheet" href="./meridian.css">
-  <script src="../../../assets/site-shell.js" defer></script>
-  <script src="../../../assets/language.js" defer></script>
-  <script src="./meridian.js" defer></script>
-</head>
-<body class="heiniu-interior heiniu-experience" data-english-title="Meridian · HEINIU interactive recreation">
-  <a class="skip" href="#main"><span data-lang-zh>跳到主要內容</span><span data-lang-en lang="en" hidden>Skip to content</span></a>
-  <header class="heiniu-shell">
-    <div class="shell-inner">
-      <a class="wordmark shell-brand" href="../../../" aria-label="HEINIU"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="9" fill="#233b31"/><path d="M8 10q2 6 8 6t8-6" fill="none" stroke="#ebf59a" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="21" r="3" fill="#ebf59a"/></svg><span>HEINIU</span></a>
-      <nav class="shell-nav" aria-label="HEINIU">
-        <a href="../../../#tools"><span data-lang-zh>工具</span><span data-lang-en lang="en" hidden>Tools</span></a>
-        <a href="../../../#work"><span data-lang-zh>作品集</span><span data-lang-en lang="en" hidden>Portfolio</span></a>
-        <a href="../../../#guides"><span data-lang-zh>教學</span><span data-lang-en lang="en" hidden>Lessons</span></a>
-      </nav>
-      <div class="shell-languages" role="group" aria-label="Language / 語言">
-        <button type="button" data-lang-choice="zh" aria-pressed="true">繁中</button>
-        <button type="button" data-lang-choice="en" aria-pressed="false">EN</button>
-      </div>
-    </div>
-  </header>
-  <div class="experience-crumb">
-    <div class="wrap">
-      <a href="../#meridian"><span data-lang-zh>← 返回 AI RADAR</span><span data-lang-en lang="en" hidden>← Back to AI Radar</span></a>
-      <span class="crumb-sep" aria-hidden="true">/</span>
-      <span class="crumb-current">Meridian</span>
-    </div>
-  </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MERIDIAN — The Art of Being Elsewhere</title>
 
-  <main id="main" class="wrap meridian" tabindex="-1">
-    <header class="meridian-head">
-      <p class="eyebrow"><span data-lang-zh>MERIDIAN · 黑牛互動重製</span><span data-lang-en lang="en" hidden>Meridian · HEINIU interactive recreation</span></p>
-      <h1><span data-lang-zh>下一站，去哪裡？</span><span data-lang-en lang="en" hidden>Where to next?</span></h1>
-      <p><span data-lang-zh>轉動指南針，抽一個目的地。拿到登機證時，你也會得到三個行李靈感。</span><span data-lang-en lang="en" hidden>Spin the compass to draw a destination. Your boarding pass comes with three ideas for what to pack.</span></p>
+    <!-- Google Fonts: Cormorant Garamond (Editorial Serif) & Plus Jakarta Sans (Crisp UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="./tailwind.css">
+
+    <script src="./lucide.min.js" defer></script>
+
+    <style>
+        /* Editorial base styling & smooth animations */
+        body {
+            background-color: #F6F4EF;
+            color: #1C1B19;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Subtle Ken Burns slow zoom for hero imagery */
+        @keyframes kenBurns {
+            0% {
+                transform: scale(1.0) translate3d(0, 0, 0);
+            }
+            100% {
+                transform: scale(1.09) translate3d(-1.2%, -0.8%, 0);
+            }
+        }
+
+        .animate-ken-burns {
+            animation: kenBurns 22s ease-out infinite alternate;
+        }
+
+        /* Scroll-reveal transition classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Card image zoom on hover */
+        .dest-card-img {
+            transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .dest-card:hover .dest-card-img {
+            transform: scale(1.06);
+        }
+
+        /* Compass spin transition */
+        .compass-needle {
+            transition: transform 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center;
+        }
+
+        /* Custom subtle scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0E1012;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3A3D42;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #C86D4B;
+        }
+
+        /* Passport stamp slight ink rotation */
+        .stamp-badge {
+            border-style: dashed;
+        }
+
+        /* Hide horizontal scrollbar for mood pills on mobile */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-terracotta/25 selection:text-ink">
+
+    <!-- =========================================================
+         NAVIGATION BAR
+         ========================================================= -->
+    <header id="main-nav" class="fixed top-0 left-0 right-0 z-40 transition-all duration-500 bg-gradient-to-b from-obsidian/80 via-obsidian/40 to-transparent text-alabaster">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8 h-20 flex items-center justify-between gap-4">
+            <!-- Brand Wordmark -->
+            <a href="#hero" class="flex items-center gap-3 group focus:outline-none">
+                <span class="w-2 h-2 rounded-full bg-terracotta group-hover:scale-125 transition-transform"></span>
+                <span class="font-serif text-2xl sm:text-3xl tracking-[0.22em] font-normal uppercase">Meridian</span>
+            </a>
+
+            <!-- Center Editorial Links (Desktop) -->
+            <nav class="hidden md:flex items-center gap-9 text-xs uppercase tracking-[0.2em] font-medium opacity-90">
+                <a href="#atlas" class="hover:text-terracotta transition-colors py-2">The Atlas</a>
+                <a href="#compass" class="hover:text-terracotta transition-colors py-2">Spin the Compass</a>
+                <a href="#manifesto" class="hover:text-terracotta transition-colors py-2">Journal</a>
+            </nav>
+
+            <!-- Right Controls: Ambient Soundscape & Passport Drawer -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Web Audio Soundscape Control -->
+                <button
+                    id="sound-toggle-btn"
+                    type="button"
+                    aria-label="Toggle ambient soundscape"
+                    class="flex items-center gap-2 px-3.5 py-2.5 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 backdrop-blur-md text-xs tracking-wider transition-all cursor-pointer"
+                >
+                    <i id="sound-icon" data-lucide="volume-x" class="w-3.5 h-3.5 text-terracotta"></i>
+                    <span class="hidden sm:inline text-white/70">Soundscape:</span>
+                    <span id="sound-label" class="font-medium text-alabaster">Off</span>
+                </button>
+
+                <!-- Passport Wishlist Trigger -->
+                <button
+                    id="passport-open-btn"
+                    type="button"
+                    aria-label="Open personal passport"
+                    class="relative flex items-center gap-2 px-4 py-2.5 rounded-full bg-terracotta hover:bg-terracotta-dark text-alabaster text-xs uppercase tracking-[0.16em] font-medium transition-all shadow-lg shadow-obsidian/20 cursor-pointer"
+                >
+                    <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+                    <span class="hidden sm:inline">Passport</span>
+                    <span id="passport-count" class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-obsidian/90 text-alabaster text-[11px] font-semibold">0</span>
+                </button>
+            </div>
+        </div>
     </header>
 
-    <div class="meridian-grid">
-      <div class="compass-panel">
-        <div class="compass" aria-hidden="true">
-          <div class="compass-face"></div>
-          <span class="cardinal north">N</span>
-          <span class="cardinal east">E</span>
-          <span class="cardinal south">S</span>
-          <span class="cardinal west">W</span>
-          <div class="needle" id="needle"></div>
+    <!-- =========================================================
+         SECTION 1: CINEMATIC FULL-BLEED HERO & LIVE WORLD CLOCK
+         ========================================================= -->
+    <section id="hero" class="relative min-h-screen w-full bg-obsidian text-alabaster flex flex-col justify-between overflow-hidden">
+        <!-- Cross-fading Hero Background Layers -->
+        <div id="hero-bg-container" class="absolute inset-0 z-0 overflow-hidden bg-obsidian">
+            <img
+                id="hero-img-a"
+                src=""
+                alt="Editorial destination landscape"
+                class="absolute inset-0 w-full h-full object-cover animate-ken-burns transition-opacity duration-1000 opacity-100"
+            />
+            <img
+                id="hero-img-b"
+                src=""
+                alt="Editorial destination landscape"
+                class="absolute inset-0 w-full h-full object-cover animate-ken-burns transition-opacity duration-1000 opacity-0"
+            />
+            <!-- Cinematic Editorial Vignette -->
+            <div class="absolute inset-0 bg-gradient-to-b from-obsidian/65 via-obsidian/30 to-obsidian/95"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-obsidian/70 via-transparent to-obsidian/30"></div>
         </div>
-        <button class="btn spin" id="spin" type="button" disabled><span id="spin-label">轉動指南針</span><span class="spin-icon" aria-hidden="true">↻</span></button>
-        <noscript><p>請開啟 JavaScript 來轉動指南針。<br><span lang="en">Enable JavaScript to spin the compass.</span></p></noscript>
-      </div>
 
-      <section class="boarding-pass" aria-labelledby="pass-heading">
-        <h2 id="pass-heading"><span data-lang-zh>登機證</span><span data-lang-en lang="en" hidden>Boarding pass</span></h2>
-        <div class="pass-route">
-          <dl>
-            <dt><span data-lang-zh>出發地</span><span data-lang-en lang="en" hidden>From</span></dt>
-            <dd><span data-lang-zh>此刻</span><span data-lang-en lang="en" hidden>Here</span></dd>
-          </dl>
-          <span class="pass-arrow" aria-hidden="true">→</span>
-          <dl>
-            <dt><span data-lang-zh>目的地</span><span data-lang-en lang="en" hidden>To</span></dt>
-            <dd id="destination-code">—</dd>
-          </dl>
+        <!-- Top Spacer for Fixed Nav -->
+        <div class="h-24 relative z-10"></div>
+
+        <!-- Main Hero Editorial Content -->
+        <div class="relative z-10 max-w-7xl w-full mx-auto px-5 sm:px-8 my-auto py-10 sm:py-16">
+            <div class="max-w-3xl">
+                <!-- Live Coordinates & Atmospheric Pill -->
+                <div class="inline-flex flex-wrap items-center gap-3 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 mb-7 text-xs tracking-[0.18em] uppercase">
+                    <span class="flex items-center gap-1.5 text-terracotta font-medium">
+                        <span class="w-1.5 h-1.5 rounded-full bg-terracotta animate-pulse"></span>
+                        Right Now, Elsewhere
+                    </span>
+                    <span class="text-white/30">•</span>
+                    <span id="hero-coords" class="text-alabaster/90 font-mono text-[11px] tracking-widest">35.0116° N, 135.7681° E</span>
+                </div>
+
+                <!-- Poetic Headline -->
+                <h1 id="hero-headline" class="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-[5.25rem] leading-[1.03] font-light tracking-tight text-alabaster mb-6 transition-opacity duration-500">
+                    Mist drifts quietly over cedar roofs while the city wakes in gold.
+                </h1>
+
+                <!-- Current Place Subtitle & Mood -->
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 text-alabaster/80 mb-10">
+                    <div class="flex items-center gap-3">
+                        <span id="hero-place-name" class="font-serif italic text-2xl sm:text-3xl text-alabaster">Kyoto, Japan</span>
+                        <span class="text-white/30">/</span>
+                        <span id="hero-live-time" class="font-sans text-sm tracking-[0.18em] uppercase text-terracotta font-medium">--:-- --</span>
+                    </div>
+                    <p id="hero-vibe" class="text-sm font-light tracking-wide text-alabaster/75 border-l border-white/20 pl-4">
+                        Mist over cedar forests &amp; stone lanterns
+                    </p>
+                </div>
+
+                <!-- Hero CTAs -->
+                <div class="flex flex-wrap items-center gap-4">
+                    <button
+                        id="hero-explore-btn"
+                        type="button"
+                        class="inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-alabaster text-obsidian hover:bg-terracotta hover:text-alabaster text-xs uppercase tracking-[0.18em] font-semibold transition-all duration-300 shadow-xl cursor-pointer"
+                    >
+                        <span>Read the Dispatch</span>
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </button>
+                    <a
+                        href="#atlas"
+                        class="inline-flex items-center gap-3 px-7 py-3.5 rounded-full border border-white/25 hover:border-alabaster text-alabaster text-xs uppercase tracking-[0.18em] font-medium backdrop-blur-sm transition-all duration-300"
+                    >
+                        <span>Explore the Atlas</span>
+                        <i data-lucide="compass" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="pass-details">
-          <p class="pass-placeholder" id="placeholder"><span data-lang-zh>轉動指南針，揭曉你的下一站。</span><span data-lang-en lang="en" hidden>Spin the compass to reveal your next stop.</span></p>
-          <div id="destination" hidden>
-            <h3 id="destination-name"></h3>
-            <p id="destination-region"></p>
-            <h4><span data-lang-zh>帶上這三樣</span><span data-lang-en lang="en" hidden>Three things to pack</span></h4>
-            <ul id="packing-list"></ul>
-          </div>
+
+        <!-- Bottom Live World Clock Switcher Bar -->
+        <div class="relative z-10 w-full border-t border-white/15 bg-obsidian/65 backdrop-blur-md">
+            <div class="max-w-7xl mx-auto px-5 sm:px-8 py-4">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-alabaster/50 font-medium">Select a Meridian — Live Local Time</span>
+                    <span class="hidden sm:inline text-[10px] uppercase tracking-[0.22em] text-alabaster/40">Click any destination to shift the horizon</span>
+                </div>
+                <div id="world-clock-bar" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+                    <!-- Populated dynamically by JavaScript -->
+                </div>
+            </div>
         </div>
-      </section>
+    </section>
+
+    <!-- =========================================================
+         SECTION 2: "WHAT DO YOU NEED TO FEEL?" MOOD COMPASS & ATLAS
+         ========================================================= -->
+    <section id="atlas" class="py-20 sm:py-28 bg-alabaster text-ink">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8">
+            <!-- Section Header -->
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12 reveal">
+                <div class="max-w-2xl">
+                    <p class="text-xs uppercase tracking-[0.24em] text-terracotta font-semibold mb-3">Curated Atlas — Volume IV</p>
+                    <h2 class="font-serif text-4xl sm:text-5xl md:text-6xl font-light leading-[1.08] text-ink">
+                        What do you need to <span class="italic text-terracotta">feel</span> right now?
+                    </h2>
+                </div>
+                <p class="text-sm sm:text-base text-stonewarm max-w-md leading-relaxed font-light">
+                    Forget checklists and crowded itineraries. Choose an emotional frequency, and let the world meet you where you are.
+                </p>
+            </div>
+
+            <!-- Interactive Mood Filter Pills -->
+            <div id="mood-filter-bar" class="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-4 mb-10 border-b border-ink/10 reveal">
+                <!-- Populated by JS -->
+            </div>
+
+            <!-- Editorial Masonry / Bento Grid -->
+            <div id="destination-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Populated dynamically by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         EDITORIAL INTERLUDE / MANIFESTO
+         ========================================================= -->
+    <section id="manifesto" class="py-20 sm:py-28 bg-parchment border-y border-ink/10">
+        <div class="max-w-4xl mx-auto px-5 sm:px-8 text-center reveal">
+            <span class="inline-block text-[11px] uppercase tracking-[0.28em] text-terracotta font-semibold mb-6">Field Note No. 09</span>
+            <blockquote class="font-serif italic text-3xl sm:text-4xl md:text-5xl font-light leading-[1.25] text-ink mb-8">
+                “Somewhere tonight, rain is tapping on a tin roof above a cedar valley, a ferry horn is echoing off granite fjords, and a stranger is pouring tea you haven’t tasted yet.”
+            </blockquote>
+            <div class="flex items-center justify-center gap-4 text-xs uppercase tracking-[0.22em] text-stonewarm">
+                <span class="w-10 h-px bg-ink/20"></span>
+                <span>Meridian Quarterly</span>
+                <span class="w-10 h-px bg-ink/20"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         SECTION 3: "SPIN THE COMPASS" SPONTANEOUS ESCAPE GENERATOR
+         ========================================================= -->
+    <section id="compass" class="relative py-24 sm:py-32 bg-obsidian text-alabaster overflow-hidden">
+        <!-- Subtle ambient glow -->
+        <div class="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[680px] h-[680px] rounded-full bg-terracotta/10 blur-3xl"></div>
+
+        <div class="relative z-10 max-w-6xl mx-auto px-5 sm:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-10 items-center">
+
+                <!-- Left Column: Compass & Trigger -->
+                <div class="lg:col-span-5 text-center lg:text-left reveal">
+                    <p class="text-xs uppercase tracking-[0.25em] text-terracotta font-semibold mb-3">Spontaneous Escape</p>
+                    <h2 class="font-serif text-4xl sm:text-5xl font-light leading-[1.1] mb-5">
+                        Leave the next chapter to <span class="italic">chance.</span>
+                    </h2>
+                    <p class="text-sm sm:text-base text-alabaster/70 font-light leading-relaxed mb-8">
+                        Sometimes the best journeys begin when you stop deliberating. Spin the meridian compass to receive a bespoke boarding pass and a three-item packing ritual.
+                    </p>
+
+                    <!-- Interactive Compass Rose SVG -->
+                    <div class="flex flex-col sm:flex-row lg:flex-col xl:flex-row items-center gap-6 justify-center lg:justify-start">
+                        <div class="relative w-32 h-32 rounded-full border border-white/15 bg-charcoal/80 flex items-center justify-center shadow-2xl">
+                            <span class="absolute top-2 text-[9px] tracking-widest text-alabaster/40">N</span>
+                            <span class="absolute bottom-2 text-[9px] tracking-widest text-alabaster/40">S</span>
+                            <span class="absolute left-2.5 text-[9px] tracking-widest text-alabaster/40">W</span>
+                            <span class="absolute right-2.5 text-[9px] tracking-widest text-alabaster/40">E</span>
+                            <svg id="compass-needle" class="compass-needle w-20 h-20" viewBox="0 0 100 100" fill="none">
+                                <circle cx="50" cy="50" r="38" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="3 3"/>
+                                <!-- North Pointer (Terracotta) -->
+                                <polygon points="50,12 57,50 50,45 43,50" fill="#C86D4B"/>
+                                <!-- South Pointer (Alabaster) -->
+                                <polygon points="50,88 57,50 50,55 43,50" fill="#F6F4EF" fill-opacity="0.35"/>
+                                <circle cx="50" cy="50" r="4" fill="#F6F4EF"/>
+                            </svg>
+                        </div>
+
+                        <button
+                            id="spin-compass-btn"
+                            type="button"
+                            class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-terracotta hover:bg-terracotta-dark text-alabaster text-xs uppercase tracking-[0.2em] font-semibold transition-all shadow-xl shadow-terracotta/20 active:scale-95 cursor-pointer"
+                        >
+                            <i data-lucide="navigation" class="w-4 h-4"></i>
+                            <span id="spin-btn-text">Drop the Pin</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Vintage-Modern Boarding Pass -->
+                <div class="lg:col-span-7 reveal">
+                    <div id="boarding-pass" class="relative rounded-3xl bg-alabaster text-ink overflow-hidden shadow-2xl border border-white/10 transition-all duration-500">
+                        <!-- Top Ticket Header -->
+                        <div class="bg-charcoal text-alabaster px-6 sm:px-8 py-5 flex items-center justify-between border-b border-white/10">
+                            <div class="flex items-center gap-2.5">
+                                <span class="w-2 h-2 rounded-full bg-terracotta"></span>
+                                <span class="font-serif tracking-[0.24em] uppercase text-sm">Meridian Airways</span>
+                            </div>
+                            <span class="text-[10px] uppercase tracking-[0.22em] text-alabaster/60 font-mono">Boarding Pass to Elsewhere</span>
+                        </div>
+
+                        <!-- Ticket Body -->
+                        <div class="p-6 sm:p-8">
+                            <!-- Route Codes -->
+                            <div class="flex items-center justify-between gap-4 pb-6 mb-6 border-b border-dashed border-ink/20">
+                                <div>
+                                    <p class="text-[10px] uppercase tracking-[0.2em] text-stonewarm mb-1">Origin</p>
+                                    <p class="font-serif text-4xl sm:text-5xl font-medium tracking-tight text-ink">HERE</p>
+                                    <p class="text-xs text-stonewarm mt-1">Right where you sit</p>
+                                </div>
+
+                                <div class="flex-1 flex flex-col items-center px-2">
+                                    <div class="w-full flex items-center gap-2">
+                                        <span class="h-px flex-1 bg-ink/20"></span>
+                                        <i data-lucide="plane" class="w-4 h-4 text-terracotta"></i>
+                                        <span class="h-px flex-1 bg-ink/20"></span>
+                                    </div>
+                                    <span id="bp-season" class="text-[10px] uppercase tracking-[0.18em] text-stonewarm mt-2">Best: Oct – Nov</span>
+                                </div>
+
+                                <div class="text-right">
+                                    <p class="text-[10px] uppercase tracking-[0.2em] text-stonewarm mb-1">Destination</p>
+                                    <p id="bp-code" class="font-serif text-4xl sm:text-5xl font-medium tracking-tight text-terracotta">KIX</p>
+                                    <p id="bp-city" class="text-xs text-ink font-medium mt-1">Kyoto, Japan</p>
+                                </div>
+                            </div>
+
+                            <!-- Poetic Hook & Coordinates -->
+                            <div class="mb-6">
+                                <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                    <span id="bp-mood" class="text-[10px] uppercase tracking-[0.2em] px-2.5 py-1 rounded-full bg-terracotta/12 text-terracotta font-semibold">Timeless &amp; Sacred</span>
+                                    <span id="bp-coords" class="font-mono text-[11px] text-stonewarm">35.0116° N, 135.7681° E</span>
+                                </div>
+                                <p id="bp-hook" class="font-serif italic text-xl sm:text-2xl text-ink leading-snug">
+                                    “Where temple bells measure the afternoon and moss gardens hold centuries of quiet.”
+                                </p>
+                            </div>
+
+                            <!-- 3-Item Poetic Packing List -->
+                            <div class="rounded-2xl bg-parchment/80 p-5 mb-6 border border-ink/5">
+                                <p class="text-[10px] uppercase tracking-[0.22em] text-stonewarm font-semibold mb-3 flex items-center gap-2">
+                                    <i data-lucide="luggage" class="w-3.5 h-3.5 text-terracotta"></i>
+                                    Pack Only Three Things
+                                </p>
+                                <ul id="bp-packing-list" class="space-y-2 text-sm text-ink/85 font-light">
+                                    <!-- Populated by JS -->
+                                </ul>
+                            </div>
+
+                            <!-- Ticket Actions -->
+                            <div class="flex flex-wrap items-center justify-between gap-3">
+                                <button
+                                    id="bp-explore-btn"
+                                    type="button"
+                                    class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-obsidian hover:bg-terracotta text-alabaster text-xs uppercase tracking-[0.18em] font-medium transition-colors cursor-pointer"
+                                >
+                                    <span>Explore Full Story</span>
+                                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                                </button>
+                                <button
+                                    id="bp-spin-again-btn"
+                                    type="button"
+                                    class="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-ink/20 hover:border-ink text-ink text-xs uppercase tracking-[0.18em] font-medium transition-colors cursor-pointer"
+                                >
+                                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                                    <span>Spin Again</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <footer class="bg-obsidian text-alabaster/70 border-t border-white/10 py-14">
+        <div class="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="text-center md:text-left">
+                <p class="font-serif text-2xl tracking-[0.22em] uppercase text-alabaster mb-1">Meridian</p>
+                <p class="text-xs tracking-wider text-alabaster/50">The Art of Being Elsewhere — Curated Dispatches for Slow Travelers.</p>
+            </div>
+            <div class="flex items-center gap-6 text-xs uppercase tracking-[0.18em]">
+                <a href="#hero" class="hover:text-terracotta transition-colors">Top</a>
+                <a href="#atlas" class="hover:text-terracotta transition-colors">Atlas</a>
+                <a href="#compass" class="hover:text-terracotta transition-colors">Compass</a>
+                <button id="footer-passport-btn" type="button" class="hover:text-terracotta transition-colors uppercase cursor-pointer">My Passport</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =========================================================
+         MAGAZINE-STYLE DESTINATION DEEP-DIVE MODAL
+         ========================================================= -->
+    <div
+        id="story-modal"
+        class="fixed inset-0 z-50 hidden items-center justify-center p-0 sm:p-6 bg-obsidian/80 backdrop-blur-md transition-opacity duration-300 opacity-0"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+    >
+        <div id="story-modal-panel" class="relative w-full max-w-4xl max-h-screen sm:max-h-[90vh] bg-alabaster text-ink sm:rounded-3xl overflow-y-auto shadow-2xl transform transition-transform duration-300 translate-y-6">
+            <!-- Close Button -->
+            <button
+                id="modal-close-btn"
+                type="button"
+                aria-label="Close destination story"
+                class="fixed sm:sticky top-4 right-4 z-30 float-right m-4 w-11 h-11 rounded-full bg-obsidian/70 hover:bg-terracotta text-alabaster backdrop-blur-md flex items-center justify-center transition-colors cursor-pointer"
+            >
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <!-- Full-Bleed Header Image -->
+            <div class="relative h-72 sm:h-96 w-full bg-obsidian -mt-[76px]">
+                <img id="modal-img" src="" alt="" class="w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-gradient-to-t from-obsidian/90 via-obsidian/35 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-6 sm:p-10 text-alabaster">
+                    <div class="flex flex-wrap items-center gap-2.5 text-[11px] uppercase tracking-[0.2em] mb-3">
+                        <span id="modal-region" class="text-terracotta font-semibold"></span>
+                        <span class="text-white/40">•</span>
+                        <span id="modal-coords" class="font-mono text-alabaster/85"></span>
+                        <span class="text-white/40">•</span>
+                        <span id="modal-season-badge" class="px-2.5 py-0.5 rounded-full bg-white/15 backdrop-blur-sm text-alabaster"></span>
+                    </div>
+                    <h3 id="modal-title" class="font-serif text-4xl sm:text-6xl font-light leading-none"></h3>
+                </div>
+            </div>
+
+            <!-- Magazine Editorial Content -->
+            <div class="p-6 sm:p-10 space-y-10">
+                <!-- Opening Dispatch -->
+                <div>
+                    <p id="modal-lead" class="font-serif italic text-2xl sm:text-3xl text-ink leading-snug mb-4"></p>
+                    <p id="modal-essay" class="text-sm sm:text-base text-stonewarm leading-relaxed font-light"></p>
+                </div>
+
+                <!-- Sensory Snapshot (Sound / Scent / Taste) -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-[0.24em] text-terracotta font-semibold mb-4">Sensory Snapshot</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="rounded-2xl bg-parchment p-5 border border-ink/5">
+                            <div class="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-stonewarm mb-2">
+                                <i data-lucide="ear" class="w-3.5 h-3.5 text-terracotta"></i>
+                                <span>Sound</span>
+                            </div>
+                            <p id="modal-sound" class="text-sm text-ink leading-relaxed font-light"></p>
+                        </div>
+                        <div class="rounded-2xl bg-parchment p-5 border border-ink/5">
+                            <div class="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-stonewarm mb-2">
+                                <i data-lucide="wind" class="w-3.5 h-3.5 text-terracotta"></i>
+                                <span>Scent</span>
+                            </div>
+                            <p id="modal-scent" class="text-sm text-ink leading-relaxed font-light"></p>
+                        </div>
+                        <div class="rounded-2xl bg-parchment p-5 border border-ink/5">
+                            <div class="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-stonewarm mb-2">
+                                <i data-lucide="utensils" class="w-3.5 h-3.5 text-terracotta"></i>
+                                <span>Taste</span>
+                            </div>
+                            <p id="modal-taste" class="text-sm text-ink leading-relaxed font-light"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 36 Hours Here Micro-Itinerary -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-[0.24em] text-terracotta font-semibold mb-5">36 Hours Here</h4>
+                    <div class="space-y-5 border-l-2 border-terracotta/30 pl-5 sm:pl-6">
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.2em] font-semibold text-ink mb-1">01 — Morning</p>
+                            <p id="modal-morning" class="text-sm text-stonewarm leading-relaxed font-light"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.2em] font-semibold text-ink mb-1">02 — Golden Hour</p>
+                            <p id="modal-golden" class="text-sm text-stonewarm leading-relaxed font-light"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-[0.2em] font-semibold text-ink mb-1">03 — After Dark</p>
+                            <p id="modal-night" class="text-sm text-stonewarm leading-relaxed font-light"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- One Unforgettable Moment Pull Quote -->
+                <div class="rounded-2xl bg-obsidian text-alabaster p-7 sm:p-9 relative overflow-hidden">
+                    <span class="text-[10px] uppercase tracking-[0.25em] text-terracotta font-semibold block mb-3">One Unforgettable Moment</span>
+                    <blockquote id="modal-moment" class="font-serif italic text-2xl sm:text-3xl font-light leading-snug text-alabaster/95"></blockquote>
+                </div>
+
+                <!-- Modal Footer Action -->
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-ink/10">
+                    <div class="text-xs text-stonewarm">
+                        <span class="uppercase tracking-[0.18em] block text-[10px]">Nearest Gateway</span>
+                        <span id="modal-gateway" class="font-medium text-ink text-sm"></span>
+                    </div>
+                    <button
+                        id="modal-stamp-btn"
+                        type="button"
+                        class="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-terracotta hover:bg-terracotta-dark text-alabaster text-xs uppercase tracking-[0.18em] font-semibold transition-all cursor-pointer"
+                    >
+                        <i data-lucide="stamp" class="w-4 h-4"></i>
+                        <span id="modal-stamp-text">Stamp to Passport</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-    <p class="visually-hidden" id="announcement" role="status"></p>
-  </main>
+
+    <!-- =========================================================
+         PERSONAL "PASSPORT" WISHLIST DRAWER
+         ========================================================= -->
+    <div id="passport-backdrop" class="fixed inset-0 z-50 hidden bg-obsidian/70 backdrop-blur-sm transition-opacity duration-300 opacity-0"></div>
+    <aside
+        id="passport-drawer"
+        class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-alabaster text-ink shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col"
+        aria-label="Personal Travel Passport"
+    >
+        <!-- Drawer Header (Styled like Passport Cover) -->
+        <div class="bg-obsidian text-alabaster px-6 py-6 flex items-center justify-between border-b border-white/10">
+            <div>
+                <p class="text-[10px] uppercase tracking-[0.26em] text-terracotta font-semibold mb-1">Personal Dossier</p>
+                <h3 class="font-serif text-3xl font-light tracking-wide">My Passport</h3>
+            </div>
+            <button
+                id="passport-close-btn"
+                type="button"
+                aria-label="Close passport drawer"
+                class="w-10 h-10 rounded-full bg-white/10 hover:bg-terracotta flex items-center justify-center transition-colors cursor-pointer"
+            >
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Stamp Summary Strip -->
+        <div class="px-6 py-4 bg-parchment border-b border-ink/10 flex items-center justify-between text-xs">
+            <span class="uppercase tracking-[0.18em] text-stonewarm">Dream Stamps Collected</span>
+            <span id="drawer-stamp-total" class="font-serif text-xl font-semibold text-terracotta">0 / 9</span>
+        </div>
+
+        <!-- Stamps List -->
+        <div id="passport-list" class="flex-1 overflow-y-auto p-6 space-y-4">
+            <!-- Populated dynamically by JS -->
+        </div>
+
+        <!-- Drawer Footer Actions -->
+        <div class="p-6 bg-parchment/70 border-t border-ink/10 space-y-3">
+            <button
+                id="copy-itinerary-btn"
+                type="button"
+                class="w-full flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-obsidian hover:bg-terracotta text-alabaster text-xs uppercase tracking-[0.18em] font-semibold transition-colors cursor-pointer"
+            >
+                <i data-lucide="copy" class="w-4 h-4"></i>
+                <span>Copy My Itinerary List</span>
+            </button>
+            <p class="text-[11px] text-center text-stonewarm">Saved locally in your browser so your wanderlist waits for you.</p>
+        </div>
+    </aside>
+
+    <!-- =========================================================
+         CUSTOM TOAST NOTIFICATION (No alert() used)
+         ========================================================= -->
+    <div
+        id="toast"
+        class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] pointer-events-none opacity-0 translate-y-3 transition-all duration-300"
+    >
+        <div class="flex items-center gap-2.5 px-5 py-3 rounded-full bg-obsidian text-alabaster border border-white/15 shadow-2xl text-xs tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-terracotta"></span>
+            <span id="toast-message">Stamped to your Passport</span>
+        </div>
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT APPLICATION LOGIC
+         ========================================================= -->
+    <script>
+        (function () {
+            'use strict';
+
+            /* ---------------------------------------------------------
+             * 1. CURATED DESTINATION DATASET (9 Editorial Destinations)
+             * --------------------------------------------------------- */
+            const DESTINATIONS = [
+                {
+                    id: 'kyoto',
+                    name: 'Kyoto',
+                    country: 'Japan',
+                    region: 'East Asia',
+                    airportCode: 'KIX',
+                    gateway: 'Kansai International (KIX) • 75 min Haruka Express',
+                    timezone: 'Asia/Tokyo',
+                    coords: '35.0116° N, 135.7681° E',
+                    bestSeason: 'Oct – Nov & Apr',
+                    moods: ['Timeless & Sacred', 'Solitude & Silence'],
+                    heroFeatured: true,
+                    heroHeadline: 'Mist drifts quietly over cedar roofs while the city wakes in gold.',
+                    heroVibe: 'Mist over cedar forests & stone lanterns',
+                    hook: 'Where temple bells measure the afternoon and moss gardens hold centuries of quiet.',
+                    image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1800&q=85',
+                    fallbackBg: 'from-stone-900 to-amber-950',
+                    essay: 'Kyoto asks you to lower your voice and slow your stride. Beyond the vermilion gates lies a city of wooden machiya townhouses, hidden Zen rock gardens, and artisans who have perfected a single craft across seven generations. Dawn here belongs to sweeping monks and steam rising from earthen teapots.',
+                    sensory: {
+                        sound: 'Bamboo groves creaking in the mountain breeze and distant temple bells at dusk.',
+                        scent: 'Damp temple moss, hinoki cypress baths, and freshly roasted hojicha tea.',
+                        taste: 'Silky yudofu tofu simmered in kombu broth, followed by bitter ceremonial matcha.'
+                    },
+                    itinerary: {
+                        morning: 'Walk the Philosopher’s Path at 6:30 AM before the city stirs, stopping at a quiet kissaten for siphon coffee and thick-cut toast.',
+                        golden: 'Ascend the stone steps toward Kiyomizu-dera as sunset turns the wooden eaves amber, then wander the lantern-lit lanes of Ninenzaka.',
+                        night: 'Sit at a six-seat counter in Pontocho Alley for seasonal kaiseki, ending with a late stroll along the dark shimmer of the Kamo River.'
+                    },
+                    moment: 'Standing barefoot on a cool wooden veranda at Saiho-ji, listening to rain fall onto a hundred shades of emerald moss.',
+                    packing: [
+                        'Slip-on leather shoes for effortless temple visits',
+                        'A linen notebook for ink stamps and quiet observations',
+                        'A light cashmere layer for misty cedar mornings'
+                    ]
+                },
+                {
+                    id: 'lofoten',
+                    name: 'Lofoten Islands',
+                    country: 'Norway',
+                    region: 'Arctic Circle',
+                    airportCode: 'SVJ',
+                    gateway: 'Svolvær Airport (SVJ) • Scenic Arctic Prop Flight',
+                    timezone: 'Europe/Oslo',
+                    coords: '68.2086° N, 13.8829° E',
+                    bestSeason: 'Jun – Aug & Feb – Mar',
+                    moods: ['Solitude & Silence', 'Wild & Untamed'],
+                    heroFeatured: true,
+                    heroHeadline: 'Granite peaks rise straight from dark fjords into endless Arctic light.',
+                    heroVibe: 'Crisp salt wind & red fishermen cabins',
+                    hook: 'Jagged cathedrals of stone plunging into turquoise Arctic water, stitched together by red timber cabins.',
+                    image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=1800&q=85',
+                    fallbackBg: 'from-slate-900 to-cyan-950',
+                    essay: 'Pinned above the Arctic Circle yet warmed by the Gulf Stream, the Lofoten archipelago feels like the edge of a Nordic myth. Dramatic peaks erupt directly from the Norwegian Sea, sheltering coves of white coral sand and ochre rorbuer stilts where fishermen have sheltered for a thousand winters.',
+                    sensory: {
+                        sound: 'Sea eagles calling over still fjords and waves rolling smooth granite pebbles.',
+                        scent: 'Cold brine, birch woodsmoke drifting from cabin chimneys, and crisp Arctic air.',
+                        taste: 'Freshly caught skrei cod with brown butter, warm cardamom buns, and wild cloudberries.'
+                    },
+                    itinerary: {
+                        morning: 'Brew strong black coffee on the wooden deck of a converted fisherman’s cabin in Reine as clouds peel off Olstinden peak.',
+                        golden: 'Hike the ridge above Kvalvika Beach—where summer sun never truly sets, bathing the surf in honeyed light for four hours.',
+                        night: 'Warm up in a wood-fired fjord sauna, plunge into icy seawater, and watch either the midnight sun or green auroras dance overhead.'
+                    },
+                    moment: 'Floating in absolute stillness inside a mirror-flat fjord while snow-dusted peaks reflect twice as tall beneath your kayak.',
+                    packing: [
+                        'A heavyweight Norwegian wool sweater that smells of hearth smoke',
+                        'Waterproof hiking boots ready for granite and peat',
+                        'A thermos that keeps coffee steaming at the summit'
+                    ]
+                },
+                {
+                    id: 'amalfi',
+                    name: 'Amalfi Coast',
+                    country: 'Italy',
+                    region: 'Mediterranean',
+                    airportCode: 'NAP',
+                    gateway: 'Naples International (NAP) • Private Coastal Boat',
+                    timezone: 'Europe/Rome',
+                    coords: '40.6333° N, 14.6029° E',
+                    bestSeason: 'May – Jun & Sep',
+                    moods: ['Slow & Sun-Drenched'],
+                    heroFeatured: true,
+                    heroHeadline: 'Terraced lemon groves hang suspended between cobalt sea and terracotta sky.',
+                    heroVibe: 'Golden hour on limestone cliffs & salt air',
+                    hook: 'Vertical pastel villages perfumed with sfusato lemons, where afternoon melts unhurriedly into aperitivo.',
+                    image: 'https://images.unsplash.com/photo-1533104816931-20fa691ff6ca?auto=format&fit=crop&w=1800&q=85',
+                    fallbackBg: 'from-amber-900 to-sky-950',
+                    essay: 'Clinging impossibly to limestone cliffs above the Tyrrhenian Sea, the Amalfi Coast is an exercise in Italian theatricality and slow pleasure. Skip the midday rush and linger in cliffside Ravello or quiet Cetara, where life moves to the rhythm of fishing boats and clinking glasses.',
+                    sensory: {
+                        sound: 'Church bells echoing down ravines, cicadas in olive groves, and waves lapping wooden gozzo boats.',
+                        scent: 'Crushed lemon leaves, sun-warmed stone walls, wild rosemary, and espresso.',
+                        taste: 'Handmade scialatielli pasta with sweet clams, followed by chilled limoncello overlooking the water.'
+                    },
+                    itinerary: {
+                        morning: 'Walk the Path of the Gods from Bomerano while the limestone trail is cool and the sea below shimmers like hammered silver.',
+                        golden: 'Charter a classic wooden boat along the hidden grottos, diving into translucent coves as the cliffs glow apricot.',
+                        night: 'Dine under a pergola of hanging lemons in Ravello, sharing chilled Falanghina wine until the stars mirror the village lights.'
+                    },
+                    moment: 'Tasting a sun-warmed Amalfi lemon sliced thin with sea salt while leaning over a 13th-century stone balustrade above the clouds.',
+                    packing: [
+                        'Unstructured white linen that softens in the sea breeze',
+                        'Tortoiseshell sunglasses for noon glare on whitewashed walls',
+                        'Espadrilles built for winding medieval staircases'
+                    ]
+                },
+                {
+                    id: 'patagonia',
+                    name: 'Patagonia',
+                    country: 'Argentina & Chile',
+                    region: 'South America',
+                    airportCode: 'FTE',
+                    gateway: 'El Calafate (FTE) • Drive along Ruta 40',
+                    timezone: 'America/Argentina/Buenos_Aires',
+                    coords: '50.9423° S, 73.4068° W',
+                    bestSeason: 'Nov – Mar',
+                    moods: ['Wild & Untamed', 'Solitude & Silence'],
+                    heroFeatured: true,
+                    heroHeadline: 'At the edge of the world, wind sculpts granite spires and blue glaciers.',
+                    heroVibe: 'Roaring steppe winds & glacial blue lakes',
+                    hook: 'An immense cathedral of wind, ice-carved towers, and golden pampas that shrinks every human worry to size.',
+                    image: 'https://images.unsplash.com/photo-1518182170546-07661fd94144?auto=format&fit=crop&w=1800&q=85',
+                    fallbackBg: 'from-slate-900 to-indigo-950',
+                    essay: 'Patagonia does not coddle you—it wakes you up. Across southern Chile and Argentina, the Andes fracture into razor-sharp granite needles like Fitz Roy and Torres del Paine, ringed by electric-turquoise glacial lakes and windswept valleys where condors glide effortlessly on gales.',
+                    sensory: {
+                        sound: 'The thunderous crack of calving glacier ice and wind sweeping through lenga beech forests.',
+                        scent: 'Crushed wild calafate berries, wet granite, and woodsmoke from an estancia hearth.',
+                        taste: 'Slow-roasted Patagonian lamb over glowing coals paired with a deep, velvety Malbec.'
+                    },
+                    itinerary: {
+                        morning: 'Start by headlamp to reach Laguna de los Tres as the first crimson alpenglow ignites Mount Fitz Roy like a lantern.',
+                        golden: 'Ride horseback across the golden steppe with local gauchos as guanacos silhouette against bruised purple clouds.',
+                        night: 'Pass a warm gourd of yerba mate beside a crackling fire while the Southern Cross blazes in an ink-black sky.'
+                    },
+                    moment: 'Watching a cathedral-sized shard of ancient blue ice shear off Perito Moreno glacier and echo across the silent canal.',
+                    packing: [
+                        'A windproof shell that laughs at 80 km/h gusts',
+                        'Well-broken-in trail boots dusted with steppe earth',
+                        'A paperback novel for long, windswept afternoon rests'
+                    ]
+                },
+                {
+                    id: 'marrakech',
+                    name: 'Marrakech',
+                    country: 'Morocco',
+                    region: 'North Africa',
+                    airportCode: 'RAK',
+                    gateway: 'Marrakech Menara (RAK) • 15 min to the Medina',
+                    timezone: 'Africa/Casablanca',
+                    coords: '31.6295° N, 7.9811° W',
+                    bestSeason: 'Mar – May & Oct – Nov',
+                    moods: ['Electric & Vibrant', 'Timeless & Sacred'],
+                    heroFeatured: true,
+                    heroHeadline: 'Behind rose-tinted walls, courtyards hum with orange blossom and dusk.',
+                    heroVibe: 'Warm ochre lanterns & Atlas twilight',
+                    hook: 'A labyrinth of terracotta alleys, hidden courtyard riads, and spice-scented twilight beneath the Atlas peaks.',
+                    image: 'https://images.unsplash.com/photo-1539020140153-e479b8c22e70?auto=format&fit=crop&w=1800&q=85',
+                    fallbackBg: 'from-orange-950 to-stone-900',
+                    essay: 'Marrakech is a study in radiant contrast. Outside your cedar door, the medina pulses with brass hammers, woven carpets, and scooters darting through shafts of dusty sunlight. Step back inside a riad, and the city vanishes into the hush of trickling fountains, zellige tilework, and orange trees.',
+                    sensory: {
+                        sound: 'The resonant call to prayer drifting over rooftops at sunset, underscored by courtyard songbirds.',
+                        scent: 'Orange blossom water, cedarwood smoke, ground cumin, and fresh spearmint.',
+                        taste: 'Tender lamb tagine with preserved lemon and saffron, poured alongside high-arcing sweet mint tea.'
+                    },
+                    itinerary: {
+                        morning: 'Sip fresh-pressed pomegranate juice on a rooftop terrace while the snow-capped High Atlas mountains shimmer on the horizon.',
+                        golden: 'Lose yourself in the artisan souks of Rahba Kedima, then retreat to a traditional marble hammam scented with eucalyptus black soap.',
+                        night: 'Dine by candlelight in a hidden courtyard garden as brass lanterns cast lacework shadows across terracotta plaster.'
+                    },
+                    moment: 'Listening to the evening call to prayer ripple from dozens of minarets at once while the sky turns burnt apricot over the medina.',
+                    packing: [
+                        'Breathable cotton kaftans or loose earth-toned linen',
+                        'Soft leather babouche slippers for quiet riad tiles',
+                        'Extra room in your duffle for hand-thrown ceramics'
+                    ]
+                },
+                {
+                    id: 'dolomites',
+                    name: 'The Dolomites',
+                    country: 'Italy',
+                    region: 'South Tyrol Alps',
+                    airportCode: 'VCE',
+                    gateway: 'Venice Marco Polo (VCE) • 2.5 hr Alpine Drive',
+                    timezone: 'Europe/Rome',
+                    coords: '46.5405° N, 12.1357° E',
+                    bestSeason: 'Jun – Sep',
+                    moods: ['Wild & Untamed', 'Solitude & Silence'],
+                    heroFeatured: false,
+                    heroHeadline: 'Pale limestone spires blush rose-pink at dusk above emerald meadows.',
+                    heroVibe: 'Alpine cowbells & rose-tinted Enrosadira',
+                    hook: 'Cathedral-like pale peaks where Italian espresso culture meets high-altitude Austrian timber refuges.',
+                    image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=85',
+                    fallbackBg: 'from-slate-800 to-emerald-950',
+                    essay: 'Nowhere else on earth do mountains glow quite like the Dolomites. Composed of ancient coral reef limestone, these jagged towers catch the setting sun in a phenomenon locals call Enrosadira—turning entire vertical walls from chalk white to luminous coral and violet.',
+                    sensory: {
+                        sound: 'Soft bronze cowbells across Alpe di Siusi meadows and crisp gravel beneath hiking poles.',
+                        scent: 'Resinous larch pine, wildflowers warmed by alpine sun, and baked apple strudel.',
+                        taste: 'Spinach canederli dumplings swimming in browned sage butter and a crisp glass of Alto Adige Pinot Bianco.'
+                    },
+                    itinerary: {
+                        morning: 'Ride the first cable car up to Seceda ridgeline before valley mist burns off, walking along the dramatic knife-edge meadow.',
+                        golden: 'Settle onto the wooden terrace of a mountain rifugio with an Aperol Spritz as the Tre Cime spires blush crimson.',
+                        night: 'Sleep high above the tree line in a timber mountain hut, waking to frost-sparkled silence and fresh mountain bread.'
+                    },
+                    moment: 'Watching the last ten minutes of Enrosadira paint the Seceda spires rose-gold while the valley below falls into blue shadow.',
+                    packing: [
+                        'A packable down jacket for crisp 2,500-meter evenings',
+                        'Sunglasses and high-altitude balm for bright ridge walks',
+                        'A film camera to capture the impossible pink limestone'
+                    ]
+                },
+                {
+                    id: 'wadi-rum',
+                    name: 'Wadi Rum',
+                    country: 'Jordan',
+                    region: 'Middle East',
+                    airportCode: 'AQJ',
+                    gateway: 'Aqaba King Hussein (AQJ) • 1 hr Desert Track',
+                    timezone: 'Asia/Amman',
+                    coords: '29.5765° N, 35.4194° E',
+                    bestSeason: 'Mar – May & Oct – Nov',
+                    moods: ['Timeless & Sacred', 'Solitude & Silence'],
+                    heroFeatured: false,
+                    heroHeadline: 'Red sandstone monoliths rise out of a silence older than memory.',
+                    heroVibe: 'Cinnamon sand & vast desert starlight',
+                    hook: 'The Valley of the Moon—an otherworldly sanctuary of red dunes, sandstone arches, and Bedouin hospitality.',
+                    image: 'https://images.unsplash.com/photo-1547234935-80c7145ec969?auto=format&fit=crop&w=1600&q=85',
+                    fallbackBg: 'from-amber-950 to-red-950',
+                    essay: 'Wadi Rum strips the world down to three elemental colors: terracotta sand, ochre stone, and cobalt sky. Guided by Bedouin hosts whose families have navigated these canyons for centuries, you discover a silence so complete you can hear the whisper of wind shifting individual grains of sand.',
+                    sensory: {
+                        sound: 'Absolute desert hush broken only by crackling desert-brush fires and low Bedouin oud melodies.',
+                        scent: 'Cardamom-spiced Arabic coffee, warm sandstone, and dry desert sage.',
+                        taste: 'Zarb—slow-roasted meats and root vegetables unearthed from a subterranean sand oven.'
+                    },
+                    itinerary: {
+                        morning: 'Climb barefoot up a cool red sand dune at sunrise as long purple shadows stretch across the valley floor.',
+                        golden: 'Traverse narrow Nabataean canyons etched with 2,000-year-old petroglyphs, pausing for sweet sage tea beneath a natural stone arch.',
+                        night: 'Lie on woven wool rugs far from camp lights and trace the Milky Way arching cleanly from horizon to horizon.'
+                    },
+                    moment: 'Drinking steaming cardamom coffee at dawn while silence settles over a thousand-foot sandstone cliff turning fire-orange.',
+                    packing: [
+                        'A lightweight cotton scarf to shield against sun and desert breeze',
+                        'Warm wool socks for surprisingly chilly starlit nights',
+                        'An unhurried spirit willing to leave cell signal behind'
+                    ]
+                },
+                {
+                    id: 'oaxaca',
+                    name: 'Oaxaca',
+                    country: 'Mexico',
+                    region: 'Central America',
+                    airportCode: 'OAX',
+                    gateway: 'Oaxaca International (OAX) • 20 min to Centro',
+                    timezone: 'America/Mexico_City',
+                    coords: '17.0732° N, 96.7266° W',
+                    bestSeason: 'Oct – Apr',
+                    moods: ['Electric & Vibrant', 'Slow & Sun-Drenched'],
+                    heroFeatured: false,
+                    heroHeadline: 'Smoky mezcal, hand-dyed textiles, and sun-washed colonial courtyards.',
+                    heroVibe: 'Copal incense & sunlit jacaranda plazas',
+                    hook: 'Mexico’s soulful cultural heart, where ancestral Zapotec craft, seven moles, and wild agave converge.',
+                    image: 'https://images.unsplash.com/photo-1518638150340-f706e86654de?auto=format&fit=crop&w=1600&q=85',
+                    fallbackBg: 'from-amber-900 to-rose-950',
+                    essay: 'Oaxaca is a feast for every sense—vivid, deeply rooted, and fiercely creative. In sun-drenched valleys ringed by the Sierra Madre, master weavers dye wool with cochineal and indigo, clay artisans fire black pottery, and palenques distill wild mountain agave in earthen pits.',
+                    sensory: {
+                        sound: 'Brass bands parading spontaneously down cobbled streets and tortillas patted rhythmically by hand.',
+                        scent: 'Toasted cacao, copal incense, roasted chiles, and smoky roasted agave hearts.',
+                        taste: 'Velvety mole negro over heirloom corn tortillas, followed by wild Tobalá mezcal sipped from a clay copita.'
+                    },
+                    itinerary: {
+                        morning: 'Begin at Mercado 20 de Noviembre with frothy spiced hot chocolate and pan de yema before exploring the Ethnobotanical Garden.',
+                        golden: 'Visit a family-run mezcal palenque in Santiago Matatlán as late afternoon light gilds the blue-green agave fields.',
+                        night: 'Share small plates on a rooftop overlooking Santo Domingo church while warm breezes carry music from the plaza below.'
+                    },
+                    moment: 'Sipping artisanal mezcal beside an earthen roasting pit as the maestro mezcalero explains how each bottle tastes of its mountain rain.',
+                    packing: [
+                        'Woven leather huaraches for sun-baked cobblestone walks',
+                        'A wide-brimmed palm hat for valley excursions',
+                        'An appetite for the most soulful cuisine in the Americas'
+                    ]
+                },
+                {
+                    id: 'queenstown',
+                    name: 'Queenstown & Fiordland',
+                    country: 'New Zealand',
+                    region: 'South Island',
+                    airportCode: 'ZQN',
+                    gateway: 'Queenstown Airport (ZQN) • Alpine Lake Approach',
+                    timezone: 'Pacific/Auckland',
+                    coords: '45.0312° S, 168.6626° E',
+                    bestSeason: 'Feb – Apr & Nov – Dec',
+                    moods: ['Wild & Untamed'],
+                    heroFeatured: false,
+                    heroHeadline: 'Rainforest waterfalls spill down sheer black cliffs into mirror fjords.',
+                    heroVibe: 'Southern Alps mist & glassy glacial lakes',
+                    hook: 'Glacier-carved valleys, Central Otago pinot vineyards, and the primeval grandeur of Milford Sound.',
+                    image: 'https://images.unsplash.com/photo-1469521669194-babb45599def?auto=format&fit=crop&w=1600&q=85',
+                    fallbackBg: 'from-emerald-950 to-slate-900',
+                    essay: 'Framed by the sawtooth Remarkables and the deep blue sweep of Lake Wakatipu, New Zealand’s South Island feels freshly forged. Drive west into Fiordland and the landscape turns primeval: mossy beech forests, kea parrots, and vertical fiords draped in temporary waterfalls after every rain.',
+                    sensory: {
+                        sound: 'Hundreds of cascading waterfalls echoing off granite walls and native tui birdsong.',
+                        scent: 'Rain-soaked silver fern, alpine snowmelt, and crushed Central Otago thyme.',
+                        taste: 'Silky Gibbston Valley Pinot Noir and sweet Bluff oysters overlooking the lake.'
+                    },
+                    itinerary: {
+                        morning: 'Drive the winding Glenorchy road along Lake Wakatipu as mist lifts off snow-capped peaks and braided glacial rivers.',
+                        golden: 'Glide quietly by boat into Milford Sound just as day-trippers depart, watching bottlenose dolphins trace the bow.',
+                        night: 'Soak in a cedar hot tub perched above the Shotover River under Southern Hemisphere constellations.'
+                    },
+                    moment: 'Standing on the bow of a small vessel in Milford Sound during a soft rain shower as a hundred silver waterfalls appear out of the clouds.',
+                    packing: [
+                        'Merino wool base layers sourced straight from the high country',
+                        'A rain jacket you genuinely love wearing in misty valleys',
+                        'A curious eye for every bend in the road'
+                    ]
+                }
+            ];
+
+            const MOODS = [
+                'All Journeys',
+                'Solitude & Silence',
+                'Wild & Untamed',
+                'Slow & Sun-Drenched',
+                'Timeless & Sacred',
+                'Electric & Vibrant'
+            ];
+
+            /* ---------------------------------------------------------
+             * 2. APPLICATION STATE
+             * --------------------------------------------------------- */
+            let activeHeroId = 'kyoto';
+            let heroLayerToggle = true; // alternates between hero-img-a and hero-img-b for smooth cross-fade
+            let activeMood = 'All Journeys';
+            let activeModalDestId = null;
+            let activeBoardingPassId = 'kyoto';
+            let compassRotation = 0;
+            let passportStamps = loadPassportStamps();
+
+            /* ---------------------------------------------------------
+             * 3. SAFE STORAGE & UTILITIES
+             * --------------------------------------------------------- */
+            function loadPassportStamps() {
+                try {
+                    const raw = localStorage.getItem('meridian_passport_stamps');
+                    return raw ? JSON.parse(raw) : [];
+                } catch (err) {
+                    return [];
+                }
+            }
+
+            function savePassportStamps() {
+                try {
+                    localStorage.setItem('meridian_passport_stamps', JSON.stringify(passportStamps));
+                } catch (err) {
+                    // Fail gracefully in restricted storage environments
+                }
+            }
+
+            function isStamped(id) {
+                return passportStamps.some(item => item.id === id);
+            }
+
+            function getDestination(id) {
+                return DESTINATIONS.find(d => d.id === id) || DESTINATIONS[0];
+            }
+
+            function formatLocalTime(timeZone) {
+                try {
+                    return new Intl.DateTimeFormat('en-US', {
+                        timeZone,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    }).format(new Date());
+                } catch (err) {
+                    return '12:00 PM';
+                }
+            }
+
+            function handleImageFallback(imgEl, title) {
+                imgEl.onerror = function () {
+                    this.onerror = null;
+                    this.src = `https://placehold.co/1200x800/171A1D/C86D4B?text=${encodeURIComponent(title)}`;
+                };
+            }
+
+            let toastTimer = null;
+            function showToast(message) {
+                const toast = document.getElementById('toast');
+                const toastMsg = document.getElementById('toast-message');
+                toastMsg.textContent = message;
+                toast.classList.remove('opacity-0', 'translate-y-3');
+                toast.classList.add('opacity-100', 'translate-y-0');
+
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-3');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 2600);
+            }
+
+            /* ---------------------------------------------------------
+             * 4. HERO & LIVE WORLD CLOCK SWITCHER
+             * --------------------------------------------------------- */
+            const heroDestinations = DESTINATIONS.filter(d => d.heroFeatured);
+
+            function renderWorldClockBar() {
+                const container = document.getElementById('world-clock-bar');
+                container.innerHTML = heroDestinations.map(dest => {
+                    const isActive = dest.id === activeHeroId;
+                    const localTime = formatLocalTime(dest.timezone);
+                    return `
+                        <button
+                            type="button"
+                            data-hero-id="${dest.id}"
+                            class="world-clock-btn text-left p-3 sm:p-3.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                                isActive
+                                    ? 'bg-white/15 border-terracotta/80 shadow-lg'
+                                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/25'
+                            }"
+                        >
+                            <div class="flex items-center justify-between gap-2 mb-1">
+                                <span class="font-serif text-base sm:text-lg text-alabaster leading-none">${dest.name}</span>
+                                <span class="clock-time font-mono text-[11px] ${isActive ? 'text-terracotta font-semibold' : 'text-alabaster/70'}" data-tz="${dest.timezone}">
+                                    ${localTime}
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-alabaster/60 truncate font-light">${dest.heroVibe}</p>
+                        </button>
+                    `;
+                }).join('');
+
+                container.querySelectorAll('.world-clock-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const targetId = btn.getAttribute('data-hero-id');
+                        if (targetId !== activeHeroId) {
+                            setActiveHero(targetId);
+                        }
+                    });
+                });
+            }
+
+            function setActiveHero(id, immediate = false) {
+                const dest = getDestination(id);
+                activeHeroId = dest.id;
+
+                const imgA = document.getElementById('hero-img-a');
+                const imgB = document.getElementById('hero-img-b');
+                const headline = document.getElementById('hero-headline');
+                const coords = document.getElementById('hero-coords');
+                const placeName = document.getElementById('hero-place-name');
+                const liveTime = document.getElementById('hero-live-time');
+                const vibe = document.getElementById('hero-vibe');
+
+                // Cross-fade background images smoothly
+                const incoming = heroLayerToggle ? imgA : imgB;
+                const outgoing = heroLayerToggle ? imgB : imgA;
+                heroLayerToggle = !heroLayerToggle;
+
+                incoming.alt = `${dest.name}, ${dest.country}`;
+                handleImageFallback(incoming, dest.name);
+                incoming.src = dest.image;
+
+                if (immediate) {
+                    incoming.classList.remove('opacity-0');
+                    incoming.classList.add('opacity-100');
+                    outgoing.classList.remove('opacity-100');
+                    outgoing.classList.add('opacity-0');
+                } else {
+                    requestAnimationFrame(() => {
+                        incoming.classList.remove('opacity-0');
+                        incoming.classList.add('opacity-100');
+                        outgoing.classList.remove('opacity-100');
+                        outgoing.classList.add('opacity-0');
+                    });
+                }
+
+                // Update editorial text
+                headline.style.opacity = '0';
+                setTimeout(() => {
+                    headline.textContent = dest.heroHeadline;
+                    coords.textContent = dest.coords;
+                    placeName.textContent = `${dest.name}, ${dest.country}`;
+                    liveTime.textContent = formatLocalTime(dest.timezone);
+                    vibe.textContent = dest.heroVibe;
+                    headline.style.opacity = '1';
+                }, immediate ? 0 : 180);
+
+                renderWorldClockBar();
+            }
+
+            function updateAllLiveClocks() {
+                document.querySelectorAll('.clock-time').forEach(el => {
+                    const tz = el.getAttribute('data-tz');
+                    if (tz) el.textContent = formatLocalTime(tz);
+                });
+                const activeDest = getDestination(activeHeroId);
+                const heroTimeEl = document.getElementById('hero-live-time');
+                if (heroTimeEl && activeDest) {
+                    heroTimeEl.textContent = formatLocalTime(activeDest.timezone);
+                }
+            }
+
+            /* ---------------------------------------------------------
+             * 5. MOOD COMPASS & EDITORIAL DESTINATION GRID
+             * --------------------------------------------------------- */
+            function renderMoodFilters() {
+                const bar = document.getElementById('mood-filter-bar');
+                bar.innerHTML = MOODS.map(mood => {
+                    const isSelected = mood === activeMood;
+                    return `
+                        <button
+                            type="button"
+                            data-mood="${mood}"
+                            class="mood-pill shrink-0 px-5 py-2.5 rounded-full text-xs uppercase tracking-[0.16em] font-medium transition-all duration-300 cursor-pointer ${
+                                isSelected
+                                    ? 'bg-obsidian text-alabaster shadow-md'
+                                    : 'bg-parchment text-stonewarm hover:bg-ink/10 hover:text-ink'
+                            }"
+                        >
+                            ${mood}
+                        </button>
+                    `;
+                }).join('');
+
+                bar.querySelectorAll('.mood-pill').forEach(pill => {
+                    pill.addEventListener('click', () => {
+                        activeMood = pill.getAttribute('data-mood');
+                        renderMoodFilters();
+                        renderDestinationGrid();
+                    });
+                });
+            }
+
+            function renderDestinationGrid() {
+                const grid = document.getElementById('destination-grid');
+                const filtered = activeMood === 'All Journeys'
+                    ? DESTINATIONS
+                    : DESTINATIONS.filter(d => d.moods.includes(activeMood));
+
+                grid.innerHTML = filtered.map((dest, index) => {
+                    const stamped = isStamped(dest.id);
+                    // Editorial bento feel: make the 1st and 5th cards wide on desktop when showing all
+                    const isFeatureSpan = activeMood === 'All Journeys' && (index === 0 || index === 4);
+                    const spanClasses = isFeatureSpan ? 'lg:col-span-2' : 'lg:col-span-1';
+                    const aspectClasses = isFeatureSpan ? 'h-80 sm:h-96' : 'h-80 sm:h-96';
+
+                    return `
+                        <article
+                            data-dest-id="${dest.id}"
+                            class="dest-card group relative flex flex-col rounded-3xl overflow-hidden bg-parchment/70 border border-ink/8 shadow-sm hover:shadow-xl transition-all duration-500 cursor-pointer ${spanClasses}"
+                        >
+                            <!-- Image Container -->
+                            <div class="relative ${aspectClasses} w-full overflow-hidden bg-gradient-to-br ${dest.fallbackBg}">
+                                <img
+                                    src="${dest.image}"
+                                    alt="${dest.name}, ${dest.country}"
+                                    loading="lazy"
+                                    onerror="this.onerror=null;this.src='https://placehold.co/1200x800/171A1D/C86D4B?text=${encodeURIComponent(dest.name)}';"
+                                    class="dest-card-img w-full h-full object-cover"
+                                />
+                                <div class="absolute inset-0 bg-gradient-to-t from-obsidian/80 via-obsidian/15 to-transparent"></div>
+
+                                <!-- Top Badges -->
+                                <div class="absolute top-4 left-4 right-4 flex items-center justify-between gap-2">
+                                    <span class="px-3 py-1.5 rounded-full bg-obsidian/60 backdrop-blur-md text-alabaster text-[10px] uppercase tracking-[0.18em]">
+                                        ${dest.moods[0]}
+                                    </span>
+
+                                    <!-- Quick Stamp Button -->
+                                    <button
+                                        type="button"
+                                        data-stamp-id="${dest.id}"
+                                        aria-label="${stamped ? 'Remove from passport' : 'Stamp to passport'}"
+                                        class="card-stamp-btn flex items-center gap-1.5 px-3.5 py-2 rounded-full text-[10px] uppercase tracking-[0.16em] font-semibold backdrop-blur-md transition-all cursor-pointer ${
+                                            stamped
+                                                ? 'bg-terracotta text-alabaster shadow-md'
+                                                : 'bg-obsidian/55 text-alabaster hover:bg-terracotta'
+                                        }"
+                                    >
+                                        <i data-lucide="${stamped ? 'check' : 'stamp'}" class="w-3.5 h-3.5"></i>
+                                        <span>${stamped ? 'Stamped' : 'Stamp'}</span>
+                                    </button>
+                                </div>
+
+                                <!-- Bottom Overlay Title & Coordinates -->
+                                <div class="absolute bottom-4 left-5 right-5 text-alabaster">
+                                    <p class="font-mono text-[10px] tracking-widest text-alabaster/75 mb-1">${dest.coords}</p>
+                                    <div class="flex items-baseline justify-between gap-3">
+                                        <h3 class="font-serif text-3xl sm:text-4xl font-light leading-none">${dest.name}</h3>
+                                        <span class="text-xs uppercase tracking-[0.18em] text-terracotta font-medium">${dest.country}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Editorial Card Body -->
+                            <div class="p-6 flex-1 flex flex-col justify-between gap-4 bg-alabaster">
+                                <p class="font-serif italic text-xl text-ink/90 leading-snug">
+                                    “${dest.hook}”
+                                </p>
+                                <div class="flex items-center justify-between pt-3 border-t border-ink/10 text-[11px] uppercase tracking-[0.16em] text-stonewarm">
+                                    <span>Best: ${dest.bestSeason}</span>
+                                    <span class="inline-flex items-center gap-1 text-ink font-medium group-hover:text-terracotta transition-colors">
+                                        Read Story
+                                        <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+                // Attach listeners for cards and stamp buttons
+                grid.querySelectorAll('.dest-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (e.target.closest('.card-stamp-btn')) return;
+                        openStoryModal(card.getAttribute('data-dest-id'));
+                    });
+                });
+
+                grid.querySelectorAll('.card-stamp-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        togglePassportStamp(btn.getAttribute('data-stamp-id'));
+                    });
+                });
+
+                lucide.createIcons();
+            }
+
+            /* ---------------------------------------------------------
+             * 6. MAGAZINE DESTINATION DEEP-DIVE MODAL
+             * --------------------------------------------------------- */
+            function openStoryModal(id) {
+                const dest = getDestination(id);
+                activeModalDestId = dest.id;
+
+                const modal = document.getElementById('story-modal');
+                const panel = document.getElementById('story-modal-panel');
+                const img = document.getElementById('modal-img');
+
+                img.alt = `${dest.name}, ${dest.country}`;
+                handleImageFallback(img, dest.name);
+                img.src = dest.image;
+
+                document.getElementById('modal-region').textContent = `${dest.region} — ${dest.country}`;
+                document.getElementById('modal-coords').textContent = dest.coords;
+                document.getElementById('modal-season-badge').textContent = `Best: ${dest.bestSeason}`;
+                document.getElementById('modal-title').textContent = dest.name;
+                document.getElementById('modal-lead').textContent = `“${dest.hook}”`;
+                document.getElementById('modal-essay').textContent = dest.essay;
+                document.getElementById('modal-sound').textContent = dest.sensory.sound;
+                document.getElementById('modal-scent').textContent = dest.sensory.scent;
+                document.getElementById('modal-taste').textContent = dest.sensory.taste;
+                document.getElementById('modal-morning').textContent = dest.itinerary.morning;
+                document.getElementById('modal-golden').textContent = dest.itinerary.golden;
+                document.getElementById('modal-night').textContent = dest.itinerary.night;
+                document.getElementById('modal-moment').textContent = `“${dest.moment}”`;
+                document.getElementById('modal-gateway').textContent = dest.gateway;
+
+                updateModalStampButton();
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+                panel.scrollTop = 0;
+
+                requestAnimationFrame(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.classList.add('opacity-100');
+                    panel.classList.remove('translate-y-6');
+                    panel.classList.add('translate-y-0');
+                });
+
+                lucide.createIcons();
+            }
+
+            function closeStoryModal() {
+                const modal = document.getElementById('story-modal');
+                const panel = document.getElementById('story-modal-panel');
+
+                modal.classList.add('opacity-0');
+                modal.classList.remove('opacity-100');
+                panel.classList.add('translate-y-6');
+                panel.classList.remove('translate-y-0');
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }, 280);
+            }
+
+            function updateModalStampButton() {
+                if (!activeModalDestId) return;
+                const stamped = isStamped(activeModalDestId);
+                const btn = document.getElementById('modal-stamp-btn');
+                const text = document.getElementById('modal-stamp-text');
+                text.textContent = stamped ? 'Stamped in Your Passport' : 'Stamp to Passport';
+                if (stamped) {
+                    btn.classList.remove('bg-terracotta', 'hover:bg-terracotta-dark');
+                    btn.classList.add('bg-obsidian', 'hover:bg-charcoal');
+                } else {
+                    btn.classList.add('bg-terracotta', 'hover:bg-terracotta-dark');
+                    btn.classList.remove('bg-obsidian', 'hover:bg-charcoal');
+                }
+            }
+
+            /* ---------------------------------------------------------
+             * 7. "SPIN THE COMPASS" BOARDING PASS GENERATOR
+             * --------------------------------------------------------- */
+            function renderBoardingPass(id) {
+                const dest = getDestination(id);
+                activeBoardingPassId = dest.id;
+
+                document.getElementById('bp-code').textContent = dest.airportCode;
+                document.getElementById('bp-city').textContent = `${dest.name}, ${dest.country}`;
+                document.getElementById('bp-season').textContent = `Best: ${dest.bestSeason}`;
+                document.getElementById('bp-mood').textContent = dest.moods[0];
+                document.getElementById('bp-coords').textContent = dest.coords;
+                document.getElementById('bp-hook').textContent = `“${dest.hook}”`;
+
+                const listEl = document.getElementById('bp-packing-list');
+                listEl.innerHTML = dest.packing.map((item, idx) => `
+                    <li class="flex items-start gap-2.5">
+                        <span class="font-mono text-[11px] text-terracotta mt-0.5">0${idx + 1}</span>
+                        <span>${item}</span>
+                    </li>
+                `).join('');
+            }
+
+            function spinCompass() {
+                const needle = document.getElementById('compass-needle');
+                const pass = document.getElementById('boarding-pass');
+                const btnText = document.getElementById('spin-btn-text');
+
+                // Pick a different random destination than the current one
+                const candidates = DESTINATIONS.filter(d => d.id !== activeBoardingPassId);
+                const nextDest = candidates[Math.floor(Math.random() * candidates.length)];
+
+                // Spin compass 2-3 full rotations plus random offset
+                compassRotation += 720 + Math.floor(Math.random() * 360);
+                needle.style.transform = `rotate(${compassRotation}deg)`;
+
+                btnText.textContent = 'Charting...';
+                pass.style.opacity = '0.55';
+                pass.style.transform = 'scale(0.985)';
+
+                setTimeout(() => {
+                    renderBoardingPass(nextDest.id);
+                    pass.style.opacity = '1';
+                    pass.style.transform = 'scale(1)';
+                    btnText.textContent = 'Drop the Pin';
+                }, 650);
+            }
+
+            /* ---------------------------------------------------------
+             * 8. PERSONAL PASSPORT WISHLIST DRAWER
+             * --------------------------------------------------------- */
+            function togglePassportStamp(id) {
+                const dest = getDestination(id);
+                const exists = isStamped(id);
+
+                if (exists) {
+                    passportStamps = passportStamps.filter(item => item.id !== id);
+                    showToast(`Removed ${dest.name} from Passport`);
+                } else {
+                    const today = new Intl.DateTimeFormat('en-US', {
+                        month: 'short',
+                        day: '2-digit',
+                        year: 'numeric'
+                    }).format(new Date());
+                    passportStamps.unshift({ id: dest.id, date: today });
+                    showToast(`Stamped ${dest.name} to your Passport`);
+                }
+
+                savePassportStamps();
+                renderPassportDrawer();
+                renderDestinationGrid();
+                updateModalStampButton();
+            }
+
+            function renderPassportDrawer() {
+                const countBadge = document.getElementById('passport-count');
+                const totalEl = document.getElementById('drawer-stamp-total');
+                const listEl = document.getElementById('passport-list');
+
+                countBadge.textContent = passportStamps.length;
+                totalEl.textContent = `${passportStamps.length} / ${DESTINATIONS.length}`;
+
+                if (passportStamps.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="h-full flex flex-col items-center justify-center text-center py-14 px-4">
+                            <div class="w-16 h-16 rounded-full border border-dashed border-ink/25 flex items-center justify-center mb-4 text-terracotta">
+                                <i data-lucide="compass" class="w-7 h-7"></i>
+                            </div>
+                            <h4 class="font-serif text-2xl text-ink mb-2">Your pages are waiting</h4>
+                            <p class="text-xs text-stonewarm leading-relaxed max-w-xs">
+                                Tap “Stamp” on any destination in the Atlas to collect places you dream of waking up in.
+                            </p>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                    return;
+                }
+
+                listEl.innerHTML = passportStamps.map((stamp, idx) => {
+                    const dest = getDestination(stamp.id);
+                    const tilt = idx % 2 === 0 ? '-rotate-1' : 'rotate-1';
+                    return `
+                        <div class="relative rounded-2xl bg-parchment/90 border border-ink/12 p-4 flex items-center gap-4 group hover:border-terracotta/50 transition-colors">
+                            <!-- Vintage Stamp Seal -->
+                            <div class="stamp-badge shrink-0 w-16 h-16 rounded-full border-2 border-terracotta/70 bg-alabaster flex flex-col items-center justify-center text-center transform ${tilt}">
+                                <span class="font-serif font-semibold text-base text-terracotta leading-none">${dest.airportCode}</span>
+                                <span class="text-[8px] uppercase tracking-widest text-stonewarm mt-0.5">${stamp.date.split(',')[0]}</span>
+                            </div>
+
+                            <!-- Stamp Details -->
+                            <div class="flex-1 min-w-0">
+                                <button type="button" data-open-story="${dest.id}" class="text-left focus:outline-none cursor-pointer">
+                                    <h4 class="font-serif text-2xl text-ink leading-tight group-hover:text-terracotta transition-colors">${dest.name}</h4>
+                                    <p class="text-[11px] uppercase tracking-[0.16em] text-stonewarm">${dest.country} • ${dest.bestSeason}</p>
+                                    <p class="font-mono text-[10px] text-stonewarm/75 mt-1">${dest.coords}</p>
+                                </button>
+                            </div>
+
+                            <!-- Remove Button -->
+                            <button
+                                type="button"
+                                data-remove-stamp="${dest.id}"
+                                aria-label="Remove ${dest.name} stamp"
+                                class="w-8 h-8 rounded-full hover:bg-ink/10 text-stonewarm hover:text-ink flex items-center justify-center transition-colors cursor-pointer"
+                            >
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+
+                listEl.querySelectorAll('[data-open-story]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        closePassportDrawer();
+                        openStoryModal(btn.getAttribute('data-open-story'));
+                    });
+                });
+
+                listEl.querySelectorAll('[data-remove-stamp]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        togglePassportStamp(btn.getAttribute('data-remove-stamp'));
+                    });
+                });
+
+                lucide.createIcons();
+            }
+
+            function openPassportDrawer() {
+                const backdrop = document.getElementById('passport-backdrop');
+                const drawer = document.getElementById('passport-drawer');
+                backdrop.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+                requestAnimationFrame(() => {
+                    backdrop.classList.remove('opacity-0');
+                    backdrop.classList.add('opacity-100');
+                    drawer.classList.remove('translate-x-full');
+                });
+            }
+
+            function closePassportDrawer() {
+                const backdrop = document.getElementById('passport-backdrop');
+                const drawer = document.getElementById('passport-drawer');
+                backdrop.classList.add('opacity-0');
+                backdrop.classList.remove('opacity-100');
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => {
+                    backdrop.classList.add('hidden');
+                    document.body.style.overflow = '';
+                }, 280);
+            }
+
+            function copyItineraryToClipboard() {
+                if (passportStamps.length === 0) {
+                    showToast('Stamp at least one destination first');
+                    return;
+                }
+
+                const lines = [
+                    'MERIDIAN — MY TRAVEL PASSPORT',
+                    '==============================',
+                    ...passportStamps.map((s, i) => {
+                        const d = getDestination(s.id);
+                        return `${i + 1}. ${d.name}, ${d.country} (${d.airportCode}) — Best: ${d.bestSeason}\n   ${d.coords} | "${d.hook}"`;
+                    })
+                ];
+                const text = lines.join('\n');
+
+                // Use execCommand('copy') for universal iframe compatibility
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Itinerary list copied to clipboard');
+                } catch (err) {
+                    showToast('Could not copy automatically');
+                }
+                document.body.removeChild(textarea);
+            }
+
+            /* ---------------------------------------------------------
+             * 9. WEB AUDIO API AMBIENT SOUNDSCAPE SYNTHESIZER
+             *    Pure procedural Ocean / Rain / Wind (Muted by default)
+             * --------------------------------------------------------- */
+            const SOUND_MODES = ['Off', 'Ocean', 'Rain', 'Wind'];
+            let soundModeIndex = 0;
+            let audioCtx = null;
+            let activeAudioNodes = [];
+
+            function stopSoundscape() {
+                activeAudioNodes.forEach(node => {
+                    try {
+                        if (node.stop) node.stop();
+                        if (node.disconnect) node.disconnect();
+                    } catch (e) {}
+                });
+                activeAudioNodes = [];
+            }
+
+            function createNoiseBuffer(ctx, type) {
+                const bufferSize = ctx.sampleRate * 3;
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const output = buffer.getChannelData(0);
+
+                if (type === 'brown') {
+                    let lastOut = 0.0;
+                    for (let i = 0; i < bufferSize; i++) {
+                        const white = Math.random() * 2 - 1;
+                        output[i] = (lastOut + (0.02 * white)) / 1.02;
+                        lastOut = output[i];
+                        output[i] *= 3.2;
+                    }
+                } else {
+                    // Pink noise approximation
+                    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                    for (let i = 0; i < bufferSize; i++) {
+                        const white = Math.random() * 2 - 1;
+                        b0 = 0.99886 * b0 + white * 0.0555179;
+                        b1 = 0.99332 * b1 + white * 0.0750759;
+                        b2 = 0.96900 * b2 + white * 0.1538520;
+                        b3 = 0.86650 * b3 + white * 0.3104856;
+                        b4 = 0.55000 * b4 + white * 0.5329522;
+                        b5 = -0.7616 * b5 - white * 0.0168980;
+                        output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
+                        b6 = white * 0.115926;
+                    }
+                }
+                return buffer;
+            }
+
+            function startSoundscape(mode) {
+                stopSoundscape();
+                if (mode === 'Off') return;
+
+                try {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (!audioCtx) audioCtx = new AudioContextClass();
+                    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                    const source = audioCtx.createBufferSource();
+                    source.buffer = createNoiseBuffer(audioCtx, mode === 'Rain' ? 'pink' : 'brown');
+                    source.loop = true;
+
+                    const filter = audioCtx.createBiquadFilter();
+                    const masterGain = audioCtx.createGain();
+                    masterGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+
+                    if (mode === 'Ocean') {
+                        filter.type = 'lowpass';
+                        filter.frequency.value = 340;
+                        masterGain.gain.linearRampToValueAtTime(0.28, audioCtx.currentTime + 1.2);
+
+                        // Gentle wave swell LFO
+                        const lfo = audioCtx.createOscillator();
+                        const lfoGain = audioCtx.createGain();
+                        lfo.frequency.value = 0.11; // ~9 second wave cycle
+                        lfoGain.gain.value = 210;
+                        lfo.connect(lfoGain);
+                        lfoGain.connect(filter.frequency);
+                        lfo.start();
+                        activeAudioNodes.push(lfo, lfoGain);
+                    } else if (mode === 'Rain') {
+                        filter.type = 'bandpass';
+                        filter.frequency.value = 1100;
+                        filter.Q.value = 0.6;
+                        masterGain.gain.linearRampToValueAtTime(0.22, audioCtx.currentTime + 1.0);
+                    } else if (mode === 'Wind') {
+                        filter.type = 'bandpass';
+                        filter.frequency.value = 420;
+                        filter.Q.value = 2.2;
+                        masterGain.gain.linearRampToValueAtTime(0.24, audioCtx.currentTime + 1.2);
+
+                        // Slow wind gust modulation
+                        const lfo = audioCtx.createOscillator();
+                        const lfoGain = audioCtx.createGain();
+                        lfo.frequency.value = 0.16;
+                        lfoGain.gain.value = 180;
+                        lfo.connect(lfoGain);
+                        lfoGain.connect(filter.frequency);
+                        lfo.start();
+                        activeAudioNodes.push(lfo, lfoGain);
+                    }
+
+                    source.connect(filter);
+                    filter.connect(masterGain);
+                    masterGain.connect(audioCtx.destination);
+                    source.start();
+
+                    activeAudioNodes.push(source, filter, masterGain);
+                } catch (err) {
+                    showToast('Audio unavailable in this browser');
+                }
+            }
+
+            function cycleSoundscape() {
+                soundModeIndex = (soundModeIndex + 1) % SOUND_MODES.length;
+                const mode = SOUND_MODES[soundModeIndex];
+
+                document.getElementById('sound-label').textContent = mode;
+                const iconEl = document.getElementById('sound-icon');
+                iconEl.setAttribute('data-lucide', mode === 'Off' ? 'volume-x' : 'volume-2');
+                lucide.createIcons();
+
+                startSoundscape(mode);
+                showToast(mode === 'Off' ? 'Ambient soundscape muted' : `Soundscape: ${mode}`);
+            }
+
+            /* ---------------------------------------------------------
+             * 10. SCROLL EFFECTS & INTERSECTION OBSERVER
+             * --------------------------------------------------------- */
+            function setupScrollEffects() {
+                const nav = document.getElementById('main-nav');
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 60) {
+                        nav.classList.add('bg-obsidian/92', 'backdrop-blur-md', 'border-b', 'border-white/10');
+                        nav.classList.remove('bg-gradient-to-b', 'from-obsidian/80', 'via-obsidian/40', 'to-transparent');
+                    } else {
+                        nav.classList.remove('bg-obsidian/92', 'backdrop-blur-md', 'border-b', 'border-white/10');
+                        nav.classList.add('bg-gradient-to-b', 'from-obsidian/80', 'via-obsidian/40', 'to-transparent');
+                    }
+                }, { passive: true });
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.12 });
+
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            }
+
+            /* ---------------------------------------------------------
+             * 11. EVENT BINDINGS & INITIALIZATION
+             * --------------------------------------------------------- */
+            function init() {
+                setActiveHero('kyoto', true);
+                renderMoodFilters();
+                renderDestinationGrid();
+                renderBoardingPass('kyoto');
+                renderPassportDrawer();
+                setupScrollEffects();
+                lucide.createIcons();
+
+                // Update world clocks every 10 seconds
+                setInterval(updateAllLiveClocks, 10000);
+
+                // Hero Explore CTA
+                document.getElementById('hero-explore-btn').addEventListener('click', () => {
+                    openStoryModal(activeHeroId);
+                });
+
+                // Soundscape Toggle
+                document.getElementById('sound-toggle-btn').addEventListener('click', cycleSoundscape);
+
+                // Passport Drawer Controls
+                document.getElementById('passport-open-btn').addEventListener('click', openPassportDrawer);
+                document.getElementById('footer-passport-btn').addEventListener('click', openPassportDrawer);
+                document.getElementById('passport-close-btn').addEventListener('click', closePassportDrawer);
+                document.getElementById('passport-backdrop').addEventListener('click', closePassportDrawer);
+                document.getElementById('copy-itinerary-btn').addEventListener('click', copyItineraryToClipboard);
+
+                // Story Modal Controls
+                document.getElementById('modal-close-btn').addEventListener('click', closeStoryModal);
+                document.getElementById('story-modal').addEventListener('click', (e) => {
+                    if (e.target.id === 'story-modal') closeStoryModal();
+                });
+                document.getElementById('modal-stamp-btn').addEventListener('click', () => {
+                    if (activeModalDestId) togglePassportStamp(activeModalDestId);
+                });
+
+                // Compass Controls
+                document.getElementById('spin-compass-btn').addEventListener('click', spinCompass);
+                document.getElementById('bp-spin-again-btn').addEventListener('click', spinCompass);
+                document.getElementById('bp-explore-btn').addEventListener('click', () => {
+                    openStoryModal(activeBoardingPassId);
+                });
+
+                // Escape key closes modal or drawer
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        closeStoryModal();
+                        closePassportDrawer();
+                    }
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', init);
+        })();
+    </script>
 </body>
 </html>
